@@ -5,7 +5,7 @@ rm(list = ls(all = TRUE))
 
 # theta1, theta2 > 0
 # stable equilibrium at +sqrt(theta2) or -sqrt(theta2) depending on the IC
-thetavec = c(3, 5, 0.7)
+thetavec = c(.2, 4, 0.5)
 
 h = 0.0001
 littlet = 1
