@@ -80,80 +80,64 @@ mat gDTQ(const vec &thetavec, double h, double k, int M, int littlet, vec &init_
   int datapoints = init_data.n_elem;
   vec xvec = k*linspace<vec>(-M,M,veclen);
 
-  mat Phat(veclen, datapoints);
-  mat Pgrad1(veclen, datapoints);
-  mat Pgrad2(veclen, datapoints);
-  // mat P(3*veclen, datapoints);
+  mat A(veclen, datapoints);
+  mat D1(veclen, datapoints);
+  mat D2(veclen, datapoints);
 
+  // compute the A and D matrix 
   for (int i = 0; i < datapoints; i++)
   {
-    Phat.col(i) = gaussian_pdf_vec(xvec, init_data(i) + h*f(init_data(i), thetavec), h12*g(init_data(i), thetavec));
-    Pgrad1.col(i) = gradient1_gaussian_vec(xvec, init_data(i) + h*f(init_data(i), thetavec), h12*g(init_data(i), thetavec));
-    Pgrad2.col(i) = gradient2_gaussian_vec(xvec, init_data(i) + h*f(init_data(i), thetavec), h12*g(init_data(i), thetavec));
+    A.col(i) = gaussian_pdf_vec(xvec, init_data(i) + h*f(init_data(i), thetavec), h12*g(init_data(i), thetavec));
+    D1.col(i) = gradient1_gaussian_vec(xvec, init_data(i) + h*f(init_data(i), thetavec), h12*g(init_data(i), thetavec));
+    D2.col(i) = gradient2_gaussian_vec(xvec, init_data(i) + h*f(init_data(i), thetavec), h12*g(init_data(i), thetavec));
   }
 
-  // double supg = max(g(0,thetavec));
-  // int gamma = ceil(5*h12*supg/k);
+  mat pdfmatrix(veclen, datapoints - 1);
+  mat qmattheta1(veclen, datapoints - 1);
+  mat qmattheta2(veclen, datapoints - 1);
 
   // loop over the timesteps
   for (int step = 1; step < numsteps - 1; step++)
   {
-    // mat Phatnew = zeros<mat>(veclen, datapoints);
-    // mat Pgrad1new = zeros<mat>(veclen, datapoints);
-    // mat Pgrad2new = zeros<mat>(veclen, datapoints);
-    mat Pnew = zeros<mat>(3*veclen, datapoints);
-    // Index 0:veclen-1 Phat
-    // Index veclen:2veclen - 1 Pgrad1
-    // Index 2veclen:3veclen -1 Pgrad2
+    mat Anew = zeros<mat>(veclen, datapoints);
+    mat D1new = zeros<mat>(veclen, datapoints);
+    mat D2new = zeros<mat>(veclen, datapoints);
 
     for (int i = 0; i < veclen; i++)
     {
-      // only do the computation gamma away from boundary
       double y = xvec(i);
+
       double mu = y + h*f(y,thetavec);
       double sigma = h12*g(y,thetavec);
+
       double G = gaussian_pdf(xvec(i), mu, sigma);
+
       double Ggrad1 = gradient1_gaussian(xvec(i), mu, sigma);
       double Ggrad2 = gradient2_gaussian(xvec(i), mu, sigma);
-      // Phatnew.row(i) = k*G*Phat.row(i);
-      // Pgrad1new.row(i) = k*Ggrad1*Phat.row(i) + k*G*Pgrad1.row(i);
-      // Pgrad2new.row(i) = k*Ggrad2*Phat.row(i) + k*G*Pgrad2.row(i);
 
-      Pnew.row(i) = k*G*P.row(i);
-      Pnew.row(veclen + i) = k*Ggrad1*P.row(i) + k*G*P.row(veclen + i);
-      Pnew.row(2*veclen + i) = k*Ggrad2*P.row(i) + k*G*P.row(2*veclen + i);
+      Anew.row(i) = k * G * A.row(i);
+      D1new.row(i) = k * Ggrad1 * A.row(i) + k * G * D1.row(i);
+      D2new.row(i) = k * Ggrad2 * A.row(i) + k * G * D2.row(i);
     }
-    // Phat = Phatnew;
-    // Pgrad1 = Pgrad1new;
-    // Pgrad2 = Pgrad2new;
-    P = Pnew
+    A = Anew;
+    D1 = D1new;
+    D2 = D2new;
   }
-  return P;
+  return A;
 }
 
 
-SEXP gdtqCPP(SEXP s_thetavec, SEXP s_c0, SEXP s_h, SEXP s_numsteps, SEXP s_k, SEXP s_yM)
+SEXP gdtqCPP(SEXP s_thetavec, SEXP s_h, SEXP s_k, SEXP s_M, SEXP s_littlet, SEXP s_init_data)
 {
-    vec thetavec = Rcpp::as<arma::vec>(s_thetavec);
-    vec C0 = Rcpp::as<arma::vec>(s_c0);
-    double h = Rcpp::as<double>(s_h);
-    int numsteps = Rcpp::as<int>(s_numsteps);
-    double k = Rcpp::as<double>(s_k);
-    double yM = Rcpp::as<double>(s_yM);
+  vec thetavec = Rcpp::as<arma::vec>(s_thetavec);
+  double h = Rcpp::as<double>(s_h);
+  double k = Rcpp::as<double>(s_k);
+  int M = Rcpp::as<int>(s_M);
+  int littlet = Rcpp::as<int>(s_littlet);
+  vec init_data = Rcpp::as<arma::vec>(s_init_data);
 
-    mat mymat = gDTQ(thetavec, C0, h, numsteps, k, yM);
-    return Rcpp::wrap( mymat );
+  mat mymat = gDTQ(thetavec, h, k, M, littlet, init_data);
+  return Rcpp::wrap( mymat );
 }
-
-// SEXP GCPP(SEXP s_thetavec, SEXP s_h, SEXP s_k, SEXP s_yM)
-// {
-//     vec thetavec = Rcpp::as<arma::vec>(s_thetavec);
-//     double h = Rcpp::as<double>(s_h);
-//     double k = Rcpp::as<double>(s_k);
-//     double yM = Rcpp::as<double>(s_yM);
-
-//     double Gval = PDFcheck(thetavec, h, k, yM);
-//     return Rcpp::wrap( Gval );
-// }
 
 
