@@ -1,9 +1,0 @@
-setwd('~/Dropbox/tm2015/sdeinference')
-load('posteriorsamples3.RData')
-ls()
-x
-plot(density(abs(x)))
-mean(abs(x))
-X
-load('rcdt2d_fakedata.RData')
-X
