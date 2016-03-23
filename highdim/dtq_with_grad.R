@@ -7,6 +7,8 @@ driftfun <- function(c0, y)
   for (i in c(2:nc0))
     f = f + c0[i]*y^(i-1)
 
+  # f = c0[1]*y + c0[2]*y^3
+
   return(f)
 }
 

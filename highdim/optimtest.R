@@ -22,7 +22,7 @@ objgradfun <- function(c0)
 }
 
 # create grid, compute densities on that grid
-myh = 0.01
+myh = 0.005
 myk = myh^0.75
 mybigm = ceiling(pi/(myk^1.1))
 
@@ -31,5 +31,8 @@ theta = c(rep(0,4),0.5)
 
 library('nloptr')
 
-res <- nloptr(x0 = theta, eval_f = objgradfun, lb = c(rep(-10,4),0.2), ub = c(rep(10,4),1), opts = list("algorithm"="NLOPT_LD_LBFGS", "print_level"=3, "check_derivatives" = TRUE, "xtol_abs"=1e-3))
+res <- nloptr(x0 = theta, eval_f = objgradfun, lb = c(rep(-10,4),0.2), ub = c(rep(10,4),1), opts = list("algorithm"="NLOPT_LD_MMA", "print_level"=3, "check_derivatives" = FALSE, "xtol_abs"=1e-3))
+
+save(res,file='optimtestresult.RData')
+
 

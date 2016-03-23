@@ -13,7 +13,7 @@ nsaves = ceiling(bigt/littlet)
 hilt = ceiling(littlet/h)
 stopifnot((nsteps == (nsaves*hilt)))
 
-ntrials = 300
+ntrials = 100
 h12 = sqrt(h)
 xtraj = matrix(0, nrow = ntrials, ncol = (nsaves + 1))
 
@@ -33,8 +33,6 @@ for (i in c(1:nsaves))
 
     xtraj[,(i+1)] = x
 }
-
-browser()
 
 if (sum(is.na(xtraj[,(nsaves+1)])) > 0)
     xtraj = xtraj[-which(is.na(xtraj[,(nsaves+1)])),]
