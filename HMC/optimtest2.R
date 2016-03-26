@@ -13,14 +13,14 @@ logprior <- function(z, mu, mass_sd)
     return(dnorm(x = z, mean = mu, sd = mass_sd, log = TRUE))
 }
 
-objgradfun <- function(c0, z, mu, mass_sd)
+objgradfun <- function(c0, z, mu, mass_sd, prior)
 {
     probmat = cdt(c0, h = myh, k = myk, bigm = mybigm, littlet = 1, data = fd)
 
     mylik = probmat$lik
     mylik[mylik < 0] = 0
 
-    objective = - sum(log(mylik))
+    objective = - sum(log(mylik)) + prior
 
     nc0 = length(c0)
     gradient = numeric(length = nc0)
@@ -28,7 +28,7 @@ objgradfun <- function(c0, z, mu, mass_sd)
     for (i in c(1:nc0))
         gradient[i] = - sum(probmat$grad[[i]] / probmat$lik)
 
-    gradient = gradient - (z - mu)/(mass_sd)^2
+    gradient = gradient - (z - mu)/(mass_sd^2)
     return(list("objective" = objective, "gradient" = gradient))
 }
 
@@ -52,30 +52,33 @@ for (i in c(1:(totsteps-1)))
     phi = rnorm(n = numparam, mean = mu, sd = mass_sd)
 
     oldlogprior = logprior(phi, mu, mass_sd)
-    oldgradpost = objgradfun(theta, phi, mu, mass_sd)
+    oldgradpost = objgradfun(theta, phi, mu, mass_sd, oldlogprior)
 
     phi_half = phi + (oldgradpost$gradient) * (myh / 2)
     theta_star = theta + phi_half * (myh / mass_sd)
 
-    propgradpost = objgradfun(theta_star, phi_half, mu, mass_sd)
+    halflogprior = logprior(phi_half, mu, mass_sd)
+    propgradpost = objgradfun(theta_star, phi_half, mu, mass_sd, halflogprior)
     phi_star = phi_half + (propgradpost$gradient) * (myh / 2)
 
     proplogprior = logprior(phi_star, mu, mass_sd)
 
-	rho = (exp(propgradpost$objective) * exp(proplogprior)) / (exp(oldgradpost$objective) * exp(oldlogprior))
+	#rho = (exp(propgradpost$objective) %*% exp(proplogprior)) / (exp(oldgradpost$objective) %*% exp(oldlogprior))
+    rho = (exp(propgradpost$objective + proplogprior) - (oldgradpost$objective + oldlogprior))
 
     # accept/reject step
     u = runif(n = 1)
+    # Q: how to compare rho and u?
     if (rho > u)
     {
         theta = theta_star
         oldgradpost = propgradpost
-        print(paste("Accepted the proposal",prop))
+        print(paste("Accepted the proposal", theta_star))
         artrack[i] = 1
     }
     else
     {
-        print(paste("Rejected the proposal",prop))
+        print(paste("Rejected the proposal", theta_star))
         artrack[i] = 0
     }
 }
