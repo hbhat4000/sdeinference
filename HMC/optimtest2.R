@@ -35,7 +35,7 @@ objgradfun <- function(c0, z, mu, mass_sd, prior)
 }
 
 # create grid, compute densities on that grid
-myh = 0.1
+myh = 0.05
 myk = myh^0.75
 mybigm = ceiling(pi/(myk^1.5))
 
@@ -90,5 +90,6 @@ for (i in c(1:totsteps))
     thetamat[i,] = theta
 }
 myout = list(theta=thetamat,ar=artrack)
-save(myout,file='posteriorsamples.RData')
+fname = paste('posteriorsamples_',myh,'.RData',sep='')
+save(myout,file=fname)
 
