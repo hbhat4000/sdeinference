@@ -5,7 +5,7 @@ rm(list = ls(all = TRUE))
 
 thetavec = c(0.5, 0.9, 1.0)
 
-h = 0.0001
+h = 0.000001
 littlet = 1
 bigt = 25
 

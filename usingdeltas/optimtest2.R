@@ -22,7 +22,7 @@ objgradfun <- function(c0)
 }
 
 # create grid, compute densities on that grid
-myh = 0.01
+myh = 0.05
 myk = myh^0.75
 mybigm = ceiling(pi/(myk^1.5))
 
