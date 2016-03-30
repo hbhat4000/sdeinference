@@ -16,17 +16,16 @@ objgradfun <- function(c0)
     nc0 = length(c0)
     gradient = numeric(length=nc0)
     for (i in c(1:nc0))
-        gradient[i] = -sum(probmat$grad[[i]] / probmat$lik)
+        gradient[i] = - sum(probmat$grad[[i]] / probmat$lik)
 
-    return(list("objective"=objective,"gradient"=gradient))
+    return(list("objective" = objective, "gradient" = gradient))
 }
 
 # create grid, compute densities on that grid
 myh = 0.05
-myk = myh^0.75
+myk = myh^0.85
 mybigm = ceiling(pi/(myk^1.5))
 
-# initial condition fakedata = c(1,4,0.5)
 theta = c(1, 2, 0.7)
 
 library('nloptr')
