@@ -33,4 +33,6 @@ library('nloptr')
 
 res <- nloptr(x0 = theta, eval_f = objgradfun, lb = c(0.1, 0, 0.1), ub = c(4, 4, 4), opts = list("algorithm"="NLOPT_LD_LBFGS", "print_level"=3, "check_derivatives" = FALSE, "xtol_abs"=1e-3))
 
+fname = paste("optimtest2_",myh,".RData",sep='')
+save(res,fname)
 
