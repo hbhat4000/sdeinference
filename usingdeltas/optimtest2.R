@@ -1,36 +1,35 @@
 rm(list = ls(all = TRUE))
 
-library('KernSmooth')
-
 # load data
-load('fakedata_ou_noise.RData')
+load('fakedata.RData')
 fd = xtraj
 
 # load necessary functions
-source('qdt_with_grad.R')
+source('dtq_with_grad.R')
 
-objectfun <- function(c0)
+objgradfun <- function(c0)
 {
-	probmat = cdt(c0, h = myh, littlet = 1, data=fd)
-        mylik = probmat$lik
-        mylik[mylik<0] = 0
-        out = -sum(log(mylik))
-        return(out)
+    probmat = cdt(c0, h = myh, k = myk, bigm = mybigm, littlet = 1, data = fd)
+    mylik = probmat$lik
+    mylik[mylik < 0] = 0
+    objective = -sum(log(mylik))
+    nc0 = length(c0)
+    gradient = numeric(length=nc0)
+    for (i in c(1:nc0))
+        gradient[i] = -sum(probmat$grad[[i]] / probmat$lik)
+
+    return(list("objective"=objective,"gradient"=gradient))
 }
 
-gradientfun <- function(c0)
-{
-	probmat = cdt(c0, h = myh, littlet = 1, data=fd)
-        out = c(0,0)
-        out[1] = -sum(probmat$likd1 / probmat$lik)
-        out[2] = -sum(probmat$likd2 / probmat$lik)
-        return(out)
-}
+# create grid, compute densities on that grid
+myh = 0.05
+myk = myh^0.75
+mybigm = ceiling(pi/(myk^1.5))
 
-# initial condition:
-theta = c(1.0,.5)
+# initial condition fakedata = c(1,4,0.5)
+theta = c(1, 2, 0.7)
 
 library('nloptr')
-# res <- nloptr(x0 = theta, eval_f = objectfun, eval_grad_f = gradientfun, lb = c(0,0.2), ub = c(2,1.0), opts = list("algorithm"="NLOPT_LD_LBFGS", "print_level"=3, "check_derivatives"=TRUE, "xtol_abs"=1e-2))
- res <- nloptr(x0 = theta, eval_f = objectfun, eval_grad_f = gradientfun, lb = c(0,0.2), ub = c(2,1.0), opts = list("algorithm"="NLOPT_LD_LBFGS", "print_level"=3, "xtol_abs"=1e-2))
+
+res <- nloptr(x0 = theta, eval_f = objgradfun, lb = c(0.1, 0, 0.1), ub = c(1, 4, 1.0), opts = list("algorithm"="NLOPT_LD_LBFGS", "print_level"=3, "check_derivatives" = TRUE, "xtol_abs"=1e-3))
 
