@@ -23,13 +23,13 @@ objgradfun <- function(c0)
 
 # create grid, compute densities on that grid
 myh = 0.05
-myk = myh^0.75
-mybigm = ceiling(pi/(myk^1.5))
+myk = myh^0.55
+mybigm = ceiling(pi/(myk^1.1))
 
 # initial condition fakedata = c(1,4,0.5)
-theta = c(1, 2, 0.7)
+theta = c(1, 0.5, 0.5)
 
 library('nloptr')
 
-res <- nloptr(x0 = theta, eval_f = objgradfun, lb = c(0.1, 0, 0.1), ub = c(1, 4, 1.0), opts = list("algorithm"="NLOPT_LD_LBFGS", "print_level"=3, "check_derivatives" = TRUE, "xtol_abs"=1e-3))
+res <- nloptr(x0 = theta, eval_f = objgradfun, lb = c(0.1, 0, 0.1), ub = c(4, 4, 4), opts = list("algorithm"="NLOPT_LD_LBFGS", "print_level"=3, "check_derivatives" = FALSE, "xtol_abs"=1e-3))
 
