@@ -14,7 +14,7 @@ nsaves = ceiling(bigt/littlet)
 hilt = ceiling(littlet/h)
 stopifnot((nsteps == (nsaves*hilt)))
 
-ntrials = 50
+ntrials = 300
 h12 = sqrt(h)
 xtraj = matrix(0, nrow = ntrials, ncol = (nsaves + 1))
 
