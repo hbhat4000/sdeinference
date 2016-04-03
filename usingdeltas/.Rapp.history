@@ -1,0 +1,6 @@
+source('makefakedata.R')
+source('optimtest2.R')
+source('makefakedata.R')
+source('optimtest2.R')
+ls
+q()
