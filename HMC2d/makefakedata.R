@@ -1,27 +1,25 @@
 rm(list = ls(all = TRUE))
 
-# solve inverse problem for nonlinear SDE
-# dX_t = theta1 X_t (theta2 - (X_t)^2) dt +  theta3 dW_t
-
-# theta1, theta2 > 0
-# stable equilibrium at +sqrt(theta2) or -sqrt(theta2) depending on the IC
-thetavec = c(.2, 4, 0.5)
+source('driftdiff.R')
+source('truethetavec.R')
 
 h = 0.0001
-littlet = 1
-bigt = 25
+t = 1
+T = 25
 
-nsteps = ceiling(bigt/h)
-nsaves = ceiling(bigt/littlet)
-hilt = ceiling(littlet/h)
+nsteps = ceiling(T/h)   # 250000
+nsaves = ceiling(T/t)   # 25
+hilt = ceiling(t/h)		# 1000
 stopifnot((nsteps == (nsaves*hilt)))
 
-ntrials = 300
+theta = truethetavec
+ntrials = 1
 h12 = sqrt(h)
-xtraj = matrix(0, nrow = ntrials, ncol = (nsaves + 1))
 
-# initial condition centered at origin so both -ve and +ve initial conditions generated
-xtraj[,1] = rnorm(n = ntrials, mean = 0, sd = 1) 
+xtraj1 = matrix(0, nrow = ntrials, ncol = (nsaves + 1))
+xtraj1[,1] = rnorm(n = ntrials, mean = 0, sd = sqrt(h)) 
+xtraj2 = matrix(0, nrow = ntrials, ncol = (nsaves + 1))
+xtraj2[,1] = rnorm(n = ntrials, mean = 0, sd = sqrt(h)) 
 
 for (i in c(1:nsaves))
 {
@@ -29,16 +27,22 @@ for (i in c(1:nsaves))
     print(i)
     flush.console()
 
-    x = xtraj[,i]
-
+    x1 = xtraj1[,i]
+    x2 = xtraj2[,i]
+    x = c(x1, x2)
+    
     for (j in c(1:hilt))
-        x = x + (thetavec[1])*(x)*(thetavec[2] - x^2)*(h) + (h12)*(thetavec[3])*(rnorm(n = ntrials))      
-    xtraj[,(i+1)] = x
+    {
+        # x1 = x1 + (f1(x1, x2, theta))*(h) + (h12)*(g1(x1, x2, theta))*(rnorm(n = ntrials))      
+        # x2 = x2 + (f2(x1, x2, theta))*(h) + (h12)*(g2(x1, x2, theta))*(rnorm(n = ntrials))
+        x1 = x1 + (f1(x, theta))*(h) + (h12)*(g1(x, theta))*(rnorm(n = ntrials))      
+        x2 = x2 + (f2(x, theta))*(h) + (h12)*(g2(x, theta))*(rnorm(n = ntrials))
+    }
+
+    xtraj1[,(i+1)] = x1
+    xtraj2[,(i+1)] = x2
 }
 
-tvec = seq(from = 0, to = bigt, by = littlet)
-xtraj = rbind(tvec, xtraj)
-save(xtraj, file = 'fakedata_ou_noise.RData')
-
-# Initial condition picked is printed out 
-# print(xtraj[2,1])
+tvec = seq(from = 0, to = T, by = t)
+xtraj = list(tvec, xtraj1, xtraj2)
+save(xtraj, file = 'fakedata.RData')

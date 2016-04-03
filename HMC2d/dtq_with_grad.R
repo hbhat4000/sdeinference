@@ -1,27 +1,31 @@
-driftfun <- function(c0, y) 
-{
-  # computes drift as a matrix
-  f = (c0[1])*(y)*(c0[2] - y^2)
-  return(f)
-}
+# driftfun <- function(c0, y) 
+# {
+#   # computes drift as a matrix
+#   f = (c0[1])*(y)*(c0[2] - y^2)
+#   return(f)
+# }
 
-difffun <- function(c0, y)
-{
-  # replicates diffusion as a long vector
-  g = rep(c0[3], length(y))
-  return(g)
-}
+# difffun <- function(c0, y)
+# {
+#   # replicates diffusion as a long vector
+#   g = rep(c0[3], length(y))
+#   return(g)
+# }
 
-difffun1 <- function(c0, y)
-{
-  # replicates diffusion term as a matrix
-  dd1 = dim(y)[1]
-  dd2 = dim(y)[2]
-  vec = rep(c0[3], dd1)
-  return(replicate(dd2, vec)) 
-}
+# difffun1 <- function(c0, y)
+# {
+#   # replicates diffusion term as a matrix
+#   dd1 = dim(y)[1]
+#   dd2 = dim(y)[2]
+#   vec = rep(c0[3], dd1)
+#   return(replicate(dd2, vec)) 
+# }
 
 source('integrandmat.R')
+# inplace of integrandmat
+# library('Rdtq2d')
+
+# source('driftdiff.R')
 source('Dtheta.R')
 
 cdt <- function(c0, h, k, bigm, littlet, data)

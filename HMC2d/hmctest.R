@@ -2,6 +2,9 @@ rm(list = ls(all = TRUE))
 
 # load data
 load('fakedata.RData')
+# xtraj[[1]] = tvec
+# xtraj[[2]] = ntrials samples of x1
+# xtraj[[3]] = ntrials samples of x2
 fd = xtraj
 
 # load necessary functions
@@ -13,9 +16,10 @@ logprior <- function(z, mu, mass_sd)
     return(dnorm(x = z, mean = mu, sd = mass_sd, log = TRUE))
 }
 
-objgradfun <- function(c0, z, mu, mass_sd, prior)
+# Change dtq_with_grad for the 2D case
+objgradfun <- function(thetavec, z, mu, mass_sd, prior)
 {
-    probmat = cdt(c0, h = myh, k = myk, bigm = mybigm, littlet = 1, data = fd)
+    probmat = cdt(thetavec, h = myh, k = myk, bigm = mybigm, littlet = 1, data = fd)
 
     mylik = probmat$lik
     mylik[mylik < 0] = 0
@@ -24,8 +28,8 @@ objgradfun <- function(c0, z, mu, mass_sd, prior)
     objective = sum(log(mylik)) + prior
 
     # form gradient of log likelihood
-    nc0 = length(c0)
-    gradient = numeric(length = nc0)
+    numparam = length(thetavec)
+    gradient = numeric(length = numparam)
     for (i in c(1:nc0))
         gradient[i] = sum(probmat$grad[[i]] / probmat$lik)
 
@@ -39,14 +43,14 @@ myh = 0.05
 myk = myh^0.75
 mybigm = ceiling(pi/(myk^1.5))
 
-# initial condition fakedata = c(1,4,0.5)
-theta = c(1, 2, 1)
+# actual data in truethetavec.R
+theta = c(1, 2, 1, 1)
 numparam = length(theta)
 
 hh = 0.01
 totsteps = 1000
-thetamat = matrix(nrow=totsteps, ncol=numparam)
-artrack = numeric(length=totsteps)
+thetamat = matrix(nrow = totsteps, ncol = numparam)
+artrack = numeric(length = totsteps)
 
 for (i in c(1:totsteps))
 {
@@ -79,17 +83,17 @@ for (i in c(1:totsteps))
     {
         theta = theta_star
         oldgradpost = propgradpost
-        print(paste("Accepted",paste("theta[",c(1:3),"]=",format(theta_star,digits=3,scientific=TRUE),collapse=', ',sep='')))
+        print(paste("Accepted", paste("theta[",c(1:3),"]=", format(theta_star, digits = 3, scientific = TRUE), collapse = ', ', sep = '')))
         artrack[i] = 1
     }
     else
     {
-        print(paste("Rejected",paste("theta[",c(1:3),"]=",format(theta_star,digits=3,scientific=TRUE),collapse=', ',sep='')))
+        print(paste("Rejected", paste("theta[",c(1:3),"]=", format(theta_star, digits = 3, scientific = TRUE), collapse = ', ', sep = '')))
         artrack[i] = 0
     }
     thetamat[i,] = theta
 }
-myout = list(theta=thetamat,ar=artrack)
-fname = paste('posteriorsamples_',myh,'.RData',sep='')
-save(myout,file=fname)
+myout = list(theta = thetamat, ar = artrack)
+fname = paste('posteriorsamples_', myh, '.RData', sep = '')
+save(myout, file = fname)
 
