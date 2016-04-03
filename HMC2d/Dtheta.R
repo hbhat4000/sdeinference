@@ -1,5 +1,6 @@
 Dtheta <- function(xvec, yvec, h, driftfun, difffun1, c0)
 {
+    # G = Rdtq2d(thetavec, x1, x2, h, numsteps, k, bigm)
     G = integrandmat(xvec, yvec, h, driftfun, difffun1, c0)
     nn = length(xvec)
     mm = length(yvec)
@@ -10,6 +11,7 @@ Dtheta <- function(xvec, yvec, h, driftfun, difffun1, c0)
     # each row same, columns have yvec
     Y = t(replicate(nn, yvec))
  
+    # change the derivatives! 
     f = driftfun(c0 ,Y)
     g = difffun1(c0, Y)
     part1 = (X - Y - f*h) 

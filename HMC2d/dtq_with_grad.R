@@ -1,53 +1,35 @@
-# driftfun <- function(c0, y) 
-# {
-#   # computes drift as a matrix
-#   f = (c0[1])*(y)*(c0[2] - y^2)
-#   return(f)
-# }
-
-# difffun <- function(c0, y)
-# {
-#   # replicates diffusion as a long vector
-#   g = rep(c0[3], length(y))
-#   return(g)
-# }
-
-# difffun1 <- function(c0, y)
-# {
-#   # replicates diffusion term as a matrix
-#   dd1 = dim(y)[1]
-#   dd2 = dim(y)[2]
-#   vec = rep(c0[3], dd1)
-#   return(replicate(dd2, vec)) 
-# }
-
+source('driftdiff.R')
 source('integrandmat.R')
 # inplace of integrandmat
-# library('Rdtq2d')
-
-# source('driftdiff.R')
+library('Rdtq2d')
 source('Dtheta.R')
 
-cdt <- function(c0, h, k, bigm, littlet, data)
+dtq <- function(thetavec, h, k, bigm, littlet, data)
 {
+  x1 = data[[2]]
+  x2 = data[[3]]
+
   numsteps = ceiling(littlet/h)
   xvec = c((-bigm):bigm)*k
   npts = length(xvec)
 
-  A = integrandmat(xvec, xvec, h, driftfun, difffun, c0)
-  D = Dtheta(xvec, xvec, h, driftfun, difffun1, c0)
+  #A = integrandmat(xvec, xvec, h, driftfun, difffun, thetavec)
+  A = Rdtq2d(thetavec, x1, x2, h, numsteps, k, bigm)
+  D = Dtheta(xvec, xvec, h, driftfun, difffun1, thetavec)
   
-  pdfmatrix = matrix(0,nrow=npts,ncol=(ncol(data)-1))
+  pdfmatrix = matrix(0, nrow = npts, ncol = (ncol(data)-1))
 
-  nc0 = length(c0)
+  thetavec = length(thetavec)
   qmattheta = list(NULL)
-  for (i in c(1:nc0)) qmattheta[[i]] = 0*pdfmatrix
+
+  for (i in c(1:thetavec)) 
+    qmattheta[[i]] = 0*pdfmatrix
 
   for (curcol in c(1:(ncol(data)-1)))
   {
-    pdfmatrix[,curcol] = rowMeans(integrandmat(xvec, data[2:nrow(data),curcol], h, driftfun, difffun, c0))
-    initderivs = Dtheta(xvec, data[2:nrow(data),curcol], h, driftfun, difffun1, c0)
-    for (i in c(1:nc0))
+    pdfmatrix[,curcol] = rowMeans(integrandmat(xvec, data[2:nrow(data),curcol], h, driftfun, difffun, thetavec))
+    initderivs = Dtheta(xvec, data[2:nrow(data),curcol], h, driftfun, difffun1, thetavec)
+    for (i in c(1:thetavec))
       qmattheta[[i]][,curcol] = rowMeans(initderivs[[i]])
   }
   startstep = 2
@@ -55,23 +37,25 @@ cdt <- function(c0, h, k, bigm, littlet, data)
   for (curstep in c(startstep:(numsteps-1)))
   {
     pdfmatrix = k*A %*% pdfmatrix
-    for (i in c(1:nc0))
+    for (i in c(1:thetavec))
       qmattheta[[i]] = k*A %*% qmattheta[[i]] + k*D[[i]] %*% pdfmatrix
   }
 
-  likelihood = matrix(0, nrow = (nrow(data) - 1), ncol = (ncol(data)-1))
+  likelihood = matrix(0, nrow = (nrow(data) - 1), ncol = (ncol(data) - 1))
   gradient = list(NULL)
-  for (i in c(1:nc0)) gradient[[i]] = 0*likelihood
+
+  for (i in c(1:thetavec)) 
+    gradient[[i]] = 0*likelihood
 
   for (curcol in c(2:ncol(data)))
   {
     # evaluate \Gamma vector across all samples at a particular time
     # this is a matrix because we're also evaluating at xvec
           
-    gammamat = integrandmat(data[2:nrow(data), curcol], xvec, h, driftfun, difffun, c0)
+    gammamat = integrandmat(data[2:nrow(data), curcol], xvec, h, driftfun, difffun, thetavec)
     likelihood[,(curcol-1)] = k*gammamat %*% pdfmatrix[,(curcol-1)]
-    gdmat = Dtheta(data[2:nrow(data),curcol], xvec, h, driftfun, difffun1, c0)
-    for (i in c(1:nc0))
+    gdmat = Dtheta(data[2:nrow(data),curcol], xvec, h, driftfun, difffun1, thetavec)
+    for (i in c(1:thetavec))
       gradient[[i]][,(curcol-1)] = k*gdmat[[i]] %*% pdfmatrix[,(curcol-1)] + k*gammamat %*% qmattheta[[i]][,(curcol-1)]
   }
 

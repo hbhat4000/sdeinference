@@ -19,7 +19,7 @@ logprior <- function(z, mu, mass_sd)
 # Change dtq_with_grad for the 2D case
 objgradfun <- function(thetavec, z, mu, mass_sd, prior)
 {
-    probmat = cdt(thetavec, h = myh, k = myk, bigm = mybigm, littlet = 1, data = fd)
+    probmat = dtq(thetavec, h = myh, k = myk, bigm = mybigm, littlet = 1, data = fd)
 
     mylik = probmat$lik
     mylik[mylik < 0] = 0
@@ -48,7 +48,10 @@ theta = c(1, 2, 1, 1)
 numparam = length(theta)
 
 hh = 0.01
-totsteps = 1000
+burnin = 50
+numsteps = 1000
+totsteps = burnin + numsteps 
+
 thetamat = matrix(nrow = totsteps, ncol = numparam)
 artrack = numeric(length = totsteps)
 
