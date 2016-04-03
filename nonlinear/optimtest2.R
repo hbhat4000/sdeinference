@@ -1,7 +1,7 @@
 rm(list = ls(all = TRUE))
 
 # load data
-load('fakedata5.RData')
+load('fakedata16.RData')
 fd = xtraj
 
 # load necessary functions
@@ -23,13 +23,13 @@ objgradfun <- function(c0)
 
 # create grid, compute densities on that grid
 myh = 0.01
-myk = myh
-mybigm = ceiling(pi/(myk^1.5))
+myk = myh^(0.75)
+mybigm = ceiling(pi/(myk^1.1))
 
 # initial condition fakedata = c(1,4,0.5)
-theta = c(4, 4, 0.5)
+theta = c(2, 2, 1)
 
 library('nloptr')
 
-res <- nloptr(x0 = theta, eval_f = objgradfun, lb = c(0, 0, 0.01), ub = c(10, 10, 2), opts = list("algorithm"="NLOPT_LD_LBFGS", "print_level"=3, "check_derivatives" = TRUE, "xtol_abs"=1e-4))
+res <- nloptr(x0 = theta, eval_f = objgradfun, lb = c(0.1, 0, 0.1), ub = c(10, 10, 2), opts = list("algorithm"="NLOPT_LD_LBFGS", "print_level"=3, "check_derivatives" = TRUE, "xtol_abs"=1e-4))
 
