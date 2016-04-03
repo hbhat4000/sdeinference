@@ -3,9 +3,9 @@ rm(list = ls(all = TRUE))
 # solve inverse problem for Ornstein-Uhlenback SDE
 # dX_t = theta1 (theta2 - X_t) dt +  theta3 dW_t
 
-thetavec = c(0.5, 0.9, 1.0)
+thetavec = c(0.5, 0, 1)
 
-h = 0.000001
+h = 0.0001
 littlet = 1
 bigt = 25
 
