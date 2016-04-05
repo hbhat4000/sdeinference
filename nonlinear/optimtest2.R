@@ -1,7 +1,7 @@
 rm(list = ls(all = TRUE))
 
 # load data
-load('fakedata_ou_noise.RData')
+load('fakedata5.RData')
 fd = xtraj
 
 # load necessary functions
@@ -22,12 +22,12 @@ objgradfun <- function(c0)
 }
 
 # create grid, compute densities on that grid
-myh = 0.1
-myk = myh^0.75
+myh = 0.01
+myk = myh
 mybigm = ceiling(pi/(myk^1.5))
 
 # initial condition fakedata = c(1,4,0.5)
-theta = c(1, 2, 1)
+theta = c(2, 2, 1)
 
 library('nloptr')
 

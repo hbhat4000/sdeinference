@@ -5,7 +5,7 @@ rm(list = ls(all = TRUE))
 
 # theta1, theta2 > 0
 # stable equilibrium at +sqrt(theta2) or -sqrt(theta2) depending on the IC
-thetavec = c(.2, 4, 0.5)
+thetavec = c(1, 4, 0.5)
 
 h = 0.0001
 littlet = 1
@@ -38,7 +38,7 @@ for (i in c(1:nsaves))
 
 tvec = seq(from = 0, to = bigt, by = littlet)
 xtraj = rbind(tvec, xtraj)
-save(xtraj, file = 'fakedata_ou_noise.RData')
+save(xtraj, file = 'fakedata5.RData')
 
 # Initial condition picked is printed out 
 # print(xtraj[2,1])
