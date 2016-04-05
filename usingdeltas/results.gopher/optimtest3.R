@@ -1,11 +1,8 @@
 rm(list = ls(all = TRUE))
 
 # load data
-<<<<<<< HEAD
-load('fakedata5.RData')
-=======
-load('fakedata16.RData')
->>>>>>> cdde1a09be4400de80d34911cd88255e1098bcae
+load('fakedata.RData')
+xtraj = xtraj[1:101,]
 fd = xtraj
 
 # load necessary functions
@@ -20,25 +17,26 @@ objgradfun <- function(c0)
     nc0 = length(c0)
     gradient = numeric(length=nc0)
     for (i in c(1:nc0))
-        gradient[i] = - sum(probmat$grad[[i]] / probmat$lik)
+        gradient[i] = -sum(probmat$grad[[i]] / probmat$lik)
 
     return(list("objective"=objective,"gradient"=gradient))
 }
 
 # create grid, compute densities on that grid
-myh = 0.01
-<<<<<<< HEAD
-myk = myh
+myh = 0.002
+myk = myh^0.75
 mybigm = ceiling(pi/(myk^1.5))
-=======
-myk = myh^(0.75)
-mybigm = ceiling(pi/(myk^1.1))
->>>>>>> cdde1a09be4400de80d34911cd88255e1098bcae
 
 # initial condition fakedata = c(1,4,0.5)
-theta = c(2, 2, 1)
+theta = c(1, 2, 0.5)
 
 library('nloptr')
 
-res <- nloptr(x0 = theta, eval_f = objgradfun, lb = c(0.1, 0, 0.1), ub = c(10, 10, 2), opts = list("algorithm"="NLOPT_LD_LBFGS", "print_level"=3, "check_derivatives" = TRUE, "xtol_abs"=1e-4))
+res <- nloptr(x0 = theta, eval_f = objgradfun, lb = c(0.1, 0, 0.1), ub = c(4, 4, 4), opts = list("algorithm"="NLOPT_LD_LBFGS", "print_level"=3, "check_derivatives" = FALSE, "xtol_abs"=1e-3))
+
+nsamp = nrow(fd) - 1
+fname = paste('solution_',myh,'_',nsamp,'.RData',sep='')
+save(res,file=fname)
+
+
 
