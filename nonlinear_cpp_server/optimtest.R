@@ -8,7 +8,8 @@ library('Rgdtq')
 
 # load data
 load('fakedata.RData')
-fd = xtraj[2:nrow(xtraj),]
+# fd = xtraj[2:nrow(xtraj),]
+fd = xtraj
 
 objgradfun <- function(theta)
 {

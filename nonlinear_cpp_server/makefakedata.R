@@ -37,8 +37,8 @@ for (i in c(1:nsaves))
     xtraj[,(i+1)] = x
 }
 
-tvec = seq(from = 0, to = bigt, by = littlet)
-xtraj = rbind(tvec, xtraj)
+# tvec = seq(from = 0, to = bigt, by = littlet)
+# xtraj = rbind(tvec, xtraj)
 save(xtraj, file = 'fakedata.RData')
 
 # Initial condition picked is printed out 
