@@ -1,6 +1,6 @@
-Rgdtq <- function (thetavec, c0, h, numsteps, k, yM)
+Rgdtq <- function (thetavec, h, k, M, littlet, init_data)
 {
-    mylist = .Call("gdtqCPP", thetavec, c0, h, numsteps, k, yM, PACKAGE = "Rgdtq")
+    mylist = .Call("gdtqCPP", thetavec, h, k, M, littlet, init_data, PACKAGE = "Rgdtq")
     return(mylist)
 }
 

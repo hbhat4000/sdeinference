@@ -1,12 +1,11 @@
 rm(list = ls(all = TRUE))
 
-source('dtq_with_grad.R')
 # solve inverse problem for nonlinear SDE
 # dX_t = theta1 X_t (theta2 - (X_t)^2) dt +  theta3 dW_t
 
 # theta1, theta2 > 0
 # stable equilibrium at +sqrt(theta2) or -sqrt(theta2) depending on the IC
-thetavec = c(.2, 4, 0.5)
+thetavec = c(1, 1, 0.5)
 
 h = 0.0001
 littlet = 1
@@ -17,12 +16,12 @@ nsaves = ceiling(bigt/littlet)
 hilt = ceiling(littlet/h)
 stopifnot((nsteps == (nsaves*hilt)))
 
-ntrials = 300
+ntrials = 1
 h12 = sqrt(h)
 xtraj = matrix(0, nrow = ntrials, ncol = (nsaves + 1))
 
 # initial condition centered at origin so both -ve and +ve initial conditions generated
-xtraj[,1] = rnorm(n = ntrials, mean = 0, sd = 1) 
+xtraj[,1] = rnorm(n = ntrials) 
 
 for (i in c(1:nsaves))
 {
@@ -33,8 +32,7 @@ for (i in c(1:nsaves))
     x = xtraj[,i]
 
     for (j in c(1:hilt))
-        #x = x + (thetavec[1])*(x)*(thetavec[2] - x^2)*(h) + (h12)*(thetavec[3])*(rnorm(n = ntrials))      
-        x = x + driftfun(thetavec,x)*(h) + (h12)*difffun(thetavec,x)*(rnorm(n = ntrials))
+        x = x + (thetavec[1])*(x)*(thetavec[2] - x^2)*(h) + (h12)*(thetavec[3])*(rnorm(n = ntrials))
 
     xtraj[,(i+1)] = x
 }
