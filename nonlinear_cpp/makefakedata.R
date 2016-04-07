@@ -5,7 +5,7 @@ rm(list = ls(all = TRUE))
 
 # theta1, theta2 > 0
 # stable equilibrium at +sqrt(theta2) or -sqrt(theta2) depending on the IC
-thetavec = c(1, 1, 0.5)
+thetavec = c(1, 4, 0.5)
 
 h = 0.0001
 littlet = 1
@@ -16,7 +16,7 @@ nsaves = ceiling(bigt/littlet)
 hilt = ceiling(littlet/h)
 stopifnot((nsteps == (nsaves*hilt)))
 
-ntrials = 1
+ntrials = 100
 h12 = sqrt(h)
 xtraj = matrix(0, nrow = ntrials, ncol = (nsaves + 1))
 
@@ -37,8 +37,8 @@ for (i in c(1:nsaves))
     xtraj[,(i+1)] = x
 }
 
-tvec = seq(from = 0, to = bigt, by = littlet)
-xtraj = rbind(tvec, xtraj)
+# tvec = seq(from = 0, to = bigt, by = littlet)
+# xtraj = rbind(tvec, xtraj)
 save(xtraj, file = 'fakedata.RData')
 
 # Initial condition picked is printed out 
