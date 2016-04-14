@@ -1,0 +1,11 @@
+Package: Rgdtql
+Type: Package
+Title: Rgdtql
+Version: 1.0
+Date: 2015-02-05
+Author: Harish S. Bhat
+Maintainer: Harish S. Bhat <hbhat@ucmerced.edu>
+Description: Continuous density tracking
+License: GPL 3.0
+Depends: Rcpp (>= 0.10.6) , RcppArmadillo (>= 0.4.000.2)
+LinkingTo: Rcpp
