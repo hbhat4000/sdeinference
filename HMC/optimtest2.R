@@ -35,7 +35,7 @@ objgradfun <- function(c0, z, mu, mass_sd, prior)
 }
 
 # create grid, compute densities on that grid
-myh = 0.05
+myh = 0.01
 myk = myh^0.75
 mybigm = ceiling(pi/(myk^1.5))
 
@@ -43,7 +43,7 @@ mybigm = ceiling(pi/(myk^1.5))
 theta = c(1, 2, 1)
 numparam = length(theta)
 
-hh = 0.01
+hh = 0.005
 totsteps = 1000
 thetamat = matrix(nrow=totsteps, ncol=numparam)
 artrack = numeric(length=totsteps)
