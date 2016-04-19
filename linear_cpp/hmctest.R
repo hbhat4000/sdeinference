@@ -2,9 +2,10 @@ rm(list = ls(all = TRUE))
 
 # load the dtq package for finding the computing likelihood function
 library('Rgdtql')
+library('Metrics')
 
 # load data
-load('fakedata.RData')
+load('fakedata1.RData')
 fd = xtraj
 
 # define log prior
@@ -41,7 +42,7 @@ mybigm = ceiling(pi/(myk^1.5))
 # initial condition fakedata = c(1,4,0.5)
 theta = c(1, 2, 1)
 numparam = length(theta)
-
+actualtheta = c(0.5, 1, 0.5)
 hh = 0.01
 totsteps = 1000
 thetamat = matrix(nrow=totsteps, ncol=numparam)
@@ -87,8 +88,8 @@ for (i in c(1:totsteps))
         artrack[i] = 0
     }
     thetamat[i,] = theta
+    rmserror[i,] = rmse(actualtheta, theta)
 }
-myout = list(theta=thetamat,ar=artrack)
-fname = paste('posteriorsamples_',myh,'.RData',sep='')
-save(myout,file=fname)
+
+save(thetamat, artrack, rmserror, file = "posteriorsample1.RData")
 

@@ -4,7 +4,7 @@ rm(list = ls(all = TRUE))
 library('Rgdtq')
 
 # load data
-load('fakedata.RData')
+load('fakedata1.RData')
 fd = xtraj
 
 # define log prior
@@ -38,6 +38,7 @@ myh = 0.05
 myk = myh^0.75
 mybigm = ceiling(pi/(myk^1.5))
 
+actualtheta = c(1, 4, 0.5)
 # initial condition fakedata = c(1,4,0.5)
 theta = c(1, 2, 1)
 numparam = length(theta)
@@ -87,8 +88,8 @@ for (i in c(1:totsteps))
         artrack[i] = 0
     }
     thetamat[i,] = theta
+    rmserror[i,] = rmse(actualtheta, theta)
 }
-myout = list(theta=thetamat,ar=artrack)
-fname = paste('posteriorsamples_',myh,'.RData',sep='')
-save(myout,file=fname)
+
+save(thetamat, artrack, rmserror, ,file = "posteriorsamples1.RData")
 

@@ -7,7 +7,7 @@ rm(list = ls(all = TRUE))
 # stable equilibrium at +sqrt(theta2) or -sqrt(theta2) depending on the IC
 thetavec = c(1, 4, 0.5)
 
-h = 0.0001
+h = 1e-6
 littlet = 1
 bigt = 25
 
@@ -39,7 +39,7 @@ for (i in c(1:nsaves))
 
 # tvec = seq(from = 0, to = bigt, by = littlet)
 # xtraj = rbind(tvec, xtraj)
-save(xtraj, file = 'fakedata.RData')
+save(xtraj, file = 'fakedata1.RData')
 
 # Initial condition picked is printed out 
 # print(xtraj[2,1])

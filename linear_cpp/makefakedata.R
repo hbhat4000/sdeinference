@@ -4,7 +4,8 @@ rm(list = ls(all = TRUE))
 # dX_t = theta1 (theta2 - X_t) dt +  theta3 dW_t
 thetavec = c(0.5, 1, 0.5)
 
-h = 0.0001
+# h = 1e-6
+h = 0.000001
 littlet = 1
 bigt = 25
 
@@ -36,4 +37,4 @@ for (i in c(1:nsaves))
 
 # tvec = seq(from = 0, to = bigt, by = littlet)
 # xtraj = rbind(tvec, xtraj)
-save(xtraj, file = 'fakedata.RData')
+save(xtraj, file = 'fakedata1.RData')
