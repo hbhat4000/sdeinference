@@ -1,71 +1,85 @@
 rm(list = ls(all = TRUE))
 
+# load all required parameters (initial theta, grid size, ...)
+source('parameters.R')
+
 # load the dtq package for finding the computing likelihood function
 library('Rgdtq')
 
-# load data
-load('fakedata.RData')
+# load library for RMSE calculation
+library('Metrics')
+
+# load data as fd vector
+fname = paste('fakedata_', datanum, '.RData', sep = '')
+load(fname)
 fd = xtraj
 
-# define log prior
+# define log prior which is summed up before returning
 logprior <- function(z)
 {
-  return(dnorm(x = z, mean = 0, sd = 100, log = TRUE))
+  return(sum(dnorm(x = z, mean = prior_mu, sd = prior_sd, log = TRUE)))
 }
 
-objfun <- function(theta, prior)
+# define log posterior as summation of log likelihood and log prior (computed in the function logprior).
+# log likelihood is computed by calling the C++ function Rdtq which 
+# returns the likelihood function computed by DTQ method
+logpost <- function(theta, prior)
 {
-  mylik = Rdtq(thetavec = theta, h = myh, k = myk, M = mybigm, littlet = 1, init_data = fd)
+  mylik = Rdtq(thetavec = theta, h = gridh, k = gridk, M = gridM, littlet = 1, init_data = fd)
   mylik[mylik < 0] = 0
   
   objective = sum(log(mylik)) + prior
   return(objective)
 }
 
-# create grid, compute densities on that grid
-myh = 0.05
-myk = myh^0.75
-mybigm = ceiling(pi/(myk^1.5))
+# matrices which are used to store the computed parameters
+thetamat = matrix(nrow = totsteps, ncol = numparam)
+artrack = numeric(length = totsteps)
+rmserror = numeric(length = totsteps)
 
-# initial condition fakedata = c(1,4,0.5)
-theta = c(1, 2, 1)
-numparam = length(theta)
+ptm = proc.time()
 
-totsteps = 1000
-thetamat = matrix(nrow=totsteps, ncol=numparam)
-artrack = numeric(length=totsteps)
-
+# looping over
 for (i in c(1:totsteps))
 {
+  oldlogprior = logprior(theta)
+  oldlogpost = logpost(theta, oldlogprior)
+
   # generate proposal 
-  z = rnorm(n = numparam, mean = 0, sd = 0.25)
-  theta_prop = theta + z
+  z = rnorm(n = numparam, mean = prop_mu, sd = prop_sd)
+  proptheta = theta + z
   
-  logprior = sum(logprior(theta_prop))
-  logpost = objfun(theta, oldlogprior)
+  proplogprior = logprior(proptheta)
+  proplogpost = logpost(proptheta, proplogprior)
   
-  if (logpost == -Inf)
-    rho = 0
-  else
-    rho = exp(proppost-oldpost)
+  rho = exp(proplogpost - oldlogpost)
   
   # accept/reject step
   u = runif(n = 1)
   if (rho > u)
   {
-    theta = theta_star
-    oldgradpost = propgradpost
-    print(paste("Accepted",paste("theta[",c(1:3),"]=",format(theta_star,digits=3,scientific=TRUE),collapse=', ',sep='')))
+    theta = proptheta
+    # oldlogprior = proplogprior
+    # oldlogpost = proplogpost
+
+    print(paste("Accepted step", i, ": ", paste("theta[", c(1:numparam), "]=", format(proptheta, digits = 3, scientific = TRUE), collapse = ', ', sep = '')))
     artrack[i] = 1
   }
   else
   {
-    print(paste("Rejected",paste("theta[",c(1:3),"]=",format(theta_star,digits=3,scientific=TRUE),collapse=', ',sep='')))
+    print(paste("Rejected step", i, ": ", paste("theta[", c(1:numparam), "]=", format(proptheta, digits = 3, scientific = TRUE), collapse = ', ', sep = '')))
     artrack[i] = 0
   }
+
+  # Assigning values irrespective of accept/reject step
   thetamat[i,] = theta
+  rmserror[i] = rmse(actualtheta, theta)
 }
-myout = list(theta=thetamat,ar=artrack)
-fname = paste('posteriorsamples_',myh,'.RData',sep='')
-save(myout,file=fname)
+
+looptime = proc.time() - ptm
+
+myout = list(thetamat, artrack, rmserror, looptime)
+fname = paste('MCMCsamples_', datanum, '.RData', sep = '')
+save(myout, file = fname)
+
 

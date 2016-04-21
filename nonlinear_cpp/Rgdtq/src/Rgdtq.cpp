@@ -7,12 +7,12 @@ using namespace std;
 using namespace arma;
 
 // drift function
-static inline mat f(mat& Y, const vec& thetavec)
+static inline mat f(const mat& Y, const vec& thetavec)
 {
   return(thetavec(0) * Y % (thetavec(1) - square(Y)));
 }
 
-static inline mat g(mat& Y, const vec& thetavec)
+static inline mat g(const mat& Y, const vec& thetavec)
 {
   mat temp = Y;
   return(temp.fill(thetavec(2)));
@@ -48,7 +48,7 @@ static inline cube Dtheta(const vec &xvec, const vec &yvec, const double h, cons
   return Ggrad;
 }
 
-cube gDTQ(const vec &thetavec, double h, double k, int M, int littlet, mat &init_data)
+cube gDTQ(const vec &thetavec, const double h, const double k, const int M, const int littlet, const mat &init_data)
 {
   int numsteps = ceil(littlet/h);
 
@@ -110,6 +110,57 @@ cube gDTQ(const vec &thetavec, double h, double k, int M, int littlet, mat &init
 return gradient;
 }
 
+static inline mat Dthetadtq(const vec &xvec, const vec &yvec, const double h, const vec &thetavec)
+{
+  int ny = yvec.n_elem;
+  int nx = xvec.n_elem;
+  mat X(nx, ny);
+  mat temp(ny, nx);
+
+  X.each_col() = xvec;
+  temp.each_col() = yvec;
+  mat Y = trans(temp);
+  mat thisdrift = f(Y, thetavec);
+  mat thisdiff = abs(g(Y, thetavec));
+  mat sqthisdiff = 2 * h * square(thisdiff);
+  mat part1 = X - Y - thisdrift*h;
+
+  mat G = exp(-square(part1) / sqthisdiff) / (sqrt(M_PI * sqthisdiff));
+  return G;
+}
+
+mat DTQ(const vec &thetavec, const double h, const double k, const int M, const int littlet, const mat &init_data)
+{
+  int numsteps = ceil(littlet/h);
+  int veclen = 2*M + 1;
+  int datapoints = init_data.n_cols;
+  vec xvec = k*linspace<vec>(-M, M, veclen);
+
+  mat D = Dthetadtq(xvec, xvec, h, thetavec);
+  mat pdfmatrix = zeros<mat>(veclen, datapoints - 1);
+  
+  for(int curcol = 0; curcol < datapoints - 1; curcol++)
+  {
+    mat initderivs = Dthetadtq(xvec, init_data.col(curcol), h, thetavec);
+    pdfmatrix.col(curcol) = sum(initderivs, 1);       // sum(,1) for rowMeans
+  }
+
+  int startstep = 1;
+  for(int curstep = startstep; curstep < numsteps - 1; curstep++)
+  {
+    pdfmatrix = k * D * pdfmatrix;
+  }
+
+  mat likelihood = zeros<mat>(init_data.n_rows, datapoints - 1);
+  for(int curcol = 1; curcol < datapoints; curcol++)
+  {
+    mat gdmat = Dthetadtq(init_data.col(curcol), xvec, h, thetavec);
+    likelihood.col(curcol - 1) = k * gdmat * pdfmatrix.col(curcol - 1);
+  }
+
+return likelihood;
+}
+
 SEXP gdtqCPP(SEXP s_thetavec, SEXP s_h, SEXP s_k, SEXP s_M, SEXP s_littlet, SEXP s_init_data)
 {
   vec thetavec = Rcpp::as<arma::vec>(s_thetavec);
@@ -119,6 +170,19 @@ SEXP gdtqCPP(SEXP s_thetavec, SEXP s_h, SEXP s_k, SEXP s_M, SEXP s_littlet, SEXP
   int littlet = Rcpp::as<int>(s_littlet);
   mat init_data = Rcpp::as<arma::mat>(s_init_data);
 
-  cube mymat = gDTQ(thetavec, h, k, M, littlet, init_data);
-  return Rcpp::wrap( mymat );
+  cube grad = gDTQ(thetavec, h, k, M, littlet, init_data);
+  return Rcpp::wrap( grad );
+}
+
+SEXP dtqCPP(SEXP s_thetavec, SEXP s_h, SEXP s_k, SEXP s_M, SEXP s_littlet, SEXP s_init_data)
+{
+  vec thetavec = Rcpp::as<arma::vec>(s_thetavec);
+  double h = Rcpp::as<double>(s_h);
+  double k = Rcpp::as<double>(s_k);
+  int M = Rcpp::as<int>(s_M);
+  int littlet = Rcpp::as<int>(s_littlet);
+  mat init_data = Rcpp::as<arma::mat>(s_init_data);
+
+  mat lik = DTQ(thetavec, h, k, M, littlet, init_data);
+  return Rcpp::wrap( lik );
 }
