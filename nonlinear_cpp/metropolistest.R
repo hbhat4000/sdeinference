@@ -10,7 +10,7 @@ library('Rgdtq')
 library('Metrics')
 
 # load data as fd vector
-fname = paste('fakedata_', datanum, '.RData', sep = '')
+fname = paste('fakedata_', fakedatanum, '.RData', sep = '')
 load(fname)
 fd = xtraj
 
@@ -34,6 +34,7 @@ logpost <- function(theta, prior)
 
 # matrices which are used to store the computed parameters
 thetamat = matrix(nrow = totsteps, ncol = numparam)
+thetagenerated = matrix(nrow = totsteps, ncol = numparam)
 artrack = numeric(length = totsteps)
 rmserror = numeric(length = totsteps)
 
@@ -54,6 +55,7 @@ for (i in c(1:totsteps))
   
   rho = exp(proplogpost - oldlogpost)
   
+  thetagenerated[i,] = proptheta
   # accept/reject step
   u = runif(n = 1)
   if (rho > u)
@@ -78,8 +80,36 @@ for (i in c(1:totsteps))
 
 looptime = proc.time() - ptm
 
+acceptance = 1 - mean(duplicated(thetamat[-(1:burnin),]))
+
+par(mfrow = c(2,3))
+
+hist(thetamat[-(1:burnin),1], nclass = 30, main = "Posterior of theta1", xlab = "True value = red line")
+abline(v = mean(thetamat[-(1:burnin),1]))
+abline(v = actualtheta[1], col = "red")
+
+hist(thetamat[-(1:burnin),2], nclass = 30, main = "Posterior of theta2", xlab = "True value = red line")
+abline(v = mean(thetamat[-(1:burnin),2]))
+abline(v = actualtheta[2], col = "red")
+
+hist(thetamat[-(1:burnin),3], nclass = 30, main = "Posterior of theta3", xlab = "True value = red line")
+abline(v = mean(thetamat[-(1:burnin),3]))
+abline(v = actualtheta[3], col = "red")
+
+plot(thetamat[-(1:burnin),1], type = "l", xlab = "True value = red line", main = "MCMC values of theta1")
+abline(h = actualtheta[1], col = "red")
+
+plot(thetamat[-(1:burnin),2], type = "l", xlab = "True value = red line", main = "MCMC values of theta2")
+abline(h = actualtheta[2], col = "red")
+
+plot(thetamat[-(1:burnin),3], type = "l", xlab = "True value = red line", main = "MCMC values of theta3")
+abline(h = actualtheta[3], col = "red")
+
+# for comparison:
+# summary(lm(y~x))
+
 myout = list(thetamat, artrack, rmserror, looptime)
-fname = paste('MCMCsamples_', datanum, '.RData', sep = '')
+fname = paste('MCMCsamples_', mcmcdatanum, '.RData', sep = '')
 save(myout, file = fname)
 
 

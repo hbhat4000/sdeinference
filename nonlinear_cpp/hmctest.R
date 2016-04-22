@@ -10,7 +10,7 @@ library('Rgdtq')
 library('Metrics')
 
 # load data which is saved as fd 
-fname = paste('fakedata_', datanum, '.RData', sep = '')
+fname = paste('fakedata_', fakedatanum, '.RData', sep = '')
 load(fname)
 fd = xtraj
 
@@ -45,6 +45,7 @@ logobjgrad <- function(theta, z, prior)
 }
 
 thetamat = matrix(nrow = totsteps, ncol = numparam)
+thetagenerated = matrix(nrow = totsteps, ncol = numparam)
 artrack = numeric(length = totsteps)
 rmserror = numeric(length = totsteps)
 
@@ -72,12 +73,13 @@ for (i in c(1:totsteps))
         rho = exp(propgradpost$objective + proplogprior - (oldgradpost$objective + oldlogprior))
     }
 
+    thetagenerated[i,] = theta_star
     # accept/reject step
     u = runif(n = 1)
     if (rho > u)
     {
         theta = theta_star
-        # oldgradpost = propgradpost
+        oldgradpost = propgradpost
         print(paste("Accepted step", i, ": ", paste("theta[", c(1:numparam), "]=", format(theta_star, digits = 3, scientific = TRUE), collapse = ', ', sep = '')))
         artrack[i] = 1
     }
@@ -92,6 +94,34 @@ for (i in c(1:totsteps))
 
 looptime = proc.time() - ptm
 
+acceptance = 1 - mean(duplicated(thetamat[-(1:burnin),]))
+
+par(mfrow = c(2,3))
+
+hist(thetamat[-(1:burnin),1], nclass = 30, main = "Posterior of theta1", xlab = "True value = red line")
+abline(v = mean(thetamat[-(1:burnin),1]))
+abline(v = actualtheta[1], col = "red")
+
+hist(thetamat[-(1:burnin),2], nclass = 30, main = "Posterior of theta2", xlab = "True value = red line")
+abline(v = mean(thetamat[-(1:burnin),2]))
+abline(v = actualtheta[2], col = "red")
+
+hist(thetamat[-(1:burnin),3], nclass = 30, main = "Posterior of theta3", xlab = "True value = red line")
+abline(v = mean(thetamat[-(1:burnin),3]))
+abline(v = actualtheta[3], col = "red")
+
+plot(thetamat[-(1:burnin),1], type = "l", xlab = "True value = red line", main = "MCMC values of theta1")
+abline(h = actualtheta[1], col = "red")
+
+plot(thetamat[-(1:burnin),2], type = "l", xlab = "True value = red line", main = "MCMC values of theta2")
+abline(h = actualtheta[2], col = "red")
+
+plot(thetamat[-(1:burnin),3], type = "l", xlab = "True value = red line", main = "MCMC values of theta3")
+abline(h = actualtheta[3], col = "red")
+
+# for comparison:
+# summary(lm(y~x))
+
 myout = list(thetamat, artrack, rmserror, looptime)
-fname = paste('HMCsamples_', datanum, '.RData', sep = '')
+fname = paste('HMCsamples_', hmcdatanum, '.RData', sep = '')
 save(myout, file = fname)

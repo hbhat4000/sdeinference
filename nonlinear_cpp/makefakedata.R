@@ -36,5 +36,5 @@ for (i in c(1:nsaves))
     xtraj[,(i+1)] = x
 }
 
-fname = paste('fakedata_', datanum, '.RData', sep = '')
+fname = paste('fakedata_', fakedatanum, '.RData', sep = '')
 save(xtraj, file = fname)
