@@ -1,7 +1,7 @@
 rm(list = ls(all = TRUE))
 
 # load data
-load('fakedata.RData')
+load('fakedata_2.RData')
 fd = xtraj
 
 # load necessary functions

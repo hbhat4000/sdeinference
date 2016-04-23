@@ -36,5 +36,8 @@ for (i in c(1:nsaves))
     xtraj[,(i+1)] = x
 }
 
+# tvec = seq(from = 0, to = bigt, by = littlet)
+# xtraj = rbind(tvec, xtraj)
+
 fname = paste('fakedata_', fakedatanum, '.RData', sep = '')
 save(xtraj, file = fname)

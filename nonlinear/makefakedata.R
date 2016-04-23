@@ -21,7 +21,7 @@ h12 = sqrt(h)
 xtraj = matrix(0, nrow = ntrials, ncol = (nsaves + 1))
 
 # initial condition centered at origin so both -ve and +ve initial conditions generated
-xtraj[,1] = rnorm(n = ntrials, mean = 0, sd = 1) 
+xtraj[,1] = rnorm(n = ntrials) 
 
 for (i in c(1:nsaves))
 {
@@ -36,13 +36,8 @@ for (i in c(1:nsaves))
     xtraj[,(i+1)] = x
 }
 
-tvec = seq(from = 0, to = bigt, by = littlet)
-xtraj = rbind(tvec, xtraj)
-<<<<<<< HEAD:nonlinear/makefakedata_ou.R
-save(xtraj, file = 'fakedata5.RData')
-=======
+# tvec = seq(from = 0, to = bigt, by = littlet)
+# xtraj = rbind(tvec, xtraj)
 save(xtraj, file = 'fakedata16.RData')
->>>>>>> cdde1a09be4400de80d34911cd88255e1098bcae:nonlinear/makefakedata.R
-
 # Initial condition picked is printed out 
 # print(xtraj[2,1])

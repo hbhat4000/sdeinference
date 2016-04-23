@@ -1,10 +1,9 @@
-# index of the data set being used (to maintain consistency)
-fakedatanum = 1
-mcmcdatanum = 1
+fakedatanum = 2
+mcmcdatanum = 2
 hmcdatanum = 2
 
 # parameters for fakedata
-fakedatah = 1e-4
+fakedatah = 1e-6
 littlet = 1
 bigt = 25
 ntrials = 100
@@ -13,18 +12,18 @@ ntrials = 100
 actualtheta = c(1, 4, 0.5)
 
 # parameters for inference
-# create grid, compute densities on that grid
+# create grid, compute densities on that grid=
 gridh = 0.05
-gridk = (gridh)^0.85
-gridM = ceiling(max(actualtheta)/(gridk)^1.5)
+gridk = (gridh)^0.75
+gridM = ceiling(pi/(gridk)^1.5)
 
 # initial condition
 theta = c(2, 2, 1)
 numparam = length(theta)
 
 # samples
-burnin = 200
-samplesteps = 1000
+burnin = 500
+samplesteps = 2000
 totsteps = burnin + samplesteps
 
 ##### MCMC specific parameters #####

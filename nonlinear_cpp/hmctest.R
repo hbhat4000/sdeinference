@@ -44,84 +44,85 @@ logobjgrad <- function(theta, z, prior)
     return(list("objective" = objective, "gradient" = gradient))
 }
 
-thetamat = matrix(nrow = totsteps, ncol = numparam)
-thetagenerated = matrix(nrow = totsteps, ncol = numparam)
-artrack = numeric(length = totsteps)
-rmserror = numeric(length = totsteps)
 
-ptm = proc.time()
-for (i in c(1:totsteps))
-{
-    # generate proposal for the momentum term, phi is numparam dimensional 
-    phi = rnorm(n = numparam, mean = hmc_mu, sd = hmc_sd)
+# thetamat = matrix(nrow = totsteps, ncol = numparam)
+# thetagenerated = matrix(nrow = totsteps, ncol = numparam)
+# artrack = numeric(length = totsteps)
+# rmserror = numeric(length = totsteps)
 
-    oldlogprior = logprior(phi)
-    oldgradpost = logobjgrad(theta, phi, oldlogprior)
+# ptm = proc.time()
+# for (i in c(1:totsteps))
+# {
+#     # generate proposal for the momentum term, phi is numparam dimensional 
+#     phi = rnorm(n = numparam, mean = hmc_mu, sd = hmc_sd)
 
-    phi_half = phi + (oldgradpost$gradient) * (hh / 2)
-    theta_star = theta + phi_half * (hh / hmc_sd)
+#     oldlogprior = logprior(phi)
+#     oldgradpost = logobjgrad(theta, phi, oldlogprior)
 
-    halflogprior = logprior(phi_half)
-    propgradpost = logobjgrad(theta_star, phi_half, halflogprior)
+#     phi_half = phi + (oldgradpost$gradient) * (hh / 2)
+#     theta_star = theta + phi_half * (hh / hmc_sd)
 
-    if (propgradpost$objective == -Inf)
-        rho = 0
-    else
-    {
-        phi_star = phi_half + (propgradpost$gradient) * (hh / 2)
-        proplogprior = logprior(phi_star)
-        rho = exp(propgradpost$objective + proplogprior - (oldgradpost$objective + oldlogprior))
-    }
+#     halflogprior = logprior(phi_half)
+#     propgradpost = logobjgrad(theta_star, phi_half, halflogprior)
 
-    thetagenerated[i,] = theta_star
-    # accept/reject step
-    u = runif(n = 1)
-    if (rho > u)
-    {
-        theta = theta_star
-        oldgradpost = propgradpost
-        print(paste("Accepted step", i, ": ", paste("theta[", c(1:numparam), "]=", format(theta_star, digits = 3, scientific = TRUE), collapse = ', ', sep = '')))
-        artrack[i] = 1
-    }
-    else
-    {
-        print(paste("Rejected step", i, ": ", paste("theta[", c(1:numparam), "]=", format(theta_star, digits = 3, scientific = TRUE), collapse = ', ', sep = '')))
-        artrack[i] = 0
-    }
-    thetamat[i,] = theta
-    rmserror[i] = rmse(actualtheta, theta)
-}
+#     if (propgradpost$objective == -Inf)
+#         rho = 0
+#     else
+#     {
+#         phi_star = phi_half + (propgradpost$gradient) * (hh / 2)
+#         proplogprior = logprior(phi_star)
+#         rho = exp(propgradpost$objective + proplogprior - (oldgradpost$objective + oldlogprior))
+#     }
 
-looptime = proc.time() - ptm
+#     thetagenerated[i,] = theta_star
+#     # accept/reject step
+#     u = runif(n = 1)
+#     if (rho > u)
+#     {
+#         theta = theta_star
+#         oldgradpost = propgradpost
+#         print(paste("Accepted step", i, ": ", paste("theta[", c(1:numparam), "]=", format(theta_star, digits = 3, scientific = TRUE), collapse = ', ', sep = '')))
+#         artrack[i] = 1
+#     }
+#     else
+#     {
+#         print(paste("Rejected step", i, ": ", paste("theta[", c(1:numparam), "]=", format(theta_star, digits = 3, scientific = TRUE), collapse = ', ', sep = '')))
+#         artrack[i] = 0
+#     }
+#     thetamat[i,] = theta
+#     rmserror[i] = rmse(actualtheta, theta)
+# }
 
-acceptance = 1 - mean(duplicated(thetamat[-(1:burnin),]))
+# looptime = proc.time() - ptm
 
-par(mfrow = c(2,3))
+# acceptance = 1 - mean(duplicated(thetamat[-(1:burnin),]))
 
-hist(thetamat[-(1:burnin),1], nclass = 30, main = "Posterior of theta1", xlab = "True value = red line")
-abline(v = mean(thetamat[-(1:burnin),1]))
-abline(v = actualtheta[1], col = "red")
+# par(mfrow = c(2,3))
 
-hist(thetamat[-(1:burnin),2], nclass = 30, main = "Posterior of theta2", xlab = "True value = red line")
-abline(v = mean(thetamat[-(1:burnin),2]))
-abline(v = actualtheta[2], col = "red")
+# hist(thetamat[-(1:burnin),1], nclass = 30, main = "Posterior of theta1", xlab = "True value = red line")
+# abline(v = mean(thetamat[-(1:burnin),1]))
+# abline(v = actualtheta[1], col = "red")
 
-hist(thetamat[-(1:burnin),3], nclass = 30, main = "Posterior of theta3", xlab = "True value = red line")
-abline(v = mean(thetamat[-(1:burnin),3]))
-abline(v = actualtheta[3], col = "red")
+# hist(thetamat[-(1:burnin),2], nclass = 30, main = "Posterior of theta2", xlab = "True value = red line")
+# abline(v = mean(thetamat[-(1:burnin),2]))
+# abline(v = actualtheta[2], col = "red")
 
-plot(thetamat[-(1:burnin),1], type = "l", xlab = "True value = red line", main = "MCMC values of theta1")
-abline(h = actualtheta[1], col = "red")
+# hist(thetamat[-(1:burnin),3], nclass = 30, main = "Posterior of theta3", xlab = "True value = red line")
+# abline(v = mean(thetamat[-(1:burnin),3]))
+# abline(v = actualtheta[3], col = "red")
 
-plot(thetamat[-(1:burnin),2], type = "l", xlab = "True value = red line", main = "MCMC values of theta2")
-abline(h = actualtheta[2], col = "red")
+# plot(thetamat[-(1:burnin),1], type = "l", xlab = "True value = red line", main = "HMC values of theta1")
+# abline(h = actualtheta[1], col = "red")
 
-plot(thetamat[-(1:burnin),3], type = "l", xlab = "True value = red line", main = "MCMC values of theta3")
-abline(h = actualtheta[3], col = "red")
+# plot(thetamat[-(1:burnin),2], type = "l", xlab = "True value = red line", main = "HMC values of theta2")
+# abline(h = actualtheta[2], col = "red")
 
-# for comparison:
-# summary(lm(y~x))
+# plot(thetamat[-(1:burnin),3], type = "l", xlab = "True value = red line", main = "HMC values of theta3")
+# abline(h = actualtheta[3], col = "red")
 
-myout = list(thetamat, artrack, rmserror, looptime)
-fname = paste('HMCsamples_', hmcdatanum, '.RData', sep = '')
-save(myout, file = fname)
+# # for comparison:
+# # summary(lm(y~x))
+
+# myout = list(thetamat, artrack, rmserror, looptime)
+# fname = paste('HMCsamples_', hmcdatanum, '.RData', sep = '')
+# save(myout, file = fname)
