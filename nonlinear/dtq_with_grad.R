@@ -29,8 +29,6 @@ cdt <- function(c0, h, k, bigm, littlet, data)
     numsteps = ceiling(littlet/h)
     xvec = c((-bigm):bigm)*k
     npts = length(xvec)
-    print(numsteps, npts)
-    flush.console()
     
     A = integrandmat(xvec, xvec, h, driftfun, difffun, c0)
     D = Dtheta(xvec, xvec, h, driftfun, difffun1, c0)
