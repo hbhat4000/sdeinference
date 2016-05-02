@@ -56,7 +56,7 @@ cube gDTQ(const vec &thetavec, const double h, const double k, const int M, cons
   int datapoints = init_data.n_cols;
   vec xvec = k*(linspace<vec>(-M,M,veclen));
   int numtheta = thetavec.n_elem;
-  cout << "numsteps: " << numsteps << "datapoints: " << datapoints << "numtheta: " << numtheta << endl;
+
 // D.slice(0) = A, D.slice(1) = Dtheta1, D.slice(2) = Dtheta2, D.slice(3) = Dtheta3
 // qmattheta.slice(0) = pdfmatrix, rest qmattheta.slice(i)
 
@@ -68,7 +68,7 @@ cube gDTQ(const vec &thetavec, const double h, const double k, const int M, cons
     cube initderivs = Dtheta(xvec, init_data.col(curcol), h, thetavec);
     for(int i = 0; i < numtheta + 1; i++)
     {
-      (qmattheta.slice(i)).col(curcol) = sum(initderivs.slice(i), 1);
+      (qmattheta.slice(i)).col(curcol) = mean(initderivs.slice(i), 1);
     }
   }
 
@@ -97,59 +97,66 @@ cube gDTQ(const vec &thetavec, const double h, const double k, const int M, cons
     }
   }
 
+  // // to check that the right values are getting passed to R
+  // cout << "objective: " << -accu(log(gradient.slice(0))) << endl;
+  // cout << "gradient 1: " << -accu(gradient.slice(1)/gradient.slice(0)) << endl;
+  // cout << "gradient 2: " << -accu(gradient.slice(2)/gradient.slice(0)) << endl;
+  // cout << "gradient 3: " << -accu(gradient.slice(3)/gradient.slice(0)) << endl;
+
+
 return gradient;
 }
 
-// static inline mat Dthetadtq(const vec &xvec, const vec &yvec, const double h, const vec &thetavec)
-// {
-//   int ny = yvec.n_elem;
-//   int nx = xvec.n_elem;
-//   mat X(nx, ny);
-//   mat temp(ny, nx);
+static inline mat Dthetadtq(const vec &xvec, const vec &yvec, const double h, const vec &thetavec)
+{
+  int ny = yvec.n_elem;
+  int nx = xvec.n_elem;
+  mat X(nx, ny);
+  mat temp(ny, nx);
 
-//   X.each_col() = xvec;
-//   temp.each_col() = yvec;
-//   mat Y = trans(temp);
-//   mat thisdrift = f(Y, thetavec);
-//   mat thisdiff = abs(g(Y, thetavec));
-//   mat sqthisdiff = 2 * h * square(thisdiff);
-//   mat part1 = X - Y - thisdrift*h;
+  X.each_col() = xvec;
+  temp.each_col() = yvec;
+  mat Y = trans(temp);
+  mat thisdrift = f(Y, thetavec);
+  mat thisdiff = abs(g(Y, thetavec));
+  mat sqthisdiff = 2 * h * square(thisdiff);
+  mat part1 = X - Y - thisdrift*h;
 
-//   mat G = exp(-square(part1) / sqthisdiff) / (sqrt(M_PI * sqthisdiff));
-//   return G;
-// }
+  mat G = exp(-square(part1) / sqthisdiff) / (sqrt(M_PI * sqthisdiff));
+  return G;
+}
 
-// mat DTQ(const vec &thetavec, const double h, const double k, const int M, const int littlet, const mat &init_data)
-// {
-//   int numsteps = ceil(littlet/h);
-//   int veclen = 2*M + 1;
-//   int datapoints = init_data.n_cols;
-//   vec xvec = k*linspace<vec>(-M, M, veclen);
+mat DTQ(const vec &thetavec, const double h, const double k, const int M, const int littlet, const mat &init_data)
+{
+  int numsteps = ceil(littlet/h);
+  int veclen = 2*M + 1;
+  int datapoints = init_data.n_cols;
+  vec xvec = k*linspace<vec>(-M, M, veclen);
 
-//   mat D = Dthetadtq(xvec, xvec, h, thetavec);
-//   mat pdfmatrix = zeros<mat>(veclen, datapoints - 1);
+  mat D = Dthetadtq(xvec, xvec, h, thetavec);
+  mat pdfmatrix = zeros<mat>(veclen, datapoints - 1);
   
-//   for(int curcol = 0; curcol < datapoints - 1; curcol++)
-//   {
-//     mat initderivs = Dthetadtq(xvec, init_data.col(curcol), h, thetavec);
-//     pdfmatrix.col(curcol) = sum(initderivs, 1);       // sum(,1) for rowMeans
-//   }
+  for(int curcol = 0; curcol < datapoints - 1; curcol++)
+  {
+    mat initderivs = Dthetadtq(xvec, init_data.col(curcol), h, thetavec);
+    pdfmatrix.col(curcol) = mean(initderivs, 1);       // mean(,1) for rowMeans
+  }
 
-//   int startstep = 1;
-//   for(int curstep = startstep; curstep < numsteps - 1; curstep++)
-//   {
-//     pdfmatrix = k * D * pdfmatrix;
-//   }
+  int startstep = 1;
+  for(int curstep = startstep; curstep < numsteps - 1; curstep++)
+  {
+    pdfmatrix = k * D * pdfmatrix;
+  }
 
-//   mat likelihood = zeros<mat>(init_data.n_rows, datapoints - 1);
-//   for(int curcol = 1; curcol < datapoints; curcol++)
-//   {
-//     mat gdmat = Dthetadtq(init_data.col(curcol), xvec, h, thetavec);
-//     likelihood.col(curcol - 1) = k * gdmat * pdfmatrix.col(curcol - 1);
-//   }
+  mat likelihood = zeros<mat>(init_data.n_rows, datapoints - 1);
+  for(int curcol = 1; curcol < datapoints; curcol++)
+  {
+    mat gdmat = Dthetadtq(init_data.col(curcol), xvec, h, thetavec);
+    likelihood.col(curcol - 1) = k * gdmat * pdfmatrix.col(curcol - 1);
+  }
 
-// return likelihood;
-// }
+return likelihood;
+}
 
 SEXP gdtqCPP(SEXP s_thetavec, SEXP s_h, SEXP s_k, SEXP s_M, SEXP s_littlet, SEXP s_init_data)
 {
@@ -164,15 +171,15 @@ SEXP gdtqCPP(SEXP s_thetavec, SEXP s_h, SEXP s_k, SEXP s_M, SEXP s_littlet, SEXP
   return Rcpp::wrap( grad );
 }
 
-// SEXP dtqCPP(SEXP s_thetavec, SEXP s_h, SEXP s_k, SEXP s_M, SEXP s_littlet, SEXP s_init_data)
-// {
-//   vec thetavec = Rcpp::as<arma::vec>(s_thetavec);
-//   double h = Rcpp::as<double>(s_h);
-//   double k = Rcpp::as<double>(s_k);
-//   int M = Rcpp::as<int>(s_M);
-//   int littlet = Rcpp::as<int>(s_littlet);
-//   mat init_data = Rcpp::as<arma::mat>(s_init_data);
+SEXP dtqCPP(SEXP s_thetavec, SEXP s_h, SEXP s_k, SEXP s_M, SEXP s_littlet, SEXP s_init_data)
+{
+  vec thetavec = Rcpp::as<arma::vec>(s_thetavec);
+  double h = Rcpp::as<double>(s_h);
+  double k = Rcpp::as<double>(s_k);
+  int M = Rcpp::as<int>(s_M);
+  int littlet = Rcpp::as<int>(s_littlet);
+  mat init_data = Rcpp::as<arma::mat>(s_init_data);
 
-//   mat lik = DTQ(thetavec, h, k, M, littlet, init_data);
-//   return Rcpp::wrap( lik );
-// }
+  mat lik = DTQ(thetavec, h, k, M, littlet, init_data);
+  return Rcpp::wrap( lik );
+}

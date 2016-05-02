@@ -1,20 +1,21 @@
 rm(list = ls(all = TRUE))
 
-# solve inverse problem for linear SDE
-# dX_t = theta1 (theta2 - X_t) dt +  theta3 dW_t
-thetavec = c(0.5, 1, 0.5)
+# load all required parameters (initial theta, grid size, ...)
+source('parameters.R')
 
-# h = 1e-6
-h = 0.000001
-littlet = 1
-bigt = 25
+# solve inverse problem for nonlinear SDE
+# dX_t = theta1 X_t (theta2 - (X_t)^2) dt +  theta3 dW_t
+
+# theta1, theta2 > 0
+# stable equilibrium at +sqrt(theta2) or -sqrt(theta2) depending on the IC
+thetavec = actualtheta
+h = fakedatah
 
 nsteps = ceiling(bigt/h)
 nsaves = ceiling(bigt/littlet)
 hilt = ceiling(littlet/h)
 stopifnot((nsteps == (nsaves*hilt)))
 
-ntrials = 100
 h12 = sqrt(h)
 xtraj = matrix(0, nrow = ntrials, ncol = (nsaves + 1))
 
@@ -37,4 +38,6 @@ for (i in c(1:nsaves))
 
 # tvec = seq(from = 0, to = bigt, by = littlet)
 # xtraj = rbind(tvec, xtraj)
-save(xtraj, file = 'fakedata1.RData')
+
+fname = paste('fakedata_', fakedatanum, '.RData', sep = '')
+save(xtraj, file = fname)

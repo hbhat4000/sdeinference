@@ -41,11 +41,11 @@ rmserror = numeric(length = totsteps)
 ptm = proc.time()
 
 # looping over
+oldlogprior = logprior(theta)
+oldlogpost = logpost(theta, oldlogprior)
+
 for (i in c(1:totsteps))
 {
-  oldlogprior = logprior(theta)
-  oldlogpost = logpost(theta, oldlogprior)
-
   # generate proposal 
   z = rnorm(n = numparam, mean = prop_mu, sd = prop_sd)
   proptheta = theta + z
@@ -61,8 +61,8 @@ for (i in c(1:totsteps))
   if (rho > u)
   {
     theta = proptheta
-    # oldlogprior = proplogprior
-    # oldlogpost = proplogpost
+    oldlogprior = proplogprior
+    oldlogpost = proplogpost
 
     print(paste("Accepted step", i, ": ", paste("theta[", c(1:numparam), "]=", format(proptheta, digits = 3, scientific = TRUE), collapse = ', ', sep = '')))
     artrack[i] = 1
@@ -108,7 +108,7 @@ abline(h = actualtheta[3], col = "red")
 # for comparison:
 # summary(lm(y~x))
 
-myout = list(thetamat, artrack, rmserror, looptime)
+myout = list(gridh, gridk, gridM, actualtheta, burnin, totsteps, prop_mu, prop_sd, prior_mu, prior_sd, thetamat, artrack, rmserror, looptime)
 fname = paste('MCMCsamples_', mcmcdatanum, '.RData', sep = '')
 save(myout, file = fname)
 

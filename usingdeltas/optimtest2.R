@@ -22,13 +22,8 @@ objgradfun <- function(c0)
 }
 
 # create grid, compute densities on that grid
-<<<<<<< HEAD
 myh = 0.05
-myk = myh
-=======
-myh = 0.01
-myk = myh^0.75
->>>>>>> cdde1a09be4400de80d34911cd88255e1098bcae
+myk = myh^(0.75)
 mybigm = ceiling(pi/(myk^1.5))
 
 theta = c(1, 2, 0.7)
