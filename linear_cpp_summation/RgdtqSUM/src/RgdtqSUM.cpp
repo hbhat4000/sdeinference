@@ -125,9 +125,34 @@ cube gDTQ(const vec& thetavec, const double h, const double k, const int M, cons
   }
 
 /**** NEW SEGMENT ****/
-  cube gdmatSUM = zeros<cube>(numtrials, veclen, numtheta + 1);
+  // cube gdmatSUM = zeros<cube>(numtrials, veclen, numtheta + 1);
+  // for(int curcol = 1; curcol < datapoints; curcol++)
+  // {
+  //   for(int i = 0; i < numtrials; i++)
+  //   {
+  //     for(int j = 0; j < veclen; j++)
+  //     {
+  //       double x = init_data(i, curcol);
+  //       double y = xvec(j);
+
+  //       // gaussian_pdf returns a vector of length numtheta + 1
+  //       // the subcube is selected as Dsum(i, j, :)
+  //       gdmatSUM.subcube(span(i), span(j), span()) = gaussian_pdf(x, y, h, thetavec);
+  //     }
+  //   }
+  // }
+  // cout << "Dimensions of cube gdmatSUM:" << gdmatSUM.n_rows << ", " << gdmatSUM.n_cols << ", " << gdmatSUM.n_slices << endl;
+  // cout << "Sum of cube gdmatSUM: " << accu(gdmatSUM) << endl;
+
+/**** OLD SEGMENT reused after changing the gaussian_pdf function call****/  
+// gradient.slice(0) = likelihood
+// gdmat.slice(0) = gammamat
+
+  cube gradientSUM = zeros<cube>(numtrials, datapoints - 1, numtheta + 1);
   for(int curcol = 1; curcol < datapoints; curcol++)
   {
+    // cube gdmat = Dtheta(init_data.col(curcol), xvec, h, thetavec);
+    cube gdmatSUM = zeros<cube>(numtrials, veclen, numtheta + 1);
     for(int i = 0; i < numtrials; i++)
     {
       for(int j = 0; j < veclen; j++)
@@ -140,17 +165,7 @@ cube gDTQ(const vec& thetavec, const double h, const double k, const int M, cons
         gdmatSUM.subcube(span(i), span(j), span()) = gaussian_pdf(x, y, h, thetavec);
       }
     }
-  }
-  cout << "Dimensions of cube gdmatSUM:" << gdmatSUM.n_rows << ", " << gdmatSUM.n_cols << ", " << gdmatSUM.n_slices << endl;
-  cout << "Sum of cube gdmatSUM: " << accu(gdmatSUM) << endl;
 
-/**** OLD SEGMENT reused after removing the gaussian_pdf function call****/  
-// gradient.slice(0) = likelihood
-// gdmat.slice(0) = gammamat
-  cube gradientSUM = zeros<cube>(numtrials, datapoints - 1, numtheta + 1);
-  for(int curcol = 1; curcol < datapoints; curcol++)
-  {
-    // cube gdmat = Dtheta(init_data.col(curcol), xvec, h, thetavec);
     (gradientSUM.slice(0)).col(curcol - 1) = k * gdmatSUM.slice(0) * (qmatthetaSUM.slice(0)).col(curcol - 1);
 
     for(int i = 1; i < numtheta + 1; i++)
