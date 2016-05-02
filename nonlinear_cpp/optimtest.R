@@ -29,6 +29,7 @@ objgradfun <- function(theta)
     for (i in c(1:numparam))
         gradient[i] = -sum(probmat[,,(i+1)] / mylik)
 
+    browser()
     return(list("objective" = objective, "gradient" = gradient))
 }
 

@@ -22,8 +22,8 @@ theta = c(0.5, 0.5, 0.5)
 numparam = length(theta)
 
 # samples
-burnin = 500
-samplesteps = 2000
+burnin = 1
+samplesteps = 2
 totsteps = burnin + samplesteps
 
 ##### MCMC specific parameters #####
