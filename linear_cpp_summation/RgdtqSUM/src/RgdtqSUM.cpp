@@ -47,8 +47,10 @@ cube gDTQ(const vec& thetavec, const double h, const double k, const int M, cons
 
   int veclen = 2*M + 1;
   int datapoints = init_data.n_cols;
+  int numtrials = init_data.n_rows;
   vec xvec = k*(linspace<vec>(-M, M, veclen));
   int numtheta = thetavec.n_elem;
+
   // double supg = 0.5;
   // int gamma = ceil(5 * sqrt(h) * supg / k);
   // int dimg = 2 * gamma;
@@ -61,8 +63,8 @@ cube gDTQ(const vec& thetavec, const double h, const double k, const int M, cons
   {
     for(int j = 0; j < veclen; j++)
     {
-      int x = xvec(i);
-      int y = xvec(j);
+      double x = xvec(i);
+      double y = xvec(j);
 
       // gaussian_pdf returns a vector of length numtheta + 1
       // the subcube is selected as Dsum(i, j, :)
@@ -78,18 +80,18 @@ cube gDTQ(const vec& thetavec, const double h, const double k, const int M, cons
   }
   cout << "Dimensions of cube DSUM: " << DSUM.n_rows << ", " << DSUM.n_cols << ", " << DSUM.n_slices << endl;
   cout << "Sum of cube DSUM: " << accu(DSUM) << endl;
-  cout << "3*3 matrix for objective function: " << DSUM.subcube(0, 0, 0, 2, 2, 3) << endl;
+  // cout << "3*3 matrix for objective function: " << DSUM.subcube(0, 0, 0, 2, 2, 3) << endl;
 
 /**** NEW SEGMENT ****/  
-  cube initderivsSUM = zeros<cube>(veclen, init_data.n_rows, numtheta + 1);
+  cube initderivsSUM = zeros<cube>(veclen, numtrials, numtheta + 1);
   for(int curcol = 0; curcol < datapoints - 1; curcol++)
   {
     for(int i = 0; i < veclen; i++)
     {
-      for(int j = 0; j < datapoints - 1; j++)
+      for(int j = 0; j < numtrials; j++)
       {
-        int x = xvec(i);
-        int y = init_data(j, curcol);
+        double x = xvec(i);
+        double y = init_data(j, curcol);
 
         // gaussian_pdf returns a vector of length numtheta + 1
         // the subcube is selected as Dsum(i, j, :)
@@ -123,15 +125,15 @@ cube gDTQ(const vec& thetavec, const double h, const double k, const int M, cons
   }
 
 /**** NEW SEGMENT ****/
-  cube gdmatSUM = zeros<cube>(init_data.n_rows, veclen, numtheta + 1);
+  cube gdmatSUM = zeros<cube>(numtrials, veclen, numtheta + 1);
   for(int curcol = 1; curcol < datapoints; curcol++)
   {
-    for(int i = 0; i < datapoints - 1; i++)
+    for(int i = 0; i < numtrials; i++)
     {
       for(int j = 0; j < veclen; j++)
       {
-        int x = init_data(i, curcol);
-        int y = xvec(j);
+        double x = init_data(i, curcol);
+        double y = xvec(j);
 
         // gaussian_pdf returns a vector of length numtheta + 1
         // the subcube is selected as Dsum(i, j, :)
@@ -145,7 +147,7 @@ cube gDTQ(const vec& thetavec, const double h, const double k, const int M, cons
 /**** OLD SEGMENT reused after removing the gaussian_pdf function call****/  
 // gradient.slice(0) = likelihood
 // gdmat.slice(0) = gammamat
-  cube gradientSUM = zeros<cube>(init_data.n_rows, datapoints - 1, numtheta + 1);
+  cube gradientSUM = zeros<cube>(numtrials, datapoints - 1, numtheta + 1);
   for(int curcol = 1; curcol < datapoints; curcol++)
   {
     // cube gdmat = Dtheta(init_data.col(curcol), xvec, h, thetavec);
@@ -157,6 +159,7 @@ cube gDTQ(const vec& thetavec, const double h, const double k, const int M, cons
     }
   }
   cout << "Dimensions of cube gradientSUM:" << gradientSUM.n_rows << ", " << gradientSUM.n_cols << ", " << gradientSUM.n_slices << endl;
+  cout << "Sum of cube gradientSUM: " << accu(gradientSUM) << endl;
 
   // // to check that the right values are getting passed to R
   cout << "objective: " << -accu(log(gradientSUM.slice(0))) << endl;

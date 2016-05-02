@@ -64,7 +64,7 @@ cube gDTQ(const vec &thetavec, const double h, const double k, const int M, cons
   cube D = Dtheta(xvec, xvec, h, thetavec);
   cout << "Dimensions of cube D: " << D.n_rows << ", " << D.n_cols << ", " << D.n_slices << endl;
   cout << "Sum of cube D: " << accu(D) << endl;
-  cout << "5*5 matrix for objective function: " << D.subcube(0, 0, 0, 2, 2, 3) << endl;
+  // cout << "3*3 matrix for objective function: " << D.subcube(0, 0, 0, 2, 2, 3) << endl;
 
   cube qmattheta = zeros<cube>(veclen, datapoints - 1, numtheta + 1);
   
@@ -116,6 +116,7 @@ cube gDTQ(const vec &thetavec, const double h, const double k, const int M, cons
     }
   }
   cout << "Dimensions of cube gradient:" << gradient.n_rows << ", " << gradient.n_cols << ", " << gradient.n_slices << endl;
+  cout << "Sum of cube gradient: " << accu(gradient) << endl;
 
   // // to check that the right values are getting passed to R
   cout << "objective: " << -accu(log(gradient.slice(0))) << endl;

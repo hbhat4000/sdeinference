@@ -1,15 +1,15 @@
-fakedatanum = 2
-mcmcdatanum = 2
-hmcdatanum = 2
+fakedatanum = 3
+mcmcdatanum = 3
+hmcdatanum = 3
 
 # parameters for fakedata
-fakedatah = 1e-6
+fakedatah = 1e-4
 littlet = 1
-bigt = 25
-ntrials = 100
+bigt = 10
+ntrials = 50
 
 # true parameter for RMSE calculation
-actualtheta = c(1, 2, 0.7)
+actualtheta = c(0.8, 0.9, 0.5)
 
 # parameters for inference
 # create grid, compute densities on that grid=
