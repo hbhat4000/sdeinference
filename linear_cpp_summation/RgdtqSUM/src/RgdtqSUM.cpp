@@ -84,6 +84,7 @@ cube gDTQ(const vec& thetavec, const double h, const double k, const int M, cons
 
 /**** NEW SEGMENT ****/  
   cube initderivsSUM = zeros<cube>(veclen, numtrials, numtheta + 1);
+
   for(int curcol = 0; curcol < datapoints - 1; curcol++)
   {
     for(int i = 0; i < veclen; i++)
@@ -98,19 +99,16 @@ cube gDTQ(const vec& thetavec, const double h, const double k, const int M, cons
         initderivsSUM.subcube(span(i), span(j), span()) = gaussian_pdf(x, y, h, thetavec);
       }
     }
-  }
-  cout << "Dimensions of cube initderivsSUM:" << initderivsSUM.n_rows << ", " << initderivsSUM.n_cols << ", " << initderivsSUM.n_slices << endl;
-  cout << "Sum of cube initderivsSUM: " << accu(initderivsSUM) << endl;
-
-  for(int curcol = 0; curcol < datapoints - 1; curcol++)
-  {
+    if (curcol == 10)
+    {
+      cout << "Dimensions of cube initderivsSUM:" << initderivsSUM.n_rows << ", " << initderivsSUM.n_cols << ", " << initderivsSUM.n_slices << endl;
+      cout << "Sum of cube initderivsSUM: " << accu(initderivsSUM) << endl;
+    }
     for(int thetavals = 0; thetavals < numtheta + 1; thetavals++)
     {
       (qmatthetaSUM.slice(thetavals)).col(curcol) = mean(initderivsSUM.slice(thetavals), 1);
     }
   }
-  cout << "Dimensions of cube qmatthetaSUM:" << qmatthetaSUM.n_rows << ", " << qmatthetaSUM.n_cols << ", " << qmatthetaSUM.n_slices << endl;
-  cout << "Sum of cube qmatthetaSUM: " << accu(qmatthetaSUM) << endl;
 
 /**** OLD SEGMENT reused because gaussian_pdf function not called****/
   int startstep = 1;
@@ -123,6 +121,8 @@ cube gDTQ(const vec& thetavec, const double h, const double k, const int M, cons
       qmatthetaSUM.slice(i) = k * DSUM.slice(0) * qmatthetaSUM.slice(i) + k * DSUM.slice(i) * qmatthetaSUM.slice(0);
     }
   }
+  cout << "Dimensions of cube qmatthetaSUM:" << qmatthetaSUM.n_rows << ", " << qmatthetaSUM.n_cols << ", " << qmatthetaSUM.n_slices << endl;
+  cout << "Sum of cube qmatthetaSUM: " << accu(qmatthetaSUM) << endl;
 
 /**** NEW SEGMENT ****/
   // cube gdmatSUM = zeros<cube>(numtrials, veclen, numtheta + 1);
@@ -141,8 +141,6 @@ cube gDTQ(const vec& thetavec, const double h, const double k, const int M, cons
   //     }
   //   }
   // }
-  // cout << "Dimensions of cube gdmatSUM:" << gdmatSUM.n_rows << ", " << gdmatSUM.n_cols << ", " << gdmatSUM.n_slices << endl;
-  // cout << "Sum of cube gdmatSUM: " << accu(gdmatSUM) << endl;
 
 /**** OLD SEGMENT reused after changing the gaussian_pdf function call****/  
 // gradient.slice(0) = likelihood
@@ -165,11 +163,15 @@ cube gDTQ(const vec& thetavec, const double h, const double k, const int M, cons
         gdmatSUM.subcube(span(i), span(j), span()) = gaussian_pdf(x, y, h, thetavec);
       }
     }
+    cout << "Dimensions of cube gdmatSUM:" << gdmatSUM.n_rows << ", " << gdmatSUM.n_cols << ", " << gdmatSUM.n_slices << endl;
+    cout << "Sum of cube gdmatSUM: " << accu(gdmatSUM) << endl;
 
     (gradientSUM.slice(0)).col(curcol - 1) = k * gdmatSUM.slice(0) * (qmatthetaSUM.slice(0)).col(curcol - 1);
 
     for(int i = 1; i < numtheta + 1; i++)
     {
+  cout << "Dimensions of cube gradientSUM:" << gradientSUM.n_rows << ", " << gradientSUM.n_cols << ", " << gradientSUM.n_slices << endl;
+  cout << "Sum of cube gradientSUM: " << accu(gradientSUM) << endl;
       (gradientSUM.slice(i)).col(curcol - 1) = k * gdmatSUM.slice(i) * (qmatthetaSUM.slice(0)).col(curcol - 1) + k * (gdmatSUM.slice(0)) * (qmatthetaSUM.slice(i)).col(curcol - 1);
     }
   }
