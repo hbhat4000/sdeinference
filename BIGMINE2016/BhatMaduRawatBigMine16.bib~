@@ -1,0 +1,150 @@
+@article{Picchini2014,
+  title = {Inference for {SDE} models via approximate {B}ayesian computation},
+  journal = {Journal of Computational and Graphical Statistics},
+  volume = {23},
+  number = {4},
+  year = {2014},
+  pages = {1080--1100},
+  author = {Picchini, U.}
+}
+
+@book{iacus2009simulation,
+  title={Simulation and {I}nference for {S}tochastic {D}ifferential {E}quations: {W}ith {R} {E}xamples},
+  author={Iacus, S.~M.},
+  series={Springer Series in Statistics},
+  year={2009},
+  publisher={Springer},
+  address={New York}
+}
+
+@book{fuchs2013inference,
+  title={Inference for Diffusion Processes: With Applications in Life Sciences},
+  author={Fuchs, C.},
+  year={2013},
+  publisher={Springer},
+  address={Berlin}
+}
+
+@article{sorensen2004parametric,
+  title={Parametric inference for diffusion processes observed at discrete points in time: a survey},
+  author={S{\o}rensen, H.},
+  journal={International Statistical Review},
+  volume={72},
+  number={3},
+  pages={337--354},
+  year={2004},
+}
+
+@article {Sahaliaclosedform,
+author = {A\"it-Sahalia, Yacine},
+title = {Maximum Likelihood Estimation of Discretely Sampled Diffusions: {A} Closed-form Approximation Approach},
+journal = {Econometrica},
+volume = {70},
+number = {1},
+publisher = {Blackwell Publishers Ltd},
+pages = {223--262},
+year = {2002},
+}
+
+@article{Pedersen1995,
+ AUTHOR = {Pedersen, Asger Roer},
+     TITLE = {A new approach to maximum likelihood estimation for stochastic
+              differential equations based on discrete observations},
+   JOURNAL = {Scandinavian Journal of Statistics},
+    VOLUME = {22},
+      YEAR = {1995},
+    NUMBER = {1},
+     PAGES = {55--71},
+}
+
+@techreport{SantaClara1997,
+ author = {Santa-Clara, P.},
+ title = {Simulated likelihood estimation of diffusions with an application to the short term interest rate},
+ year = {1997},
+ institution = {UCLA Anderson School of Management},
+ type = {Working Paper},
+ number = {12-97},
+}
+
+@book{BhattacharyaWaymire2009,
+    AUTHOR = {Bhattacharya, Rabi N. and Waymire, Edward C.},
+     TITLE = {Stochastic Processes with Applications},
+    SERIES = {Classics in Applied Mathematics},
+    VOLUME = {61},
+ PUBLISHER = {Society for Industrial and Applied Mathematics (SIAM),
+              Philadelphia, PA},
+      YEAR = {2009},
+}
+
+@unpublished{NLopt,
+  author = {Johnson, Steven~G.},
+  title = {The NLopt nonlinear-optimization package},
+   year = {2016},
+   note = {{h}ttp://ab-initio.mit.edu/nlopt}
+}
+
+@unpublished{nloptr,
+  author = {Ypma, Jelmer},
+  title = {nloptr: R interface to NLopt},
+  year = {2014},
+  note = {{h}ttp://cran.r-project.org/web/packages/nloptr/},
+}
+
+@unpublished{BhatMadu2016,
+  author = {Bhat, Harish~S. and Madushani, R.~W.~M.~A.},
+   year = {2016},
+  title = {Density tracking by quadrature for stochastic differential equations},
+  note = {Preprint},
+}
+
+@article{BallyTalay1996,
+    AUTHOR = {Bally, Vlad and Talay, Denis},
+     TITLE = {The law of the {E}uler scheme for stochastic differential
+              equations. {II}. {C}onvergence rate of the density},
+   JOURNAL = {Monte Carlo Methods and Applications},
+    VOLUME = {2},
+      YEAR = {1996},
+    NUMBER = {2},
+     PAGES = {93--128},
+}
+
+@article{Nocedal1980,
+ AUTHOR = {J. Nocedal},
+ TITLE = {Updating quasi-{N}ewton matrices with limited storage},
+ YEAR = {1980},
+ PAGES = {773--782},
+ VOLUME = {35},
+ JOURNAL = {Mathematics of Computation},
+}
+
+@article{NocedalLiu1989,
+ author = {J. Nocedal and D.~C. Liu},
+ title = {On the limited memory {BFGS} method for large scale optimization},
+ year = {1989},
+ volume = {45},
+ number = {3},
+ pages = {503--528},
+}
+
+@article{Svanberg2002,
+ AUTHOR = {Svanberg, Krister},
+     TITLE = {A class of globally convergent optimization methods based on
+              conservative convex separable approximations},
+  JOURNAL = {SIAM Journal on Optimization},
+    VOLUME = {12},
+      YEAR = {2002},
+    NUMBER = {2},
+     PAGES = {555--573},
+}
+
+@article{Wilkinson2005,
+  title = {{B}ayesian inference for stochastic kinetic models using a diffusion approximation},
+  author = {Golightly, A. and Wilkinson, D.~J.},
+  year = {2005},
+  volume = {61},
+  pages = {781--788},
+  journal = {Biometrics},
+}
+
+
+

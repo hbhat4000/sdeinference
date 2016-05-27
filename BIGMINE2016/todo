@@ -1,0 +1,31 @@
+0.0 fix up intro
+
+basic idea
+
+0.1 add info on Scala and Spark stuff w/ Shagun's diagrams
+
+big mining needs to involve new mathematical derivations as well as clever implementations, i.e., need both for scalability.  cannot simply take old algorithms and implement in scala/spark.  similarly, some new algorithms will not work with new software frameworks and hardware infrastructure.
+
+scala/breeze/intel mkl
+spark/RDD/mapping/nonequispaced
+
+0.2 conclusion / future directions
+
+mention GitHub
+
+1. add in details of numerical experiments
+-> priors
+-> proposals
+-> initial conditions
+-> how fake data was generated
+CHECK THE ABOVE -- MAKE SURE PARAMETERS AGREE
+
+2. plots:
+-> posteriors, check
+-> time series plot *****
+-> scalability *****
+(trace plots???)
+
+3. additional results:
+-> real-world?
+-> nonparametric?
