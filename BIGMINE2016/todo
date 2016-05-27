@@ -8,11 +8,7 @@ basic idea
 
 big mining needs to involve new mathematical derivations as well as clever implementations, i.e., need both for scalability.  cannot simply take old algorithms and implement in scala/spark.  similarly, some new algorithms will not work with new software frameworks and hardware infrastructure.
 
-mention GitHub
-
-2. plots:
--> scalability *****
-1) length of time series
-2) number of processors!
+STUFF WE DIDN'T DO:
+1) scalability w/ number of processors
 
 

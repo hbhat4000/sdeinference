@@ -51,13 +51,28 @@ of California, Merced, 5200 N. Lake Rd., Merced, CA, 95343, USA}
 \maketitle
 
 \begin{abstract}
-This is the abstract for this article.
+
 \end{abstract}
 \begin{keywords}
 List of keywords
 \end{keywords}
 
 \section{Introduction}
+\label{sect:intro}
+In this paper, we concern ourselves with the problem of 
+Bayesian inference and filtering for time series.  The time series
+consist of noisy observations of a process that satisfies a stochastic
+differential equation (SDE).  The drift and diffusion terms  of this SDE contain parameters.  Our goal is to use the observations to infer
+both the time series of the SDE's actual state (the filtering
+problem) and the parameters in the drift/diffusion terms (the
+inference problem).  While there are existing packages (e.g., for use
+with the R language for statistical computing) for solving this
+problem, we believe the method and implementation described here is
+the first to make use of Apache Spark.  Apache Spark is a ...
+
+How does our method link up to methods from the past?
+
+What do we do in this paper?
 
 One way to carry out this inference is through numerical maximization of the likelihood function.  For the actual SDE, the exact likelihood $p(\mathbf{x} | \theta)$ can only be computed in very special cases, i.e., when we can solve analytically for the transition density of (\ref{eqn:sde}).  Therefore, prior work has focused on approximating the exact likelihood, either through analytical methods, numerical methods, or a combination of the two.
 
@@ -726,7 +741,7 @@ $\beta_1=0.9639$.  These results are consistent with $O(L)$ temporal scaling.
 
 \begin{figure}[th]
 \begin{center}
-\includegraphics[width=3in]{scaling}
+\includegraphics[width=5in]{scaling}
 \end{center}
 \caption{For each indicated value of $L$, we have generated a time
   series of length $L$, run our inference/filtering code, and recorded

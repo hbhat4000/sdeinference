@@ -12,6 +12,7 @@
    (TeX-add-symbols
     '("cs" 1))
    (LaTeX-add-labels
+    "sect:intro"
     "sect:methods"
     "eqn:sdefiltprob"
     "eqn:sde"
