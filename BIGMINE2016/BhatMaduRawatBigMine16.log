@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.14159265-2.6-1.40.15 (TeX Live 2014) (preloaded format=pdflatex 2014.5.25)  27 MAY 2016 11:19
+This is pdfTeX, Version 3.14159265-2.6-1.40.15 (TeX Live 2014) (preloaded format=pdflatex 2014.5.25)  27 MAY 2016 14:38
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -391,11 +391,7 @@ Package: booktabs 2005/04/14 v1.61803 publication quality tables
 \@lastruleclass=\count130
 \@thisrulewidth=\dimen137
 )
-(./BhatMaduRawatBigMine16.aux
-
-LaTeX Warning: Label `sect:spark' multiply defined.
-
-)
+(./BhatMaduRawatBigMine16.aux)
 \openout1 = `BhatMaduRawatBigMine16.aux'.
 
 LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 49.
@@ -412,7 +408,8 @@ LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 49.
 LaTeX Font Info:    ... okay on input line 49.
 LaTeX Font Info:    Checking defaults for PD1/pdf/m/n on input line 49.
 LaTeX Font Info:    ... okay on input line 49.
- (/usr/local/texlive/2014/texmf-dist/tex/context/base/supp-pdf.mkii
+
+(/usr/local/texlive/2014/texmf-dist/tex/context/base/supp-pdf.mkii
 [Loading MPS to PDF converter (version 2006.09.02).]
 \scratchcounter=\count131
 \scratchdimen=\dimen138
@@ -477,69 +474,65 @@ Overfull \hbox (1.35896pt too wide) in paragraph at lines 270--273
 n/10.95 g[]$\OT1/cmr/m/n/10.95 ,
  []
 
-[5] [6] <gammawindow.pdf, id=240, 702.625pt x 528.97626pt>
+[5] [6] [7] <gammawindow.pdf, id=264, 702.625pt x 528.97626pt>
 File: gammawindow.pdf Graphic file (type pdf)
 
 <use gammawindow.pdf>
-Package pdftex.def Info: gammawindow.pdf used on input line 394.
+Package pdftex.def Info: gammawindow.pdf used on input line 457.
 (pdftex.def)             Requested size: 433.62pt x 326.46059pt.
- <vec_to_slice.pdf, id=241, 644.99759pt x 271.77095pt>
+ <vec_to_slice.pdf, id=274, 632.01678pt x 249.35046pt>
 File: vec_to_slice.pdf Graphic file (type pdf)
 
 <use vec_to_slice.pdf>
-Package pdftex.def Info: vec_to_slice.pdf used on input line 405.
-(pdftex.def)             Requested size: 433.62pt x 182.71176pt.
- [7] [8 <./gammawindow.pdf>]
-<post_equi.pdf, id=313, 433.62pt x 216.81pt>
+Package pdftex.def Info: vec_to_slice.pdf used on input line 505.
+(pdftex.def)             Requested size: 433.62pt x 171.07797pt.
+ [8] [9 <./gammawindow.pdf>] [10 <./vec_to_slice.pdf>]
+<post_equi.pdf, id=378, 433.62pt x 216.81pt>
 File: post_equi.pdf Graphic file (type pdf)
  <use post_equi.pdf>
-Package pdftex.def Info: post_equi.pdf used on input line 485.
+Package pdftex.def Info: post_equi.pdf used on input line 594.
 (pdftex.def)             Requested size: 433.62pt x 216.81938pt.
 
-<post_nonequi.pdf, id=315, 433.62pt x 216.81pt>
+<post_nonequi.pdf, id=380, 433.62pt x 216.81pt>
 File: post_nonequi.pdf Graphic file (type pdf)
  <use post_nonequi.pdf>
-Package pdftex.def Info: post_nonequi.pdf used on input line 503.
+Package pdftex.def Info: post_nonequi.pdf used on input line 612.
 (pdftex.def)             Requested size: 433.62pt x 216.81938pt.
 
-<timeseries1.pdf, id=316, 433.62pt x 216.81pt>
+<timeseries1.pdf, id=381, 433.62pt x 216.81pt>
 File: timeseries1.pdf Graphic file (type pdf)
  <use timeseries1.pdf>
-Package pdftex.def Info: timeseries1.pdf used on input line 511.
+Package pdftex.def Info: timeseries1.pdf used on input line 620.
 (pdftex.def)             Requested size: 433.62pt x 216.81938pt.
 
-<timeseries2.pdf, id=317, 433.62pt x 216.81pt>
+<timeseries2.pdf, id=382, 433.62pt x 216.81pt>
 File: timeseries2.pdf Graphic file (type pdf)
  <use timeseries2.pdf>
-Package pdftex.def Info: timeseries2.pdf used on input line 519.
+Package pdftex.def Info: timeseries2.pdf used on input line 628.
 (pdftex.def)             Requested size: 433.62pt x 216.81938pt.
 
-(./BhatMaduRawatBigMine16.bbl [9 <./vec_to_slice.pdf>] [10 <./post_equi.pdf> <.
-/post_nonequi.pdf>] [11 <./timeseries1.pdf> <./timeseries2.pdf>])
-Package atveryend Info: Empty hook `BeforeClearDocument' on input line 547.
- [12]
-Package atveryend Info: Empty hook `AfterLastShipout' on input line 547.
+(./BhatMaduRawatBigMine16.bbl [11 <./post_equi.pdf>] [12 <./post_nonequi.pdf> <
+./timeseries1.pdf>] [13 <./timeseries2.pdf>])
+Package atveryend Info: Empty hook `BeforeClearDocument' on input line 656.
+ [14]
+Package atveryend Info: Empty hook `AfterLastShipout' on input line 656.
 
 (./BhatMaduRawatBigMine16.aux)
-Package atveryend Info: Executing hook `AtVeryEndDocument' on input line 547.
-Package atveryend Info: Executing hook `AtEndAfterFileList' on input line 547.
+Package atveryend Info: Executing hook `AtVeryEndDocument' on input line 656.
+Package atveryend Info: Executing hook `AtEndAfterFileList' on input line 656.
 Package rerunfilecheck Info: File `BhatMaduRawatBigMine16.out' has not changed.
 
-(rerunfilecheck)             Checksum: 8D5929FC91A948A7102505C347F0328A;792.
-
-
-LaTeX Warning: There were multiply-defined labels.
-
-Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 547.
+(rerunfilecheck)             Checksum: 8451B529088961AA33FE6D5668141032;788.
+Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 656.
  ) 
 Here is how much of TeX's memory you used:
- 9317 strings out of 493117
- 132123 string characters out of 6135433
- 271236 words of memory out of 5000000
- 12599 multiletter control sequences out of 15000+600000
- 11728 words of font info for 43 fonts, out of 8000000 for 9000
+ 9330 strings out of 493117
+ 132292 string characters out of 6135433
+ 273750 words of memory out of 5000000
+ 12606 multiletter control sequences out of 15000+600000
+ 12232 words of font info for 46 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
- 36i,9n,37p,1061b,438s stack positions out of 5000i,500n,10000p,200000b,80000s
+ 36i,16n,37p,1123b,448s stack positions out of 5000i,500n,10000p,200000b,80000s
 </usr/local/texlive/2014/texmf-dist/fonts/type1/public/amsfonts/cm/cmbx10.pfb
 ></usr/local/texlive/2014/texmf-dist/fonts/type1/public/amsfonts/cm/cmbx12.pfb>
 </usr/local/texlive/2014/texmf-dist/fonts/type1/public/amsfonts/cm/cmbx8.pfb></
@@ -555,11 +548,12 @@ ive/2014/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy10.pfb></usr/local/texli
 ve/2014/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy6.pfb></usr/local/texlive
 /2014/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy8.pfb></usr/local/texlive/2
 014/texmf-dist/fonts/type1/public/amsfonts/cm/cmti10.pfb></usr/local/texlive/20
-14/texmf-dist/fonts/type1/public/amsfonts/symbols/msbm10.pfb>
-Output written on BhatMaduRawatBigMine16.pdf (12 pages, 2738112 bytes).
+14/texmf-dist/fonts/type1/public/amsfonts/cm/cmtt10.pfb></usr/local/texlive/201
+4/texmf-dist/fonts/type1/public/amsfonts/symbols/msbm10.pfb>
+Output written on BhatMaduRawatBigMine16.pdf (14 pages, 2782704 bytes).
 PDF statistics:
- 461 PDF objects out of 1000 (max. 8388607)
- 377 compressed objects within 4 object streams
- 73 named destinations out of 1000 (max. 500000)
+ 503 PDF objects out of 1000 (max. 8388607)
+ 411 compressed objects within 5 object streams
+ 77 named destinations out of 1000 (max. 500000)
  127 words of extra memory for PDF output out of 10000 (max. 10000000)
 

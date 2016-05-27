@@ -3,7 +3,7 @@
 \BOOKMARK [2][-]{subsection.0.2.1}{Inference Problem}{section.0.2}% 3
 \BOOKMARK [2][-]{subsection.0.2.2}{Likelihood Computation via Density Tracking by Quadrature}{section.0.2}% 4
 \BOOKMARK [2][-]{subsection.0.2.3}{Metropolis Algorithm}{section.0.2}% 5
-\BOOKMARK [1][-]{section.0.3}{Apache Spark Implementation}{}% 6
+\BOOKMARK [1][-]{section.0.3}{Scalable Implementation}{}% 6
 \BOOKMARK [2][-]{subsection.0.3.1}{Scala/Breeze}{section.0.3}% 7
 \BOOKMARK [2][-]{subsection.0.3.2}{Spark}{section.0.3}% 8
 \BOOKMARK [1][-]{section.0.4}{Results}{}% 9

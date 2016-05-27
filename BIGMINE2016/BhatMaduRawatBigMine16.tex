@@ -149,7 +149,7 @@ Hence we can write
 \begin{equation}
 \label{eqn:obsstate}
 p( \mathbf{y} \, | \, \mathbf{x}, \theta, \sigma_\epsilon^2 )
-= \prod_{j=0}^L p( y_{t_j} \, | \, x_{t_j}, \sigma_\epsilon^2 ).
+= \prod_{j=0}^L p( y_{t_j} \, | \, x_j, \sigma_\epsilon^2 ).
 \end{equation}
 Next, we examine the second term on the right-hand side of
 (\ref{eqn:post1}).  It is clear that $\sigma_\epsilon^2$ is independent
@@ -165,13 +165,13 @@ posterior:
 \begin{equation}
 \label{eqn:post2}
 p(\mathbf{x}, \theta, \sigma_\epsilon^2 \, | \, \mathbf{y}) 
-\propto \left[ \prod_{j=0}^L p( y_{t_j} \, | \, x_{t_j},
+\propto \left[ \prod_{j=0}^L p( y_{t_j} \, | \, x_j,
   \sigma_\epsilon^2 ) \right] p( \mathbf{x} | \theta ) p(\theta)
 p(\sigma_\epsilon^2)
 \end{equation}
-From (\ref{eqn:obs}), we have that $y_{t_j} \, | \, x_{t_j},
-\sigma_\epsilon^2$ is Gaussian with mean $x_{t_j}$ and variance
-$\sigma_\epsilon^2$.  The terms $p(\theta)$ and $p(\sigma_\epsilon^2$
+From (\ref{eqn:obs}), we have that $y_{t_j} \, | \, x_j,
+\sigma_\epsilon^2$ is Gaussian with mean $x_j$ and variance
+$\sigma_\epsilon^2$.  The terms $p(\theta)$ and $p(\sigma_\epsilon^2)$
 are priors.  The only other term, $p( \mathbf{x} | \theta )$, is the 
 likelihood of $\theta$ under the model (\ref{eqn:sde}).  We describe
 the computation of this likelihood next.
@@ -186,15 +186,15 @@ all random variables $X_{t_{j-k}}$ for $k \geq 1$.  With this
 property, the likelihood factors:
 \begin{equation}
 \label{eqn:markov}
-p(\mathbf{x} | \theta) = p(x_0) \prod_{j=0}^{L-1} p(x_{t_{j+1}} \, | \,
-x_{t_j}, \theta).
+p(\mathbf{x} | \theta) = p(x_0) \prod_{j=0}^{L-1} p(x_{j+1} \, | \,
+x_j, \theta).
 \end{equation}
 Each term in the product can be interpreted as follows: we
 start the SDE (\ref{eqn:sde}) with the initial condition $X_{t_j} =
-x_{t_j}$ and fixed parameter vector $\theta$.  We then solve for the
+x_j$ and fixed parameter vector $\theta$.  We then solve for the
 probability density function (pdf) of $X_{t_{j+1}}$, and evaluate that
-pdf at $x_{t_{j+1}}$.  By following these steps, we have calculated
-$p(x_{t_{j+1}} \, | \, x_{t_j}, \theta)$.
+pdf at $x_{j+1}$.  By following these steps, we have calculated
+$p(x_{j+1} \, | \, x_j, \theta)$.
 
 We now outline a provably convergent method to compute the aforementioned
 pdf.  Because this method computes an approximation to the density via
@@ -202,7 +202,7 @@ iterated quadrature, we refer to the method as DTQ (density tracking
 by quadrature).  The first step of the method consists of discretizing
 (\ref{eqn:sde}) via the Euler-Maruyama discretization.  When
 describing this discretization, we specialize to the case where we
-seek $p(x_{t_{j+1}} \, | \, x_{t_j}, \theta)$.  That is, we take
+seek $p(x_{j+1} \, | \, x_j, \theta)$.  That is, we take
 $\{\tau_i\}_{i=0}^n$ to be a temporal grid such that $\tau_0 = t_j$,
 $\tau_n = t_{j+1}$, and $h = (t_{j+1} - t_j)/n > 0$.  Then, for $0 =
 1, 2, \ldots, n$, we have $\tau_i = t_j + i h$.  On this temporal
@@ -216,12 +216,12 @@ where $\{Z_i\}_{i=1}^{n}$ is an i.i.d. family of Gaussian random
 variables, each with mean $0$ and variance $1$.  For $i \geq 1$, we
 think of $\tilde{x}_i$ as a numerical approximation to $X_{\tau_i}$.
 Note that $\tilde{x}_0 = X_{\tau_0} = X_{t_j}$ which is constrained to
-equal the data point $x_{t_j}$ in this calculation.
+equal the data point $x_j$ in this calculation.
 
 The next step in deriving the DTQ method is to write down the
 Chapman-Kolmogorov equation corresponding to (\ref{eqn:sde_em}).  Let
 $p(\tilde{x}_{i})$ denote the pdf of $\tilde{x}_i$ given the initial
-condition $\tilde{x}_0 = x_{t_j}$.  Then purely based on the laws of
+condition $\tilde{x}_0 = x_j$.  Then purely based on the laws of
 probability we can write:
 \begin{equation}
 \label{eqn:chapman}
@@ -259,34 +259,35 @@ take both $j, j' \in \{-M, \ldots, 0, \ldots, M\}$; this means that
 each vector $\mathbf{p}_i$ has dimension $2M+1$.
 
 Now that we have a method to compute the required pdf's, here is how
-we compute $p(x_{t_{j+1}} \, | \, x_{t_j}, \theta)$:
+we compute $p(x_{j+1} \, | \, x_j, \theta)$:
 \begin{enumerate}
-\item Because $\tilde{x}_0 = x_{t_j}$, we have that $p(\tilde{x}_0) =
-  \delta(\tilde{x}_0 - x_{t_j})$.  Inserting this in
+\item Because $\tilde{x}_0 = x_j$, we have that $p(\tilde{x}_0) =
+  \delta(\tilde{x}_0 - x_j)$.  Inserting this in
   (\ref{eqn:chapman2}) with $i=0$, we obtain
 \begin{equation}
 \label{eqn:DTQfirst}
-p(\tilde{x}_1) = G(\tilde{x}_1,x_{t_j}).
+p(\tilde{x}_1) = G(\tilde{x}_1,x_j).
 \end{equation}
 Evaluating the right-hand side with $\tilde{x}_1$ equal to each point
 in the spatial grid $\{z_j\}_{j=-M}^{M}$, we obtain $\mathbf{p}_1$.
 \item With $\mathbf{p}_1$ in hand, we iterate (\ref{eqn:chapman3}) a
   total of $n-2$ times.  This takes us to $\mathbf{p}_{n-1}$.
 \item Then, by (\ref{eqn:chapman2}), we have that the density of
-  $\tilde{x}_{i+1}$ evaluated at the data point $x_{t_{j+1}}$ is
+  $\tilde{x}_{i+1}$ evaluated at the data point $x_{j+1}$ is
 $$
-p(\tilde{x}_{i+1}) \biggr|_{\tilde{x}_{i+1} = x_{t_{j+1}}} =
-\int_{\tilde{x}_i}  G(x_{t_{j+1}},\tilde{x}_i)  p(\tilde{x}_i)  \, d
+p(\tilde{x}_{i+1}) \biggr|_{\tilde{x}_{i+1} = x_{j+1}} =
+\int_{\tilde{x}_i}  G(x_{j+1},\tilde{x}_i)  p(\tilde{x}_i)  \, d
 \tilde{x}_i.$$
 Applying trapezoidal quadrature to the right-hand side, we have
 \begin{equation}
 \label{eqn:DTQlast}
-p(x_{t_{j+1}} \, | \, x_{t_j}, \theta) \approx \sum_j k G(x_{t_{j+1}},
+p(x_{j+1} \, | \, x_j, \theta) \approx \sum_j k G(x_{j+1},
 z_j) p_{n-1}^j.
 \end{equation}
 \end{enumerate}
 
 \subsection{Metropolis Algorithm}
+\label{sect:metropolis}
 Now that we understand how to compute the likelihood term, we return
 to the problem of sampling from the posterior (\ref{eqn:post2}).  We
 describe here a classical Metropolis algorithm that incorporates the
@@ -315,12 +316,13 @@ Metropolis algorithm is as follows:
 The $\log$ transformation ensures that the variance parameter
 $\sigma_\epsilon^2$ only takes positive values.
 \item Calculate the ratio
-$$
+\begin{equation}
+\label{eqn:rho}
 \rho = \frac{ p( \mathbf{x}^\ast_{i+1}, \theta^\ast_{i+1},
   (\sigma_\epsilon^2)^\ast_{i+1} \, | \, \mathbf{y} ) } { p(
   \mathbf{x}_{i}, \theta_{i}, (\sigma_\epsilon^2)_{i} \, | \,
   \mathbf{y} )  }.
-$$
+\end{equation}
 In practice, the denominator of this ratio has already been calculated at the
 previous step; only the numerator needs to be calculated.  To
 compute the numerator, we use (\ref{eqn:post2}) together with the
@@ -334,15 +336,21 @@ procedure described in Section \ref{sect:likelihood}, including
   \mathbf{x}_i$, $\theta_{i+1} = \theta_i$, $(\sigma_\epsilon^2)_{i+1} = (\sigma_\epsilon^2)_{i}$.
 \end{itemize}
 
-\section{Apache Spark Implementation}
-\label{sect:spark}
+\section{Scalable Implementation}
+\label{sect:scalableimplementation}
 
 There are two elements to our strategy of implementing the MCMC
 algorithm from Section \ref{sect:methods} in a scalable fashion.  The
 first aspect has to do with representing the main DTQ step
 (\ref{eqn:chapman3}) using Scala and Breeze.  The second aspect has to
 do with using Apache Spark to evaluate each term in the product
-(\ref{eqn:markov}) in a parallel, distributed fashion.
+(\ref{eqn:markov}) in a parallel, distributed fashion.  Note that all
+of our codes and data are available at
+\url{https://github.com/hbhat4000/sdeinference/tree/master/sparkdtq}.
+The main code to perform MCMC inference is \texttt{sparkdtq.sc}.  Also
+note that all development and testing was carried out on a server with
+$24$ effective cores ($2$ Intel Xeon E5-2620 chips at $2.0$ GHz), $16$
+GB of RAM, and $4$ TB of disk space.
 
 \subsection{Scala/Breeze}
 \label{sect:scala}
@@ -387,27 +395,126 @@ normalized, i.e., such that $k \sum_j {p}_{i}^j$ is sufficiently close
 to $1$.  In all of our tests, we have been able to choose $\gamma \ll M$ 
 while maintaining normalization to machine precision.
 
+The main DTQ step (\ref{eqn:chapman3}), as it is implemented in Scala
+using the window parameter $\gamma$, is represented graphically in
+Figure \ref{fig:implementation1}.  The code implementing this step
+makes use of the Breeze library
+(\url{https://github.com/scalanlp/breeze}) for numerical linear
+algebra in Scala. For additional efficiency, we utilize Breeze's
+support for the Intel Math Kernel Library (MKL).
 
+Let us explain the procedure diagrammed in Figure
+\ref{fig:implementation1}.  In the Metropolis algorithm given in
+Section \ref{sect:metropolis}, each time we must evaluate the
+numerator of $\rho$ in (\ref{eqn:rho}), we must evaluate the
+likelihood function for a particular choice of $\mathbf{x}$ and
+$\theta$.  For this choice of $\theta$, we evaluate  each row of
+the propagator matrix $\mathcal{G}$ over a window of size $2 \gamma+1$.  These rows are represented by the pink rectangles; there
+are $2M+1$ such rows.  Because each such row has the same size, we
+store the resulting collection as a Breeze \texttt{DenseVector} of
+\texttt{DenseVector}.  This computation, which comprises the upper
+half of Figure \ref{fig:implementation1}, occurs once per Metropolis step.
+
+To implement (\ref{eqn:matrixchapman}), we must now multiply the
+propagator matrix by the vector representing the pdf at time step
+$i$.  This matrix-vector product can be equivalently described as a
+collection of $2M+1$ vector-vector dot products, where each vector is
+of size $2\gamma+1$.  To generate the vectors to dot against
+collection of propagator vectors (already computed), we apply a
+windowing technique.  Namely, for each element $p_i^j$ of the pdf
+vector $\mathbf{p}_i$, we construct a window of size $2\gamma+1$
+around the element $p_i^j$: the window consists of $(p_i^{j-\gamma},
+\ldots, p_i^j, \ldots, p_i^{j+\gamma})$.  Of course, it is understood here
+that $p_i^c = 0$ whenever $|c| > M$.  In this way, we build a
+collection of windowed pdf vectors, represented in Figure
+\ref{fig:implementation1} as the lower-right stack of blue
+rectangles.  As above, the collection consists of $2M+1$ vectors, each
+of size $2\gamma+1$.
+
+With the propagator collection denoted by \texttt{propagator} and the
+collection of windowed pdf vectors denoted by \texttt{allwins}, the
+Scala and Breeze syntax for computing all required dot products at once is, simply
+\begin{equation}
+\label{eqn:alldots}
+\text{\texttt{px = propagator dot allwins}}
+\end{equation}
+This line of code completes the implementation of
+(\ref{eqn:matrixchapman}).  To iterate the procedure, we apply the
+windowing procedure---diagrammed in the lower half of Figure
+\ref{fig:implementation1}---to \texttt{px}, store the resulting
+collection in \texttt{allwins}, and then repeat (\ref{eqn:alldots}).
+
+The entire procedure diagrammed in Figure \ref{fig:implementation1}
+makes use of functional programming techniques---specifically, Scala's
+\texttt{map} construct---to entirely avoid explicit loops.
+Additionally, note that this procedure is inherently more efficient
+than using a sparse matrix representation for the propagator matrix;
+we know where the nonzero entries belong, so we do not need to
+allocate either space or time to this task.
 
 \begin{figure}[ht]
 \begin{center}
 \includegraphics[width=6in]{gammawindow}
 \end{center}
-\caption{Making use of Scala, Breeze, and Intel MKL.}
+\caption{In order to implement the matrix-vector multiplication in
+  (\ref{eqn:matrixchapman}) in a scalable way, we make use of the
+  structure of the propagator matrix $\mathcal{G}$.  Instead of computing all
+  entries of this matrix, we compute and store only those entries that
+  are close to the diagonal---the pink rectangles in the upper half of
+  the diagram.  The blue rectangles in the lower half of the diagram
+  correspond to windowed versions of the pdf vector $\mathbf{p}_i$.
+  In both cases, there is one windowed vector per row; the row numbers
+  go from $-M$ to $M$ as labeled.  Both the pink and blue rectangles
+  correspond to vectors of length  $2\gamma+1$, with $\gamma \ll M$.  The matrix-vector
+  multiplication $\mathcal{G}  \mathbf{p}_i$ then corresponds to a
+  collection of $2M+1$ vector-vector dot  products.  This
+  representation of (\ref{eqn:matrixchapman}) makes efficient use of
+  Scala, Breeze, and the Intel MKL.  For more details, see the description in Section \ref{sect:scala}.}
 \label{fig:implementation1}
 \end{figure}
 
 \subsection{Spark}
 \label{sect:spark}
+Spark enables parallel/distributed computation using the notion of a
+resilient distributed dataset (RDD).  Since the main bottleneck in our
+Metropolis algorithm is the computation of the likelihood
+$p(\mathbf{x} \, | \, \theta)$, we turn to the question of converting
+the state time series $\mathbf{x}$ into an RDD.  We think of this time
+series as a sequence of pairs $(t_j,x_j)$ as depicted in the
+top line of Figure \ref{fig:implementation2}.  When we examine
+(\ref{eqn:markov}), we see that to compute a given term in the product,
+we need access to neighboring pairs $(t_j,x_j)$ and
+$(t_{j+1},x_{j+1})$.
+
+Hence, we map the original sequence of pairs,
+labeled as $\overrightarrow{tx}$ in Figure \ref{fig:implementation2}, to
+\texttt{tslices}, a Scala \texttt{Array} where each element is a
+vector of neighboring pairs.  We convert this array to an RDD, \texttt{tslicesRDD}, using
+Spark's \texttt{sc.parallelize} method.  When we subsequently use a
+\texttt{map} operation to compute the log likelihood $\log p(x_{j+1} \, | \,
+x_j, \theta)$ term corresponding to each element of \texttt{tslicesRDD},
+the computation takes place in parallel.  Spark automatically
+distributes the propagator and the $\theta$ vector.  For a
+non-equispaced time series problem, each calculation of
+$p(x_{j+1} \, | \, x_j, \theta)$ will take more (respectively, less)
+time when $t_{j+1} - t_j$ is larger (respectively, smaller).  Again, Spark automatically
+assigns tasks to workers to compute the overall log likelihood efficiently.
 
 \begin{figure}[ht]
 \begin{center}
 \includegraphics[width=6in]{vec_to_slice}
 \end{center}
-\caption{Making use of Spark using math.}
+\caption{We use Spark to parallelize the computation of the likelihood
+(\ref{eqn:markov}).  We accomplish this by converting the
+original time series (for states $\mathbf{x}$, not observations
+$\mathbf{y}$) from a vector of pairs to an array where each element is
+a vector of consecutive pairs.  The original vector of pairs is
+labeled as $\protect\overrightarrow{tx}$, and the Scala \texttt{Array}
+of consecutive pairs is \texttt{tslices}.  This latter object can be
+easily converted into a Spark RDD; subsequent \texttt{map} operations
+on this RDD are executed in parallel.}
 \label{fig:implementation2}
 \end{figure}
-
 
 \section{Results}
 \label{sect:results}
@@ -474,7 +581,9 @@ consists of a Gaussian with parameters $(\mu=0,\sigma=0.02)$.
 
 For two values of the DTQ internal time step ($h = 0.02$ and
 $h=0.01$), we apply the Metropolis algorithm to generate $10,000$
-samples of the posterior (\ref{eqn:post2}).  
+samples of the posterior (\ref{eqn:post2}).  Note that $h=0.02$
+implies $M=257$ and $h=0.01$ implies $M=559$; hence $\gamma=25$
+gives at least a $10$-fold reduction in computational effort.
 
 We discard the first $100$ samples as burn-in samples, i.e., samples
 that are taken before the Metropolis Markov chain has, to a good
