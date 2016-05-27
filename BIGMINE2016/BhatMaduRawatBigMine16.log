@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.14159265-2.6-1.40.15 (TeX Live 2014) (preloaded format=pdflatex 2014.5.25)  27 MAY 2016 14:38
+This is pdfTeX, Version 3.14159265-2.6-1.40.15 (TeX Live 2014) (preloaded format=latex 2014.5.25)  27 MAY 2016 16:40
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -123,18 +123,10 @@ Package: trig 1999/03/16 v1.09 sin cos tan (DPC)
 (/usr/local/texlive/2014/texmf-dist/tex/latex/latexconfig/graphics.cfg
 File: graphics.cfg 2010/04/23 v1.9 graphics configuration of TeX Live
 )
-Package graphics Info: Driver file: pdftex.def on input line 91.
+Package graphics Info: Driver file: dvips.def on input line 91.
 
-(/usr/local/texlive/2014/texmf-dist/tex/latex/pdftex-def/pdftex.def
-File: pdftex.def 2011/05/27 v0.06d Graphics/color for pdfTeX
-
-(/usr/local/texlive/2014/texmf-dist/tex/generic/oberdiek/infwarerr.sty
-Package: infwarerr 2010/04/08 v1.3 Providing info/warning/error messages (HO)
-)
-(/usr/local/texlive/2014/texmf-dist/tex/generic/oberdiek/ltxcmds.sty
-Package: ltxcmds 2011/11/09 v1.22 LaTeX kernel commands for general use (HO)
-)
-\Gread@gobject=\count101
+(/usr/local/texlive/2014/texmf-dist/tex/latex/graphics/dvips.def
+File: dvips.def 2014/04/23 v3.0j Driver-dependant file (DPC,SPQR)
 ))
 \Gin@req@height=\dimen112
 \Gin@req@width=\dimen113
@@ -149,9 +141,8 @@ Package: xcolor 2007/01/21 v2.11 LaTeX color extensions (UK)
 (/usr/local/texlive/2014/texmf-dist/tex/latex/latexconfig/color.cfg
 File: color.cfg 2007/01/18 v1.5 color configuration of teTeX/TeXLive
 )
-Package xcolor Info: Driver file: pdftex.def on input line 225.
+Package xcolor Info: Driver file: dvips.def on input line 225.
 Package xcolor Info: Model `cmy' substituted by `cmy0' on input line 1337.
-Package xcolor Info: Model `hsb' substituted by `rgb' on input line 1341.
 Package xcolor Info: Model `RGB' extended on input line 1353.
 Package xcolor Info: Model `HTML' substituted by `rgb' on input line 1355.
 Package xcolor Info: Model `Hsb' substituted by `hsb' on input line 1356.
@@ -165,7 +156,7 @@ File: x11nam.def 2007/01/21 v2.11 Predefined colors according to Unix/X11 (UK)
 ))
 (/usr/local/texlive/2014/texmf-dist/tex/latex/algorithm2e/algorithm2e.sty
 Package: algorithm2e 2013/01/06 v5.00 algorithms environments
-\c@AlgoLine=\count102
+\c@AlgoLine=\count101
 
 (/usr/local/texlive/2014/texmf-dist/tex/latex/base/ifthen.sty
 Package: ifthen 2001/05/26 v1.1c Standard LaTeX ifthen package (DPC)
@@ -211,9 +202,9 @@ subscribe by emailing sympa@lirmm.fr with 'subscribe <list> <firstname name>'
 \algoheightrule=\skip61
 \algotitleheightruledefault=\skip62
 \algotitleheightrule=\skip63
-\c@algocfline=\count103
-\c@algocfproc=\count104
-\c@algocf=\count105
+\c@algocfline=\count102
+\c@algocfproc=\count103
+\c@algocf=\count104
 \algocf@algoframe=\box34
 \algocf@algobox=\box35
 ) (/usr/local/texlive/2014/texmf-dist/tex/latex/hyperref/hyperref.sty
@@ -226,15 +217,15 @@ Package: hobsub-hyperref 2012/05/28 v1.13 Bundle oberdiek, subset hyperref (HO)
 (/usr/local/texlive/2014/texmf-dist/tex/generic/oberdiek/hobsub-generic.sty
 Package: hobsub-generic 2012/05/28 v1.13 Bundle oberdiek, subset generic (HO)
 Package: hobsub 2012/05/28 v1.13 Construct package bundles (HO)
-Package hobsub Info: Skipping package `infwarerr' (already loaded).
-Package hobsub Info: Skipping package `ltxcmds' (already loaded).
+Package: infwarerr 2010/04/08 v1.3 Providing info/warning/error messages (HO)
+Package: ltxcmds 2011/11/09 v1.22 LaTeX kernel commands for general use (HO)
 Package: ifluatex 2010/03/01 v1.3 Provides the ifluatex switch (HO)
 Package ifluatex Info: LuaTeX not detected.
 Package: ifvtex 2010/03/01 v1.5 Detect VTeX and its facilities (HO)
 Package ifvtex Info: VTeX not detected.
 Package: intcalc 2007/09/27 v1.1 Expandable calculations with integers (HO)
 Package: ifpdf 2011/01/30 v2.3 Provides the ifpdf switch (HO)
-Package ifpdf Info: pdfTeX in PDF mode is detected.
+Package ifpdf Info: pdfTeX in PDF mode is not detected.
 Package: etexcmds 2011/02/16 v1.5 Avoid name clashes with e-TeX commands (HO)
 Package etexcmds Info: Could not find \expanded.
 (etexcmds)             That can mean that you are not using pdfTeX 1.50 or
@@ -247,7 +238,7 @@ Package: pdftexcmds 2011/11/29 v0.20 Utility functions of pdfTeX for LuaTeX (HO
 Package pdftexcmds Info: LuaTeX not detected.
 Package pdftexcmds Info: \pdf@primitive is available.
 Package pdftexcmds Info: \pdf@ifprimitive is available.
-Package pdftexcmds Info: \pdfdraftmode found.
+Package pdftexcmds Info: \pdfdraftmode is ignored in DVI mode.
 Package: pdfescape 2011/11/25 v1.13 Implements pdfTeX's escape features (HO)
 Package: bigintcalc 2012/04/08 v1.3 Expandable calculations on big integers (HO
 )
@@ -274,13 +265,13 @@ Package: auxhook 2011/03/04 v1.3 Hooks for auxiliary files (HO)
 Package: kvoptions 2011/06/30 v3.11 Key value format for package options (HO)
 )
 \@linkdim=\dimen120
-\Hy@linkcounter=\count106
-\Hy@pagecounter=\count107
+\Hy@linkcounter=\count105
+\Hy@pagecounter=\count106
 
 (/usr/local/texlive/2014/texmf-dist/tex/latex/hyperref/pd1enc.def
 File: pd1enc.def 2012/11/06 v6.83m Hyperref: PDFDocEncoding definition (HO)
 )
-\Hy@SavedSpaceFactor=\count108
+\Hy@SavedSpaceFactor=\count107
 
 (/usr/local/texlive/2014/texmf-dist/tex/latex/latexconfig/hyperref.cfg
 File: hyperref.cfg 2002/06/06 v1.2 hyperref configuration of TeXLive
@@ -292,10 +283,10 @@ Package hyperref Info: Plain pages OFF on input line 4458.
 Package hyperref Info: Backreferencing OFF on input line 4463.
 Package hyperref Info: Implicit mode ON; LaTeX internals redefined.
 Package hyperref Info: Bookmarks ON on input line 4688.
-\c@Hy@tempcnt=\count109
+\c@Hy@tempcnt=\count108
 LaTeX Info: Redefining \url on input line 5041.
 \XeTeXLinkMargin=\dimen121
-\Fld@menulength=\count110
+\Fld@menulength=\count109
 \Field@Width=\dimen122
 \Fld@charsize=\dimen123
 Package hyperref Info: Hyper figures OFF on input line 6295.
@@ -307,15 +298,23 @@ Package hyperref Info: Link coloring with OCG OFF on input line 6320.
 Package hyperref Info: PDF/A mode OFF on input line 6325.
 LaTeX Info: Redefining \ref on input line 6365.
 LaTeX Info: Redefining \pageref on input line 6369.
-\Hy@abspage=\count111
-\c@Item=\count112
-\c@Hfootnote=\count113
+\Hy@abspage=\count110
+\c@Item=\count111
+\c@Hfootnote=\count112
 )
 
-Package hyperref Message: Driver (autodetected): hpdftex.
+Package hyperref Message: Driver (default): hdvips.
 
-(/usr/local/texlive/2014/texmf-dist/tex/latex/hyperref/hpdftex.def
-File: hpdftex.def 2012/11/06 v6.83m Hyperref driver for pdfTeX
+(/usr/local/texlive/2014/texmf-dist/tex/latex/hyperref/hdvips.def
+File: hdvips.def 2012/11/06 v6.83m Hyperref driver for dvips
+
+(/usr/local/texlive/2014/texmf-dist/tex/latex/hyperref/pdfmark.def
+File: pdfmark.def 2012/11/06 v6.83m Hyperref definitions for pdfmark specials
+\pdf@docset=\toks21
+\pdf@box=\box36
+\pdf@toks=\toks22
+\pdf@defaulttoks=\toks23
+\HyField@AnnotCount=\count113
 \Fld@listcount=\count114
 \c@bookmark@seq@number=\count115
 
@@ -325,7 +324,7 @@ Package uniquecounter Info: New unique counter `rerunfilecheck' on input line 2
 82.
 )
 \Hy@SectionHShift=\skip64
-)
+))
 (/usr/local/texlive/2014/texmf-dist/tex/latex/hyperref/nameref.sty
 Package: nameref 2012/10/27 v2.43 Cross-referencing by name of section
 
@@ -342,12 +341,12 @@ Package hyperref Info: Option `plainpages' set `false' on input line 137.
 \interauthorskip=\skip67
 \aftermaketitskip=\skip68
 \jmlrlength=\skip69
-\jmlrbox=\box36
+\jmlrbox=\box37
 \c@example=\count117
 \c@theorem=\count118
 \c@subfigure=\count119
-\@subfloatcapbox=\box37
-\@subfloatcontsbox=\box38
+\@subfloatcapbox=\box38
+\@subfloatcontsbox=\box39
 \c@subtable=\count120
 \c@chapter=\count121
 \postchapterskip=\skip70
@@ -361,15 +360,15 @@ Package: longtable 2004/02/01 v4.11 Multi-page Table package (DPC)
 \LTpost=\skip75
 \LTchunksize=\count122
 \LTcapwidth=\dimen124
-\LT@head=\box39
-\LT@firsthead=\box40
-\LT@foot=\box41
-\LT@lastfoot=\box42
+\LT@head=\box40
+\LT@firsthead=\box41
+\LT@foot=\box42
+\LT@lastfoot=\box43
 \LT@cols=\count123
 \LT@rows=\count124
 \c@LT@tables=\count125
 \c@LT@chunks=\count126
-\LT@p@ftn=\toks21
+\LT@p@ftn=\toks24
 )
 (/usr/local/texlive/2014/texmf-dist/tex/latex/booktabs/booktabs.sty
 Package: booktabs 2005/04/14 v1.61803 publication quality tables
@@ -408,42 +407,13 @@ LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 49.
 LaTeX Font Info:    ... okay on input line 49.
 LaTeX Font Info:    Checking defaults for PD1/pdf/m/n on input line 49.
 LaTeX Font Info:    ... okay on input line 49.
-
-(/usr/local/texlive/2014/texmf-dist/tex/context/base/supp-pdf.mkii
-[Loading MPS to PDF converter (version 2006.09.02).]
-\scratchcounter=\count131
-\scratchdimen=\dimen138
-\scratchbox=\box43
-\nofMPsegments=\count132
-\nofMParguments=\count133
-\everyMPshowfont=\toks22
-\MPscratchCnt=\count134
-\MPscratchDim=\dimen139
-\MPnumerator=\count135
-\makeMPintoPDFobject=\count136
-\everyMPtoPDFconversion=\toks23
-) (/usr/local/texlive/2014/texmf-dist/tex/latex/oberdiek/epstopdf-base.sty
-Package: epstopdf-base 2010/02/09 v2.5 Base part for package epstopdf
-
-(/usr/local/texlive/2014/texmf-dist/tex/latex/oberdiek/grfext.sty
-Package: grfext 2010/08/19 v1.1 Manage graphics extensions (HO)
-)
-Package grfext Info: Graphics extension search list:
-(grfext)             [.png,.pdf,.jpg,.mps,.jpeg,.jbig2,.jb2,.PNG,.PDF,.JPG,.JPE
-G,.JBIG2,.JB2,.eps]
-(grfext)             \AppendGraphicsExtensions on input line 452.
-
-(/usr/local/texlive/2014/texmf-dist/tex/latex/latexconfig/epstopdf-sys.cfg
-File: epstopdf-sys.cfg 2010/07/13 v1.3 Configuration of (r)epstopdf for TeX Liv
-e
-))
 \AtBeginShipoutBox=\box44
 Package hyperref Info: Link coloring ON on input line 49.
 LaTeX Info: Redefining \ref on input line 49.
 LaTeX Info: Redefining \pageref on input line 49.
 LaTeX Info: Redefining \nameref on input line 49.
-
-(./BhatMaduRawatBigMine16.out) (./BhatMaduRawatBigMine16.out)
+ (./BhatMaduRawatBigMine16.out)
+(./BhatMaduRawatBigMine16.out)
 \@outlinefile=\write3
 \openout3 = `BhatMaduRawatBigMine16.out'.
 
@@ -454,106 +424,71 @@ File: omscmr.fd 1999/05/25 v2.5h Standard LaTeX font definitions
 )
 LaTeX Font Info:    Font shape `OMS/cmr/m/n' in size <8> not available
 (Font)              Font shape `OMS/cmsy/m/n' tried instead on input line 51.
-LaTeX Font Info:    Font shape `OMS/cmr/m/n' in size <10.95> not available
-(Font)              Font shape `OMS/cmsy/m/n' tried instead on input line 62.
-LaTeX Font Info:    Try loading font information for U+msa on input line 74.
+LaTeX Font Info:    Try loading font information for U+msa on input line 62.
 
 (/usr/local/texlive/2014/texmf-dist/tex/latex/amsfonts/umsa.fd
 File: umsa.fd 2013/01/14 v3.01 AMS symbols A
 )
-LaTeX Font Info:    Try loading font information for U+msb on input line 74.
+LaTeX Font Info:    Try loading font information for U+msb on input line 62.
 
 (/usr/local/texlive/2014/texmf-dist/tex/latex/amsfonts/umsb.fd
 File: umsb.fd 2013/01/14 v3.01 AMS symbols B
-) [1{/usr/local/texlive/2014/texmf-var/fonts/map/pdftex/updmap/pdftex.map}
+) [1
 
-] [2] [3] [4]
-Overfull \hbox (1.35896pt too wide) in paragraph at lines 270--273
+] [2]
+LaTeX Font Info:    Font shape `OMS/cmr/m/n' in size <10.95> not available
+(Font)              Font shape `OMS/cmsy/m/n' tried instead on input line 110.
+
+[3] [4]
+Overfull \hbox (1.35896pt too wide) in paragraph at lines 257--260
 \OT1/cmr/m/n/10.95 Evaluating the right-hand side with $[]$ equal to each point
  in the spa-tial grid $\OMS/cmsy/m/n/10.95 f\OML/cmm/m/it/10.95 z[]\OMS/cmsy/m/
 n/10.95 g[]$\OT1/cmr/m/n/10.95 ,
  []
 
-[5] [6] [7] <gammawindow.pdf, id=264, 702.625pt x 528.97626pt>
-File: gammawindow.pdf Graphic file (type pdf)
+[5] [6]
+File: gammawindow.eps Graphic file (type eps)
+ <gammawindow.eps> [7] [8]
+File: vec_to_slice.eps Graphic file (type eps)
+ <vec_to_slice.eps> [9]
+File: post_equi.eps Graphic file (type eps)
+ <post_equi.eps>
+[10]
+File: post_nonequi.eps Graphic file (type eps)
+ <post_nonequi.eps> [11]
+File: timeseries1.eps Graphic file (type eps)
+ <timeseries1.eps>
+File: timeseries2.eps Graphic file (type eps)
+ <timeseries2.eps> [12]
+File: scaling.eps Graphic file (type eps)
 
-<use gammawindow.pdf>
-Package pdftex.def Info: gammawindow.pdf used on input line 457.
-(pdftex.def)             Requested size: 433.62pt x 326.46059pt.
- <vec_to_slice.pdf, id=274, 632.01678pt x 249.35046pt>
-File: vec_to_slice.pdf Graphic file (type pdf)
+<scaling.eps>
 
-<use vec_to_slice.pdf>
-Package pdftex.def Info: vec_to_slice.pdf used on input line 505.
-(pdftex.def)             Requested size: 433.62pt x 171.07797pt.
- [8] [9 <./gammawindow.pdf>] [10 <./vec_to_slice.pdf>]
-<post_equi.pdf, id=378, 433.62pt x 216.81pt>
-File: post_equi.pdf Graphic file (type pdf)
- <use post_equi.pdf>
-Package pdftex.def Info: post_equi.pdf used on input line 594.
-(pdftex.def)             Requested size: 433.62pt x 216.81938pt.
+Package natbib Warning: Citation `Fuchs2013' on page 13 undefined on input line
+ 750.
 
-<post_nonequi.pdf, id=380, 433.62pt x 216.81pt>
-File: post_nonequi.pdf Graphic file (type pdf)
- <use post_nonequi.pdf>
-Package pdftex.def Info: post_nonequi.pdf used on input line 612.
-(pdftex.def)             Requested size: 433.62pt x 216.81938pt.
+[13] (./BhatMaduRawatBigMine16.bbl [14] [15])
 
-<timeseries1.pdf, id=381, 433.62pt x 216.81pt>
-File: timeseries1.pdf Graphic file (type pdf)
- <use timeseries1.pdf>
-Package pdftex.def Info: timeseries1.pdf used on input line 620.
-(pdftex.def)             Requested size: 433.62pt x 216.81938pt.
+Package natbib Warning: There were undefined citations.
 
-<timeseries2.pdf, id=382, 433.62pt x 216.81pt>
-File: timeseries2.pdf Graphic file (type pdf)
- <use timeseries2.pdf>
-Package pdftex.def Info: timeseries2.pdf used on input line 628.
-(pdftex.def)             Requested size: 433.62pt x 216.81938pt.
-
-(./BhatMaduRawatBigMine16.bbl [11 <./post_equi.pdf>] [12 <./post_nonequi.pdf> <
-./timeseries1.pdf>] [13 <./timeseries2.pdf>])
-Package atveryend Info: Empty hook `BeforeClearDocument' on input line 656.
- [14]
-Package atveryend Info: Empty hook `AfterLastShipout' on input line 656.
-
-(./BhatMaduRawatBigMine16.aux)
-Package atveryend Info: Executing hook `AtVeryEndDocument' on input line 656.
-Package atveryend Info: Executing hook `AtEndAfterFileList' on input line 656.
+Package atveryend Info: Empty hook `BeforeClearDocument' on input line 778.
+[16]
+Package atveryend Info: Empty hook `AfterLastShipout' on input line 778.
+ (./BhatMaduRawatBigMine16.aux)
+Package atveryend Info: Empty hook `AtVeryEndDocument' on input line 778.
+Package atveryend Info: Executing hook `AtEndAfterFileList' on input line 778.
 Package rerunfilecheck Info: File `BhatMaduRawatBigMine16.out' has not changed.
 
-(rerunfilecheck)             Checksum: 8451B529088961AA33FE6D5668141032;788.
-Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 656.
+(rerunfilecheck)             Checksum: 16D5CDC9F413BD221290BC1DE7FFC5D1;864.
+Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 778.
  ) 
 Here is how much of TeX's memory you used:
- 9330 strings out of 493117
- 132292 string characters out of 6135433
- 273750 words of memory out of 5000000
- 12606 multiletter control sequences out of 15000+600000
+ 8728 strings out of 493118
+ 123120 string characters out of 6135459
+ 262504 words of memory out of 5000000
+ 12100 multiletter control sequences out of 15000+600000
  12232 words of font info for 46 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
- 36i,16n,37p,1123b,448s stack positions out of 5000i,500n,10000p,200000b,80000s
-</usr/local/texlive/2014/texmf-dist/fonts/type1/public/amsfonts/cm/cmbx10.pfb
-></usr/local/texlive/2014/texmf-dist/fonts/type1/public/amsfonts/cm/cmbx12.pfb>
-</usr/local/texlive/2014/texmf-dist/fonts/type1/public/amsfonts/cm/cmbx8.pfb></
-usr/local/texlive/2014/texmf-dist/fonts/type1/public/amsfonts/cm/cmcsc10.pfb></
-usr/local/texlive/2014/texmf-dist/fonts/type1/public/amsfonts/cm/cmex10.pfb></u
-sr/local/texlive/2014/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi10.pfb></us
-r/local/texlive/2014/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi6.pfb></usr/
-local/texlive/2014/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi8.pfb></usr/lo
-cal/texlive/2014/texmf-dist/fonts/type1/public/amsfonts/cm/cmr10.pfb></usr/loca
-l/texlive/2014/texmf-dist/fonts/type1/public/amsfonts/cm/cmr6.pfb></usr/local/t
-exlive/2014/texmf-dist/fonts/type1/public/amsfonts/cm/cmr8.pfb></usr/local/texl
-ive/2014/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy10.pfb></usr/local/texli
-ve/2014/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy6.pfb></usr/local/texlive
-/2014/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy8.pfb></usr/local/texlive/2
-014/texmf-dist/fonts/type1/public/amsfonts/cm/cmti10.pfb></usr/local/texlive/20
-14/texmf-dist/fonts/type1/public/amsfonts/cm/cmtt10.pfb></usr/local/texlive/201
-4/texmf-dist/fonts/type1/public/amsfonts/symbols/msbm10.pfb>
-Output written on BhatMaduRawatBigMine16.pdf (14 pages, 2782704 bytes).
-PDF statistics:
- 503 PDF objects out of 1000 (max. 8388607)
- 411 compressed objects within 5 object streams
- 77 named destinations out of 1000 (max. 500000)
- 127 words of extra memory for PDF output out of 10000 (max. 10000000)
+ 38i,16n,37p,1123b,448s stack positions out of 5000i,500n,10000p,200000b,80000s
 
+Output written on BhatMaduRawatBigMine16.dvi (16 pages, 109304 bytes).

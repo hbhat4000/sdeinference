@@ -47,6 +47,8 @@
     "fig:post_nonequi"
     "fig:timeseries1"
     "fig:timeseries2"
+    "sect:scaling"
+    "fig:scaling"
     "sect:conclusion")
    (LaTeX-add-bibliographies)))
 

@@ -58,18 +58,6 @@ List of keywords
 \end{keywords}
 
 \section{Introduction}
-\begin{itemize}
-\item Overviews: \citep{sorensen2004parametric, iacus2009simulation, fuchs2013inference}
-\item Diffusion approx. for chemical kinetics: \citep{Wilkinson2004, Wilkinson2005}
-\item Approximate Bayes: \citep{Picchini2014}
-\item Using path-wise simulation to fill in ``missing data'': \citep{fuchs2013inference, Elerian2001, roberts2001inference}
-\item Variational Bayes and mean field: \citep{Archambeau2007a, Vrettas2015}
-\item Gaussian process approximations: \citep{Archambeau2007, Ruttor2013}
-\item Nonlinear Gaussian filtering and adaptive MCMC: \citep{Sarkka2015}
-\item Parametric inference with Gibbs sampling: \citep{Donnet2008}
-\end{itemize}
-
-
 
 One way to carry out this inference is through numerical maximization of the likelihood function.  For the actual SDE, the exact likelihood $p(\mathbf{x} | \theta)$ can only be computed in very special cases, i.e., when we can solve analytically for the transition density of (\ref{eqn:sde}).  Therefore, prior work has focused on approximating the exact likelihood, either through analytical methods, numerical methods, or a combination of the two.
 
@@ -81,7 +69,7 @@ Other methods similar to ours are those of \citep{Pedersen1995} and \citep{Santa
 
 The work of \citep{Sahaliaclosedform} shares our goal of computing an accurate approximation of the exact transition density and resulting likelihood function.  Instead of applying quadrature, A\"it-Sahalia expands the transition density in a Gram-Charlier series and then computes the expansion coefficients up to a certain order.  
 
-While the approach developed in this paper involves maximum likelihood estimation, computation of the likelihood is also required for many Bayesian approaches.  Exceptions include likelihood-free approaches such as that of \citep{Picchini2014}.
+Exceptions include likelihood-free approaches such as that of \citep{Picchini2014}.
 
 In the present paper, we are primarily interested in developing properties of our algorithm, to establish a set of examples in which the algorithm succeeds.  We reserve for future work a detailed comparison of our algorithm against existing approaches for inference in stochastic differential equation models.
 
@@ -90,7 +78,6 @@ The paper is structured as follows: in Section \ref{sect:methods}, we give detai
 Stochastic Differential Equations (SDE) are a widely used powerful mathematical tool to model real-world phenomena. However, parameter inference of SDE models is still a 
 very challenging problem, due to the fact that the likelihood function is generally unknown for the case where time-discrete observations are available \citep{sorensen2004parametric, iacus2009simulation, fuchs2013inference}. Most existing parametric inference methods for discretely observed SDE require inter-observation time to be small, to track the transition density for the discrete time observations. As a way to facilitate approximation of the transition density for parametric inference for large inter-observation times, Bayesian methods are used to simulate missing values of the observations to form a high-frequency data set. In situations where the likelihood function is either analytically unavailable or computationally prohibitive to evaluate, Bayesian inference of SDE makes use of likelihood-free methods such as Approximate Bayesian Computation \citep{Picchini2014}, variational methods \citep{Archambeau2007a, Vrettas2015}, and/or Gaussian processes \citep{Archambeau2007, Ruttor2013}.
 
-%SDE have application in areas epidemiology, mechanics, genetics, population biology, systems biology, molecular dynamics, geostatistics,social sciences, economics and finance. (include why parameter estimation is important, existing methods and the challenge of computation of the likelihood)
 
 In our work we have developed a Markov Chain Monte Carlo Method (MCMC) algorithm for Bayesian inference of parameters in SDE.  The MCMC algorithm is derived using a Metropolis scheme; our innovation is to evaluate the log likelihood efficiently using density tracking by quadrature (DTQ).  The DTQ method applies quadrature to the Chapman-Kolmogorov equation associated with a time-discretization of the original SDE \citep{BhatMadu2016}. For the case of scalar SDE, the DTQ method's density function converges to the true density of the SDE at a rate that is linear in the time step.  The method we have developed is applicable to the case where inter-observation times are large and/or irregular.  In this paper, we present a Metropolis algorithm for Bayesian inference of unknown parameters of a 2-D SDE.
 
@@ -577,7 +564,10 @@ be independent Gaussians.  In particular, $Z_\mathbf{x}$ is a collection of
 $L+1$ independent Gaussians, each with parameters
 $(\mu=0,\sigma=0.02)$, $Z_\theta$ consists of two independent
 Gaussians, each with parameters $(\mu=0,\sigma=0.05)$, and $Z_\sigma$
-consists of a Gaussian with parameters $(\mu=0,\sigma=0.02)$.
+consists of a Gaussian with parameters $(\mu=0,\sigma=0.02)$.  These
+distributions have been chosen, via trial and error, to yield a
+Metropolis acceptance rate that is between $20-40\%$ in all tests we
+have conducted.
 
 For two values of the DTQ internal time step ($h = 0.02$ and
 $h=0.01$), we apply the Metropolis algorithm to generate $10,000$
@@ -589,11 +579,36 @@ We discard the first $100$ samples as burn-in samples, i.e., samples
 that are taken before the Metropolis Markov chain has, to a good
 approximation, reached equilibrium.
 
+Using the samples thus obtained, we plot the posterior densities for
+$\theta_1$, $\theta_2$ and $\log_{10} \sigma_\epsilon^2$ in Figure
+\ref{fig:post_equi}.  In this paper, all density plots use a Gaussian
+kernel with the ``nrd'' (or normal reference rule) bandwidth
+\citep{Scott2015}.  The density in blue (respectively, black)
+corresponds to the samples produced using the DTQ method with $h=0.02$
+(respectively, $h=0.01$).  The red vertical lines indicate the ground
+truth values for each parameter.
+
+Overall, we see that the Metropolis algorithm does a reasonable job of
+inferring the parameters.  For the Orstein-Uhlenbeck model
+(\ref{eqn:ou}), Bayesian inference is non-trivial when the temporal
+spacing between observations is sufficiently large.  Keeping in mind
+the logarithmic scale for the density of the third parameter, we still
+conclude that our method has the greatest room for improvement here.
+As we show below, however, the mean inferred value of
+$\sigma_\epsilon$ is consistent with the observation series
+$\mathbf{y}$ and the mean inferred state series $\mathbf{x}$.
+
 \begin{figure}[th]
 \begin{center}
 \includegraphics[width=6in]{post_equi}
 \end{center}
-\caption{Posterior densities for equispaced time series}
+\caption{Posterior densities for the inference/filtering problem with
+  equispaced time series $(\mathbf{t},\mathbf{y})$.  Each density is
+  calculated on the basis of $9900$ post-burn-in Metropolis samples
+  computed  using the indicated value of the internal DTQ time step
+  parameter $h$.  Overall, we see reasonable agreement between the
+  ground truth values (indicated by red vertical lines) and the
+  posterior densities.}
 \label{fig:post_equi}
 \end{figure}
 
@@ -607,45 +622,152 @@ $4 \times 10^{4}$ and $4 \times 10^5 - 4 \times 10^4$.  Effectively,
 this generates a time series with minimum, mean, and maximum spacings
 $t_{j+1} - t_j$ of, respectively, $0.04$, $0.2$, and $0.36$.
 
+We use the same priors and Metropolis initial conditions as in Section \ref{sect:equispaced}.  We change
+the proposal distributions slightly.  The parameters for
+$Z_{\mathbf{x}}$ and $Z_\sigma$ are now $(\mu=0,\sigma=0.01)$, while
+for $Z_\theta$ the parameters are still $(\mu=0,\sigma=0.05)$.
+
+For two values of the DTQ internal time step ($h = 0.02$ and
+$h=0.01$), we apply the Metropolis algorithm to generate $10,000$
+samples of the posterior (\ref{eqn:post2}).  Again, we discard the
+first $100$ samples as burn-in samples.
+
+Using the samples thus obtained, and using the same procedure
+described in Section \ref{sect:equispaced}, we plot the posterior densities for
+$\theta_1$, $\theta_2$ and $\log_{10} \sigma_\epsilon^2$ in Figure
+\ref{fig:post_nonequi}.  Overall, as compared with Figure
+\ref{fig:post_equi}, we see improved agreement between the ground
+truth values and the posteriors for $\theta_2$ and
+$\log_{10}$, while the posterior for $\theta_1$ is still reasonably
+accurate.
+
+
 \begin{figure}[th]
 \begin{center}
 \includegraphics[width=6in]{post_nonequi}
 \end{center}
-\caption{Posterior densities for non-equispaced time series}
+\caption{Posterior densities for the inference/filtering problem with
+  non-equispaced time series $(\mathbf{t},\mathbf{y})$.  Each density is
+  calculated on the basis of $9900$ post-burn-in Metropolis samples
+  computed  using the indicated value of the internal DTQ time step
+  parameter $h$.  Overall, we see reasonable agreement between the
+  ground truth values (indicated by red vertical lines) and the
+  posterior densities.}
 \label{fig:post_nonequi}
 \end{figure}
+
+
+We turn to the filtering results, focusing on the post-burn-in samples of
+$\mathbf{x}$ generated with DTQ parameter $h=0.01$.  In Figure
+\ref{fig:timeseries1}, we plot the original non-equispaced observation
+series $\mathbf{y}$ in red.  We have plotted in grey each of the
+$9900$ samples of the state series $\mathbf{x}$; the mean of these
+samples is plotted in black.  We see that the Metropolis sampler does
+indeed explore a number of different trajectories for the state
+series, and that the mean inferred state series corresponds to a
+smoothed version of the original observation series.
+
 
 \begin{figure}[th]
 \begin{center}
 \includegraphics[width=6in]{timeseries1}
 \end{center}
-\caption{Observations and inferred states}
+\caption{We plot the observations (in red) together with each of the
+  samples of the state series $\mathbf{x}$.  Each such sample is a
+  grey curve, and the mean of all such grey curves is plotted in
+  black.  We refer to the black curve as the mean inferred state series.}
 \label{fig:timeseries1}
 \end{figure}
+
+
+In Figure \ref{fig:timeseries2}, we again plot the original
+non-equispaced observation series $\mathbf{y}$ in red and the mean
+inferred state series $\mathbf{x}$ in black.  This time,
+however, we add/subtract the mean inferred value of $\sigma_\epsilon$
+to $\mathbf{y}$ to obtain error bars associated with each
+observation.  These error bars are plotted in grey.  The idea behind
+this plot is that if (\ref{eqn:obs}) holds, then given the symmetry of
+the random variables $\epsilon_t$, it should also be true that $X_t =
+Y_t + \epsilon'_t$, where $\epsilon'_t$ has the same distribution as
+$\epsilon_t$.  To be self-consistent, the observation series should,
+at least most of the time, lie within one (inferred) standard deviation
+$\sigma_\epsilon$ of the (inferred) state series.  The plot in Figure
+\ref{fig:timeseries2} confirms that this is the case.
 
 \begin{figure}[th]
 \begin{center}
 \includegraphics[width=6in]{timeseries2}
 \end{center}
-\caption{Observations and mean inferred state with error bars.  The
-  error bars are computed by
-  adding/subtracting the mean inferred value of $\sigma_\epsilon$ to
-  the observation series $\mathbf{y}$.}
+\caption{We plot the observations (in red) together with the mean
+  inferred state series (in black).  The
+  error bars (grey) are computed by adding/subtracting the mean inferred
+  value of $\sigma_\epsilon$ to/from the observation series
+  $\mathbf{y}$.  Note that the mean inferred state is typically within
+one $\sigma_\epsilon$ of the corresponding observation.}
 \label{fig:timeseries2}
 \end{figure}
 
-% first set of tests: determinstic tvec
-% actual_bigrun1 and actual_bigrun2
-% theta = 
+\subsection{Scaling}
+\label{sect:scaling}
+We have conducted tests to explore the relationship between running
+time and $L$, the length
+of the observation series.  For each $L \in \{124, 250, 500,
+2500\}$, and for each $h \in \{0.02, 0.01\}$, we have generated a
+time series of the indicated length, run our inference/filtering code, and
+recorded the amount of time $T$ required to generate $1000$ Metropolis
+samples of the posterior.  The results are plotted in Figure
+\ref{fig:scaling} with log-transformed axes. For each set of points,
+we fit a line of the form $\log T = \beta_0 + \beta_1 \log L$, which
+corresponds to the law $T = e^{\beta_0} L^{\beta_1}$.  The solid lines
+in Figure \ref{fig:scaling} correspond to this latter law, plotted on
+the same log-transformed axes.  For the $h=0.02$ line, we obtain
+$\beta_1 = 0.9092$; for the $h=0.01$ line, we obtain
+$\beta_1=0.9639$.  These results are consistent with $O(L)$ temporal scaling.
 
-% second set of tests: random tvec
-% actual_bigrun7 and actual_bigrun6
-% theta = (0.5, 1, 0.25) is true vec
-% h = 0.01
-% h = 0.02
+\begin{figure}[th]
+\begin{center}
+\includegraphics[width=3in]{scaling}
+\end{center}
+\caption{For each indicated value of $L$, we have generated a time
+  series of length $L$, run our inference/filtering code, and recorded
+  the amount of time $T$ required to generate $1000$ Metropolis samples of
+  the posterior.  We fit lines to $\log T$ as a function of $\log
+  L$---both the lines and the original data are plotted on
+  log-transformed axes.  The slopes of the lines are less than $1$,
+  consistent with $O(L)$ temporal scaling.}
+\label{fig:scaling}
+\end{figure}
 
-\section{Conclusion}
+
+\section{Discussion and Conclusion}
 \label{sect:conclusion}
+The results from Section \ref{sect:results}
+show that while decreasing the value of the DTQ internal step $h$ does
+change the sampled values and the plotted densities, the change is not
+significant.  We believe much greater gains (in terms of agreement
+between the posterior modes and the ground truth values) would be achieved by
+improving both the proposal strategy and the vanilla Metropolis
+accept/reject step; such ideas have been pursued successfully by \citep{Fuchs2013} and others, and we seek
+to implement these improvements in future work.  For now, however, we
+conclude that the implementation described in this paper does indeed
+perform Bayesian filtering and inference at a baseline acceptable
+level.
+
+Aside from improving the Metropolis algorithm, we see three main
+areas for improvement.  First, we have yet to test and tune our implementation
+on a large-scale, distributed Spark cluster. 
+Second, we believe we can derive large gains in performance by
+adapting our algorithm to work in a streaming fashion.  Specifically,
+instead of inferring the entire state series $\mathbf{x}$ at once, as
+we currently do, we can proceed one step a time through the temporal
+sequence of observations.  Third, we have already begun to incorporate
+the DTQ into an adjoint method suitable for computing gradients of the
+likelihood.  This will enable us to apply techniques such as
+stochastic gradient descent or Hamiltonian Monte Carlo to our
+inference problem for either fast MLE/MAP point estimation or
+accelerated sampling from posteriors.  These steps, and possibly
+others, will become  necessary as we adapt our methods to
+multi-dimensional time series problems, a task we have already begun.
 
 \acks{This work was partially supported by a grant from UC Merced's
   Committee on Research (awarded to H.S. Bhat) and by UC Merced USAP fellowships

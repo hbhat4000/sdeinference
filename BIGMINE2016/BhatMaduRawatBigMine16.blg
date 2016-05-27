@@ -3,44 +3,46 @@ Capacity: max_strings=35307, hash_size=35307, hash_prime=30011
 The top-level auxiliary file: BhatMaduRawatBigMine16.aux
 The style file: plainnat.bst
 Database file #1: BhatMaduRawatBigMine16.bib
-You've used 18 entries,
+Warning--I didn't find a database entry for "Fuchs2013"
+You've used 13 entries,
             2773 wiz_defined-function locations,
-            716 strings with 8191 characters,
-and the built_in function-call counts, 7830 in all, are:
-= -- 721
-> -- 391
-< -- 15
-+ -- 136
-- -- 117
-* -- 607
-:= -- 1211
-add.period$ -- 55
-call.type$ -- 18
-change.case$ -- 91
-chr.to.int$ -- 17
-cite$ -- 36
-duplicate$ -- 371
-empty$ -- 662
-format.name$ -- 145
-if$ -- 1633
+            685 strings with 7248 characters,
+and the built_in function-call counts, 5400 in all, are:
+= -- 488
+> -- 248
+< -- 12
++ -- 89
+- -- 75
+* -- 400
+:= -- 838
+add.period$ -- 40
+call.type$ -- 13
+change.case$ -- 62
+chr.to.int$ -- 12
+cite$ -- 26
+duplicate$ -- 276
+empty$ -- 476
+format.name$ -- 90
+if$ -- 1132
 int.to.chr$ -- 2
 int.to.str$ -- 1
-missing$ -- 17
-newline$ -- 98
-num.names$ -- 72
-pop$ -- 166
+missing$ -- 14
+newline$ -- 73
+num.names$ -- 52
+pop$ -- 125
 preamble$ -- 1
-purify$ -- 75
+purify$ -- 51
 quote$ -- 0
-skip$ -- 282
+skip$ -- 201
 stack$ -- 0
-substring$ -- 341
-swap$ -- 38
+substring$ -- 206
+swap$ -- 34
 text.length$ -- 3
 text.prefix$ -- 0
 top$ -- 0
-type$ -- 188
+type$ -- 128
 warning$ -- 0
-while$ -- 80
+while$ -- 55
 width$ -- 0
-write$ -- 240
+write$ -- 177
+(There was 1 warning)
