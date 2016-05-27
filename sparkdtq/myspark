@@ -1,0 +1,2 @@
+/home/hbhat/Downloads/spark-1.6.1/bin/spark-shell --master local[24] --driver-memory 12g --total-executor-cores 24 -i sparkdtq.sc
+
