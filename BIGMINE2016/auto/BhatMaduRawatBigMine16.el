@@ -28,11 +28,14 @@
     "eqn:chapman3"
     "eqn:DTQfirst"
     "eqn:DTQlast"
+    "fig:implementation1"
     "eqn:ou"
     "eqn:ou_obs"
     "sect:equispaced"
     "fig:post_equi"
     "sect:nonequispaced"
-    "fig:post_nonequi")
+    "fig:post_nonequi"
+    "fig:timeseries1"
+    "fig:timeseries2")
    (LaTeX-add-bibliographies)))
 

@@ -342,7 +342,15 @@ procedure described in Section \ref{sect:likelihood}, including
 
 \section{Apache Spark Implementation}
 
-% Lots of cleverness here
+\begin{figure}[ht]
+\begin{center}
+\includegraphics[width=6in]{gammawindow}
+\end{center}
+\caption{Making use of Scala, Breeze, and Intel MKL.}
+\label{fig:implementation1}
+\end{figure}
+
+
 
 \section{Results}
 We begin with results on artificial data sets.  The model used to
@@ -440,6 +448,24 @@ $t_{j+1} - t_j$ of, respectively, $0.04$, $0.2$, and $0.36$.
 \label{fig:post_nonequi}
 \end{figure}
 
+\begin{figure}[th]
+\begin{center}
+\includegraphics[width=6in]{timeseries1}
+\end{center}
+\caption{Observations and inferred states}
+\label{fig:timeseries1}
+\end{figure}
+
+\begin{figure}[th]
+\begin{center}
+\includegraphics[width=6in]{timeseries2}
+\end{center}
+\caption{Observations and mean inferred state with error bars.  The
+  error bars are computed by
+  adding/subtracting the mean inferred value of $\sigma_\epsilon$ to
+  the observation series $\mathbf{y}$.}
+\label{fig:timeseries2}
+\end{figure}
 
 % first set of tests: determinstic tvec
 % actual_bigrun1 and actual_bigrun2

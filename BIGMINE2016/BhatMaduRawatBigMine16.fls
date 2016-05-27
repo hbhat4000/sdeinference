@@ -1,4 +1,4 @@
-PWD /Users/hsbhat/Desktop/BIGMINE2016_template
+PWD /Users/hsbhat/Documents/sdeinference/BIGMINE2016
 INPUT /usr/local/texlive/2014/texmf.cnf
 INPUT /usr/local/texlive/2014/texmf-dist/web2c/texmf.cnf
 INPUT /usr/local/texlive/2014/texmf-var/web2c/pdftex/pdflatex.fmt
@@ -145,12 +145,21 @@ INPUT /usr/local/texlive/2014/texmf-dist/fonts/tfm/public/amsfonts/symbols/msbm7
 INPUT /usr/local/texlive/2014/texmf-dist/fonts/tfm/public/cm/cmbx8.tfm
 INPUT /usr/local/texlive/2014/texmf-dist/fonts/tfm/public/cm/cmbx6.tfm
 INPUT /usr/local/texlive/2014/texmf-var/fonts/map/pdftex/updmap/pdftex.map
+INPUT gammawindow.pdf
+INPUT ./gammawindow.pdf
+INPUT ./gammawindow.pdf
 INPUT post_equi.pdf
 INPUT ./post_equi.pdf
 INPUT ./post_equi.pdf
 INPUT post_nonequi.pdf
 INPUT ./post_nonequi.pdf
 INPUT ./post_nonequi.pdf
+INPUT timeseries1.pdf
+INPUT ./timeseries1.pdf
+INPUT ./timeseries1.pdf
+INPUT timeseries2.pdf
+INPUT ./timeseries2.pdf
+INPUT ./timeseries2.pdf
 INPUT BhatMaduRawatBigMine16.bbl
 INPUT BhatMaduRawatBigMine16.bbl
 INPUT /usr/local/texlive/2014/texmf-dist/fonts/tfm/public/cm/cmti10.tfm
