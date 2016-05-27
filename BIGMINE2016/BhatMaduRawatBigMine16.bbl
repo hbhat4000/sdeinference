@@ -1,4 +1,4 @@
-\begin{thebibliography}{17}
+\begin{thebibliography}{18}
 \providecommand{\natexlab}[1]{#1}
 \providecommand{\url}[1]{\texttt{#1}}
 \expandafter\ifx\csname urlstyle\endcsname\relax
@@ -47,6 +47,12 @@ C.~Fuchs.
 \newblock \emph{Inference for Diffusion Processes: With Applications in Life
   Sciences}.
 \newblock Springer, Berlin, 2013.
+
+\bibitem[Golightly and Wilkinson(2004)]{Wilkinson2004}
+A.~Golightly and D.~J. Wilkinson.
+\newblock On {B}ayesian inference for stochastic kinetic models using diffusion
+  approximations.
+\newblock Statistics Preprint STA04, 4, University of Newcastle, U.K., 2004.
 
 \bibitem[Golightly and Wilkinson(2005)]{Wilkinson2005}
 A.~Golightly and D.~J. Wilkinson.

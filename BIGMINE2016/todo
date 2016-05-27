@@ -12,7 +12,12 @@ scala/breeze/intel mkl
 spark/RDD/mapping/nonequispaced
 
 0.2 conclusion / future directions
+-> test on distributed Spark cluster
 -> could turn this into a streaming algorithm, haven't explored yet
+-> higher-dimensional time series, as in our young Bayesian paper
+-> could incorporate DTQ into adjoint method for computing gradients, and
+   then apply stochastic gradient descent or Hamiltonian Monte Carlo for
+   either MLE, MAP, or accelerated MCMC inference
 
 mention GitHub
 
@@ -31,5 +36,6 @@ CHECK THE ABOVE -- MAKE SURE PARAMETERS AGREE
 2) number of processors!
 (trace plots???)
 
+What machine did we run it on?
 
 

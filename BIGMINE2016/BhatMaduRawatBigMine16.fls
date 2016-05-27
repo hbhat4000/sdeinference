@@ -148,6 +148,9 @@ INPUT /usr/local/texlive/2014/texmf-var/fonts/map/pdftex/updmap/pdftex.map
 INPUT gammawindow.pdf
 INPUT ./gammawindow.pdf
 INPUT ./gammawindow.pdf
+INPUT vec_to_slice.pdf
+INPUT ./vec_to_slice.pdf
+INPUT ./vec_to_slice.pdf
 INPUT post_equi.pdf
 INPUT ./post_equi.pdf
 INPUT ./post_equi.pdf
