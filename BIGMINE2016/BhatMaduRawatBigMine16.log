@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.14159265-2.6-1.40.15 (TeX Live 2014) (preloaded format=pdflatex 2014.5.25)  27 MAY 2016 23:38
+This is pdfTeX, Version 3.14159265-2.6-1.40.15 (TeX Live 2014) (preloaded format=pdflatex 2014.5.25)  27 MAY 2016 23:49
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -526,7 +526,7 @@ Package pdftex.def Info: scaling.pdf used on input line 820.
  [12 <./post_nonequi.pdf>] <scaling2.pdf, id=385, 289.08pt x 216.81pt>
 File: scaling2.pdf Graphic file (type pdf)
  <use scaling2.pdf>
-Package pdftex.def Info: scaling2.pdf used on input line 845.
+Package pdftex.def Info: scaling2.pdf used on input line 846.
 (pdftex.def)             Requested size: 289.07999pt x 216.81938pt.
  [13 <./timeseries1.pdf> <./timeseries2.pdf>] [14 <./scaling.pdf>]
 (./BhatMaduRawatBigMine16.bbl [15 <./scaling2.pdf>])
@@ -545,11 +545,11 @@ Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 893.
 Here is how much of TeX's memory you used:
  9329 strings out of 493117
  132137 string characters out of 6135433
- 274506 words of memory out of 5000000
+ 274473 words of memory out of 5000000
  12603 multiletter control sequences out of 15000+600000
  12232 words of font info for 46 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
- 36i,16n,37p,1123b,436s stack positions out of 5000i,500n,10000p,200000b,80000s
+ 36i,16n,37p,1123b,438s stack positions out of 5000i,500n,10000p,200000b,80000s
 </usr/local/texlive/2014/texmf-dist/fonts/type1/public/amsfonts/cm/cmbx10.pfb
 ></usr/local/texlive/2014/texmf-dist/fonts/type1/public/amsfonts/cm/cmbx12.pfb>
 </usr/local/texlive/2014/texmf-dist/fonts/type1/public/amsfonts/cm/cmbx8.pfb></
@@ -567,7 +567,7 @@ ve/2014/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy6.pfb></usr/local/texlive
 014/texmf-dist/fonts/type1/public/amsfonts/cm/cmti10.pfb></usr/local/texlive/20
 14/texmf-dist/fonts/type1/public/amsfonts/cm/cmtt10.pfb></usr/local/texlive/201
 4/texmf-dist/fonts/type1/public/amsfonts/symbols/msbm10.pfb>
-Output written on BhatMaduRawatBigMine16.pdf (16 pages, 2811941 bytes).
+Output written on BhatMaduRawatBigMine16.pdf (16 pages, 2811968 bytes).
 PDF statistics:
  506 PDF objects out of 1000 (max. 8388607)
  408 compressed objects within 5 object streams

@@ -1,7 +1,7 @@
 # Fdb version 3
-["bibtex BhatMaduRawatBigMine16"] 1464417485 "BhatMaduRawatBigMine16.aux" "BhatMaduRawatBigMine16.bbl" "BhatMaduRawatBigMine16" 1464417488
+["bibtex BhatMaduRawatBigMine16"] 1464418116 "BhatMaduRawatBigMine16.aux" "BhatMaduRawatBigMine16.bbl" "BhatMaduRawatBigMine16" 1464418186
   "/usr/local/texlive/2014/texmf-dist/bibtex/bst/natbib/plainnat.bst" 1233624470 26816 ffe5423d2019860bad9f54bc402fac15 ""
-  "BhatMaduRawatBigMine16.aux" 1464417487 14816 5ccca8f64b85a02e32d96bc5600c0d3c ""
+  "BhatMaduRawatBigMine16.aux" 1464418179 14760 b177175926592ded25e80db0aa92a4ff ""
   "BhatMaduRawatBigMine16.bcf" 0 -1 0 ""
   "BhatMaduRawatBigMine16.bib" 1464386659 7023 64d0bbf8f6d32c40931093b6c4c6591b ""
   (generated)
@@ -96,10 +96,10 @@
   "vec_to_slice.eps" 1464385019 1597149 89b61c4a2668a7a90c58aa89853d2115 ""
   (generated)
   "BhatMaduRawatBigMine16.dvi"
-  "BhatMaduRawatBigMine16.aux"
   "BhatMaduRawatBigMine16.out"
+  "BhatMaduRawatBigMine16.aux"
   "BhatMaduRawatBigMine16.log"
-["pdflatex"] 1464417485 "BhatMaduRawatBigMine16.tex" "BhatMaduRawatBigMine16.pdf" "BhatMaduRawatBigMine16" 1464417488
+["pdflatex"] 1464418177 "BhatMaduRawatBigMine16.tex" "BhatMaduRawatBigMine16.pdf" "BhatMaduRawatBigMine16" 1464418186
   "/usr/local/texlive/2014/texmf-dist/fonts/map/fontname/texfonts.map" 1272929888 3287 e6b82fe08f5336d4d5ebc73fb1152e87 ""
   "/usr/local/texlive/2014/texmf-dist/fonts/tfm/public/amsfonts/cmextra/cmex7.tfm" 1246382020 1004 54797486969f23fa377b128694d548df ""
   "/usr/local/texlive/2014/texmf-dist/fonts/tfm/public/amsfonts/cmextra/cmex8.tfm" 1246382020 988 bdf658c3bfc2d96d3c8b02cfc1c94c20 ""
@@ -196,10 +196,10 @@
   "/usr/local/texlive/2014/texmf-var/fonts/map/pdftex/updmap/pdftex.map" 1401025944 1445653 26a0aacf3d70032b1ec192e8c7792117 ""
   "/usr/local/texlive/2014/texmf-var/web2c/pdftex/pdflatex.fmt" 1401025990 3832012 904d82bdcc8abf2b1cd296990b82553b ""
   "/usr/local/texlive/2014/texmf.cnf" 1401025936 577 a59edbde8d3a8c549d0eeaab1739e2ff ""
-  "BhatMaduRawatBigMine16.aux" 1464417487 14816 5ccca8f64b85a02e32d96bc5600c0d3c ""
-  "BhatMaduRawatBigMine16.bbl" 1464417485 3736 20f377a169764b9fb5f0315f4247bdc3 "bibtex BhatMaduRawatBigMine16"
-  "BhatMaduRawatBigMine16.out" 1464417487 864 16d5cdc9f413bd221290bc1de7ffc5d1 ""
-  "BhatMaduRawatBigMine16.tex" 1464417480 44448 f7c127cc17c77e31f23d19fb010c614d ""
+  "BhatMaduRawatBigMine16.aux" 1464418179 14760 b177175926592ded25e80db0aa92a4ff ""
+  "BhatMaduRawatBigMine16.bbl" 1464418117 3736 20f377a169764b9fb5f0315f4247bdc3 "bibtex BhatMaduRawatBigMine16"
+  "BhatMaduRawatBigMine16.out" 1464418179 864 16d5cdc9f413bd221290bc1de7ffc5d1 ""
+  "BhatMaduRawatBigMine16.tex" 1464418174 44461 2b133d27bc24338d011226b848f59d87 ""
   "gammawindow.pdf" 1464331730 72371 25d40f8f8ad4b6274f7e6cda5bcffdb8 ""
   "jmlr.cls" 1336162162 35182 e5ecc7df54928cab005f7f2fd5500f7c ""
   "post_equi.pdf" 1464366729 20592 90d226bf8248bda4a5dbc773827a004d ""
@@ -210,7 +210,7 @@
   "timeseries2.pdf" 1464369278 14529 465834cd0317834474a0579cbb58e829 ""
   "vec_to_slice.pdf" 1464384986 82971 2c6ebe3b7fec4e3b902a63e8feb34a6d ""
   (generated)
-  "BhatMaduRawatBigMine16.aux"
+  "BhatMaduRawatBigMine16.pdf"
   "BhatMaduRawatBigMine16.out"
   "BhatMaduRawatBigMine16.log"
-  "BhatMaduRawatBigMine16.pdf"
+  "BhatMaduRawatBigMine16.aux"

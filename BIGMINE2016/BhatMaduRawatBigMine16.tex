@@ -832,7 +832,8 @@ $\beta_1=0.9639$.  These results are consistent with $O(L)$ temporal scaling.
 
 We have also explored how the running time of our code changes as we
 change the number $\nu$ of Spark processors.  We begin with a non-equispaced
-time series of length $2501$.  For each $h \in \{0.02,0.01\}$, we
+time series of length $2501$.  For each $\nu \in \{3, 6, 12, 24\}$ and
+each $h \in \{0.02,0.01\}$, we
 recorded the time $T$ required to 
 generate $10$ Metropolis samples.  For each set of points, we fit a
 line of the form $\log T = \beta_0 + \beta_1 \log \nu$.  Both the raw
@@ -845,9 +846,8 @@ line, we obtain $\beta_1=-0.4699$.  These results suggest $O(\nu^{-1/2})$ scalin
 \includegraphics[width=4in]{scaling2}
 \end{center}
 \vspace{-0.25in}
-\caption{For a non-equispaced time series of length $2501$, and for
-  each $h \in {0.02,0.01}$, we ran our code with the indicated number
-  of Spark processors $\nu$.  We recorded $T$, the time required to generate
+\caption{For a non-equispaced time series of length $2501$, we ran our code with $\nu$ Spark
+  processors where $\nu \in \{3,6,12,24\}$.  We recorded $T$, the time required to generate
   $10$ Metropolis samples of the posterior.  We fit lines to $\log T$ as a function of $\log
   \nu$---both the lines and the original data are plotted on
   log-transformed axes.  The slopes of the lines are close to $-0.5$, suggesting $O(\nu^{-1/2})$ scaling.}
@@ -876,7 +876,7 @@ adapting our algorithm to work in a streaming fashion.  Specifically,
 instead of inferring the entire state series $\mathbf{x}$ at once, as
 we currently do, we can proceed one step a time through the temporal
 sequence of observations.  Third, we have already begun to incorporate
-the DTQ into an adjoint method suitable for computing gradients of the
+the DTQ method into an adjoint method suitable for computing gradients of the
 likelihood.  This will enable us to apply techniques such as
 stochastic gradient descent or Hamiltonian Monte Carlo to our
 inference problem for either fast MLE/MAP point estimation or
