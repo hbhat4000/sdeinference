@@ -12,6 +12,8 @@
    (TeX-add-symbols
     '("cs" 1))
    (LaTeX-add-labels
+    "sect:intro"
+    "sect:methods"
     "eqn:sdefiltprob"
     "eqn:sde"
     "eqn:obs"
@@ -28,7 +30,16 @@
     "eqn:chapman3"
     "eqn:DTQfirst"
     "eqn:DTQlast"
+    "sect:metropolis"
+    "eqn:rho"
+    "sect:scalableimplementation"
+    "sect:scala"
+    "eqn:matrixchapman"
+    "eqn:alldots"
     "fig:implementation1"
+    "sect:spark"
+    "fig:implementation2"
+    "sect:results"
     "eqn:ou"
     "eqn:ou_obs"
     "sect:equispaced"
@@ -36,6 +47,9 @@
     "sect:nonequispaced"
     "fig:post_nonequi"
     "fig:timeseries1"
-    "fig:timeseries2")
+    "fig:timeseries2"
+    "sect:scaling"
+    "fig:scaling"
+    "sect:conclusion")
    (LaTeX-add-bibliographies)))
 
