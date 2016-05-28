@@ -21,7 +21,7 @@ h12 = sqrt(h)
 xtraj = matrix(0, nrow = ntrials, ncol = (nsaves + 1))
 
 # initial condition centered at origin so both -ve and +ve initial conditions generated
-xtraj[,1] = rnorm(n = ntrials, mean = 0, sd = 1) 
+xtraj[,1] = rnorm(n = ntrials) 
 
 for (i in c(1:nsaves))
 {
@@ -36,9 +36,15 @@ for (i in c(1:nsaves))
     xtraj[,(i+1)] = x
 }
 
+<<<<<<< HEAD
 tvec = seq(from = 0, to = bigt, by = littlet)
 xtraj = rbind(tvec, xtraj)
 save(xtraj, file = 'fakedata.RData')
 
+=======
+# tvec = seq(from = 0, to = bigt, by = littlet)
+# xtraj = rbind(tvec, xtraj)
+save(xtraj, file = 'fakedata16.RData')
+>>>>>>> c6272b4f88e53081448b40b63ebc84e4ecfea7e7
 # Initial condition picked is printed out 
 # print(xtraj[2,1])

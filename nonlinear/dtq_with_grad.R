@@ -29,7 +29,7 @@ cdt <- function(c0, h, k, bigm, littlet, data)
     numsteps = ceiling(littlet/h)
     xvec = c((-bigm):bigm)*k
     npts = length(xvec)
-
+    
     A = integrandmat(xvec, xvec, h, driftfun, difffun, c0)
     D = Dtheta(xvec, xvec, h, driftfun, difffun1, c0)
     
@@ -41,8 +41,8 @@ cdt <- function(c0, h, k, bigm, littlet, data)
 
     for (curcol in c(1:(ncol(data)-1)))
     {
-        pdfmatrix[,curcol] = rowMeans(integrandmat(xvec, data[2:nrow(data),curcol], h, driftfun, difffun, c0))
-        initderivs = Dtheta(xvec, data[2:nrow(data),curcol], h, driftfun, difffun1, c0)
+        pdfmatrix[,curcol] = rowMeans(integrandmat(xvec, data[,curcol], h, driftfun, difffun, c0))
+        initderivs = Dtheta(xvec, data[,curcol], h, driftfun, difffun1, c0)
         for (i in c(1:nc0))
             qmattheta[[i]][,curcol] = rowMeans(initderivs[[i]])
     }
@@ -55,7 +55,7 @@ cdt <- function(c0, h, k, bigm, littlet, data)
             qmattheta[[i]] = k*A %*% qmattheta[[i]] + k*D[[i]] %*% pdfmatrix
     }
 
-    likelihood = matrix(0, nrow = (nrow(data) - 1), ncol = (ncol(data)-1))
+    likelihood = matrix(0, nrow = nrow(data), ncol = (ncol(data)-1))
     gradient = list(NULL)
     for (i in c(1:nc0)) gradient[[i]] = 0*likelihood
 
@@ -64,9 +64,9 @@ cdt <- function(c0, h, k, bigm, littlet, data)
         # evaluate \Gamma vector across all samples at a particular time
         # this is a matrix because we're also evaluating at xvec
               
-        gammamat = integrandmat(data[2:nrow(data), curcol], xvec, h, driftfun, difffun, c0)
+        gammamat = integrandmat(data[, curcol], xvec, h, driftfun, difffun, c0)
         likelihood[,(curcol-1)] = k*gammamat %*% pdfmatrix[,(curcol-1)]
-        gdmat = Dtheta(data[2:nrow(data),curcol], xvec, h, driftfun, difffun1, c0)
+        gdmat = Dtheta(data[,curcol], xvec, h, driftfun, difffun1, c0)
         for (i in c(1:nc0))
             gradient[[i]][,(curcol-1)] = k*gdmat[[i]] %*% pdfmatrix[,(curcol-1)] + k*gammamat %*% qmattheta[[i]][,(curcol-1)]
     }

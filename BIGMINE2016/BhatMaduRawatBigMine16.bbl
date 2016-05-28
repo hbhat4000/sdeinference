@@ -1,0 +1,115 @@
+\begin{thebibliography}{17}
+\providecommand{\natexlab}[1]{#1}
+\providecommand{\url}[1]{\texttt{#1}}
+\expandafter\ifx\csname urlstyle\endcsname\relax
+  \providecommand{\doi}[1]{doi: #1}\else
+  \providecommand{\doi}{doi: \begingroup \urlstyle{rm}\Url}\fi
+
+\bibitem[A\"it-Sahalia(2002)]{Sahaliaclosedform}
+Yacine A\"it-Sahalia.
+\newblock Maximum likelihood estimation of discretely sampled diffusions: {A}
+  closed-form approximation approach.
+\newblock \emph{Econometrica}, 70\penalty0 (1):\penalty0 223--262, 2002.
+
+\bibitem[Archambeau et~al.(2007{\natexlab{a}})Archambeau, Cornford, Opper, and
+  Shawe-Taylor]{Archambeau2007}
+C.~Archambeau, D.~Cornford, M.~Opper, and J.~Shawe-Taylor.
+\newblock Gaussian process approximations of stochastic differential equations.
+\newblock \emph{Journal of Machine Learning Research: Workshop and Conference
+  Proceedings}, 1:\penalty0 1--16, 2007{\natexlab{a}}.
+
+\bibitem[Archambeau et~al.(2007{\natexlab{b}})Archambeau, Opper, Shen,
+  Cornford, and Shawe-Taylor]{Archambeau2007a}
+C.~Archambeau, M.~Opper, Y.~Shen, D.~Cornford, and J.~Shawe-Taylor.
+\newblock Variational inference for diffusion processes.
+\newblock In \emph{Advances in Neural Information Processing Systems 20}, pages
+  17--24, 2007{\natexlab{b}}.
+
+\bibitem[Bhat and Madushani(2016)]{BhatMadu2016}
+Harish~S. Bhat and R.~W.~M.~A. Madushani.
+\newblock Density tracking by quadrature for stochastic differential equations.
+\newblock Preprint, 2016.
+
+\bibitem[Donnet and Samson(2008)]{Donnet2008}
+S.~Donnet and A.~Samson.
+\newblock Parametric inference for mixed models defined by stochastic
+  differential equations.
+\newblock \emph{ESAIM: Probability and Statistics}, 12:\penalty0 196--218,
+  2008.
+
+\bibitem[Elerian et~al.(2001)Elerian, Chib, and Shephard]{Elerian2001}
+O.~Elerian, S.~Chib, and N.~Shephard.
+\newblock Likelihood inference for discretely observed nonlinear diffusions.
+\newblock \emph{Econometrica}, 69\penalty0 (4):\penalty0 959--993, 2001.
+
+\bibitem[Fuchs(2013)]{fuchs2013inference}
+C.~Fuchs.
+\newblock \emph{Inference for Diffusion Processes: With Applications in Life
+  Sciences}.
+\newblock Springer, Berlin, 2013.
+
+\bibitem[Golightly and Wilkinson(2005)]{Wilkinson2005}
+A.~Golightly and D.~J. Wilkinson.
+\newblock {B}ayesian inference for stochastic kinetic models using a diffusion
+  approximation.
+\newblock \emph{Biometrics}, 61:\penalty0 781--788, 2005.
+
+\bibitem[Iacus(2009)]{iacus2009simulation}
+S.~M. Iacus.
+\newblock \emph{Simulation and {I}nference for {S}tochastic {D}ifferential
+  {E}quations: {W}ith {R} {E}xamples}.
+\newblock Springer Series in Statistics. Springer, New York, 2009.
+
+\bibitem[Pedersen(1995)]{Pedersen1995}
+Asger~Roer Pedersen.
+\newblock A new approach to maximum likelihood estimation for stochastic
+  differential equations based on discrete observations.
+\newblock \emph{Scandinavian Journal of Statistics}, 22\penalty0 (1):\penalty0
+  55--71, 1995.
+
+\bibitem[Picchini(2014)]{Picchini2014}
+U.~Picchini.
+\newblock Inference for {SDE} models via approximate {B}ayesian computation.
+\newblock \emph{Journal of Computational and Graphical Statistics}, 23\penalty0
+  (4):\penalty0 1080--1100, 2014.
+
+\bibitem[Roberts and Stramer(2001)]{roberts2001inference}
+G.~O. Roberts and O.~Stramer.
+\newblock On inference for partially observed nonlinear diffusion models using
+  the {M}etropolis-{H}astings algorithm.
+\newblock \emph{Biometrika}, 88\penalty0 (3):\penalty0 603--621, 2001.
+
+\bibitem[Ruttor et~al.(2013)Ruttor, Batz, and Opper]{Ruttor2013}
+A.~Ruttor, P.~Batz, and M.~Opper.
+\newblock Approximate {G}aussian process inference for the drift function in
+  stochastic differential equations.
+\newblock In \emph{Advances in Neural Information Processing Systems 26}, pages
+  2040--2048, 2013.
+
+\bibitem[Santa-Clara(1997)]{SantaClara1997}
+P.~Santa-Clara.
+\newblock Simulated likelihood estimation of diffusions with an application to
+  the short term interest rate.
+\newblock Working Paper 12-97, UCLA Anderson School of Management, 1997.
+
+\bibitem[S\"{a}rkk\"{a} et~al.(2015)S\"{a}rkk\"{a}, Hartikainen, Mbalawata, and
+  Haario]{Sarkka2015}
+S.~S\"{a}rkk\"{a}, J.~Hartikainen, I.~S. Mbalawata, and H.~Haario.
+\newblock Posterior inference on parameters of stochastic differential
+  equations via non-linear {G}aussian filtering and adaptive {MCMC}.
+\newblock \emph{Statistics and Computing}, 25:\penalty0 427--437, 2015.
+
+\bibitem[S{\o}rensen(2004)]{sorensen2004parametric}
+H.~S{\o}rensen.
+\newblock Parametric inference for diffusion processes observed at discrete
+  points in time: a survey.
+\newblock \emph{International Statistical Review}, 72\penalty0 (3):\penalty0
+  337--354, 2004.
+
+\bibitem[Vrettas et~al.(2015)Vrettas, Opper, and Cornford]{Vrettas2015}
+M.~D. Vrettas, M.~Opper, and D.~Cornford.
+\newblock Variational mean-field algorithm for efficient inference in large
+  systems of stochastic differential equations.
+\newblock \emph{Physical Review E}, 91\penalty0 (012148), 2015.
+
+\end{thebibliography}
