@@ -18,7 +18,6 @@
 \providecommand\HyField@AuxAddToCoFields[2]{}
 \bibstyle{plainnat}
 \citation{sorensen2004parametric,iacus2009simulation,fuchs2013inference}
-\citation{BhatMadu2016}
 \newlabel{jmlrstart}{{}{1}{}{Doc-Start}{}}
 \@writefile{toc}{\contentsline {section}{\numberline {1}Introduction}{1}{section.0.1}}
 \newlabel{sect:intro}{{1}{1}{Introduction}{section.0.1}{}}
@@ -26,11 +25,8 @@
 \citation{SantaClara1997}
 \citation{Sahaliaclosedform}
 \citation{Picchini2014}
-\citation{sorensen2004parametric,iacus2009simulation,fuchs2013inference}
-\citation{Picchini2014}
 \citation{Archambeau2007a,Vrettas2015}
 \citation{Archambeau2007,Ruttor2013}
-\citation{BhatMadu2016}
 \@writefile{toc}{\contentsline {section}{\numberline {2}Statistical Method}{3}{section.0.2}}
 \newlabel{sect:methods}{{2}{3}{Statistical Method}{section.0.2}{}}
 \newlabel{eqn:sdefiltprob}{{1}{3}{Statistical Method}{equation.0.2.1}{}}
@@ -39,15 +35,16 @@
 \@writefile{toc}{\contentsline {subsection}{\numberline {2.1}Inference Problem}{3}{subsection.0.2.1}}
 \newlabel{eqn:post1}{{2}{3}{Inference Problem}{equation.0.2.2}{}}
 \newlabel{eqn:obsstate}{{3}{3}{Inference Problem}{equation.0.2.3}{}}
-\newlabel{eqn:secondterm}{{4}{4}{Inference Problem}{equation.0.2.4}{}}
-\newlabel{eqn:post2}{{5}{4}{Inference Problem}{equation.0.2.5}{}}
+\newlabel{eqn:secondterm}{{4}{3}{Inference Problem}{equation.0.2.4}{}}
+\newlabel{eqn:post2}{{5}{3}{Inference Problem}{equation.0.2.5}{}}
+\citation{BhatMadu2016}
 \@writefile{toc}{\contentsline {subsection}{\numberline {2.2}Likelihood Computation via Density Tracking by Quadrature}{4}{subsection.0.2.2}}
 \newlabel{sect:likelihood}{{2.2}{4}{Likelihood Computation via Density Tracking by Quadrature}{subsection.0.2.2}{}}
 \newlabel{eqn:markov}{{6}{4}{Likelihood Computation via Density Tracking by Quadrature}{equation.0.2.6}{}}
 \newlabel{eqn:sde_em}{{7}{4}{Likelihood Computation via Density Tracking by Quadrature}{equation.0.2.7}{}}
 \newlabel{eqn:chapman}{{8}{4}{Likelihood Computation via Density Tracking by Quadrature}{equation.0.2.8}{}}
-\newlabel{eqn:kernel}{{9}{5}{Likelihood Computation via Density Tracking by Quadrature}{equation.0.2.9}{}}
-\newlabel{eqn:chapman2}{{10}{5}{Likelihood Computation via Density Tracking by Quadrature}{equation.0.2.10}{}}
+\newlabel{eqn:kernel}{{9}{4}{Likelihood Computation via Density Tracking by Quadrature}{equation.0.2.9}{}}
+\newlabel{eqn:chapman2}{{10}{4}{Likelihood Computation via Density Tracking by Quadrature}{equation.0.2.10}{}}
 \newlabel{eqn:chapman3}{{11}{5}{Likelihood Computation via Density Tracking by Quadrature}{equation.0.2.11}{}}
 \newlabel{eqn:DTQfirst}{{12}{5}{Likelihood Computation via Density Tracking by Quadrature}{equation.0.2.12}{}}
 \newlabel{eqn:DTQlast}{{13}{5}{Likelihood Computation via Density Tracking by Quadrature}{equation.0.2.13}{}}
@@ -60,41 +57,43 @@
 \newlabel{sect:scala}{{3.1}{6}{Scala/Breeze}{subsection.0.3.1}{}}
 \newlabel{eqn:matrixchapman}{{15}{6}{Scala/Breeze}{equation.0.3.15}{}}
 \newlabel{eqn:alldots}{{16}{7}{Scala/Breeze}{equation.0.3.16}{}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {3.2}Spark}{8}{subsection.0.3.2}}
-\newlabel{sect:spark}{{3.2}{8}{Spark}{subsection.0.3.2}{}}
-\@writefile{toc}{\contentsline {section}{\numberline {4}Results}{8}{section.0.4}}
-\newlabel{sect:results}{{4}{8}{Results}{section.0.4}{}}
-\newlabel{eqn:ou}{{17}{8}{Results}{equation.0.4.17}{}}
-\newlabel{eqn:ou_obs}{{18}{8}{Results}{equation.0.4.18}{}}
-\@writefile{lof}{\contentsline {figure}{\numberline {1}{\ignorespaces In order to implement the matrix-vector multiplication in (\ref  {eqn:matrixchapman}) in a scalable way, we make use of the structure of the propagator matrix $\mathcal  {G}$. Instead of computing all entries of this matrix, we compute and store only those entries that are close to the diagonal---the pink rectangles in the upper half of the diagram. The blue rectangles in the lower half of the diagram correspond to windowed versions of the pdf vector $\mathbf  {p}_i$. In both cases, there is one windowed vector per row; the row numbers go from $-M$ to $M$ as labeled. Both the pink and blue rectangles correspond to vectors of length $2\gamma +1$, with $\gamma \ll M$. The matrix-vector multiplication $\mathcal  {G} \mathbf  {p}_i$ then corresponds to a collection of $2M+1$ vector-vector dot products. This representation of (\ref  {eqn:matrixchapman}) makes efficient use of Scala, Breeze, and the Intel MKL. For more details, see the description in Section \ref  {sect:scala}.}}{9}{figure.1}}
-\newlabel{fig:implementation1}{{1}{9}{In order to implement the matrix-vector multiplication in (\ref {eqn:matrixchapman}) in a scalable way, we make use of the structure of the propagator matrix $\mathcal {G}$. Instead of computing all entries of this matrix, we compute and store only those entries that are close to the diagonal---the pink rectangles in the upper half of the diagram. The blue rectangles in the lower half of the diagram correspond to windowed versions of the pdf vector $\mathbf {p}_i$. In both cases, there is one windowed vector per row; the row numbers go from $-M$ to $M$ as labeled. Both the pink and blue rectangles correspond to vectors of length $2\gamma +1$, with $\gamma \ll M$. The matrix-vector multiplication $\mathcal {G} \mathbf {p}_i$ then corresponds to a collection of $2M+1$ vector-vector dot products. This representation of (\ref {eqn:matrixchapman}) makes efficient use of Scala, Breeze, and the Intel MKL. For more details, see the description in Section \ref {sect:scala}}{figure.1}{}}
-\@writefile{lof}{\contentsline {figure}{\numberline {2}{\ignorespaces We use Spark to parallelize the computation of the likelihood (\ref  {eqn:markov}). We accomplish this by converting the original time series (for states $\mathbf  {x}$, not observations $\mathbf  {y}$) from a vector of pairs to an array where each element is a vector of consecutive pairs. The original vector of pairs is labeled as $\overrightarrow {tx}$, and the Scala \texttt  {Array} of consecutive pairs is \texttt  {tslices}. This latter object can be easily converted into a Spark RDD; subsequent \texttt  {map} operations on this RDD are executed in parallel.}}{10}{figure.2}}
-\newlabel{fig:implementation2}{{2}{10}{We use Spark to parallelize the computation of the likelihood (\ref {eqn:markov}). We accomplish this by converting the original time series (for states $\mathbf {x}$, not observations $\mathbf {y}$) from a vector of pairs to an array where each element is a vector of consecutive pairs. The original vector of pairs is labeled as $\protect \overrightarrow {tx}$, and the Scala \texttt {Array} of consecutive pairs is \texttt {tslices}. This latter object can be easily converted into a Spark RDD; subsequent \texttt {map} operations on this RDD are executed in parallel}{figure.2}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {3.2}Spark}{7}{subsection.0.3.2}}
+\newlabel{sect:spark}{{3.2}{7}{Spark}{subsection.0.3.2}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {1}{\ignorespaces In order to implement the matrix-vector multiplication in (\ref  {eqn:matrixchapman}) in a scalable way, we make use of the structure of the propagator matrix $\mathcal  {G}$. Instead of computing all entries of this matrix, we compute and store only those entries that are close to the diagonal---the pink rectangles in the upper half of the diagram. The blue rectangles in the lower half of the diagram correspond to windowed versions of the pdf vector $\mathbf  {p}_i$. In both cases, there is one windowed vector per row; the row numbers go from $-M$ to $M$ as labeled. Both the pink and blue rectangles correspond to vectors of length $2\gamma +1$, with $\gamma \ll M$. The matrix-vector multiplication $\mathcal  {G} \mathbf  {p}_i$ then corresponds to a collection of $2M+1$ vector-vector dot products. This representation of (\ref  {eqn:matrixchapman}) makes efficient use of Scala, Breeze, and the Intel MKL. For more details, see the description in Section \ref  {sect:scala}.}}{8}{figure.1}}
+\newlabel{fig:implementation1}{{1}{8}{In order to implement the matrix-vector multiplication in (\ref {eqn:matrixchapman}) in a scalable way, we make use of the structure of the propagator matrix $\mathcal {G}$. Instead of computing all entries of this matrix, we compute and store only those entries that are close to the diagonal---the pink rectangles in the upper half of the diagram. The blue rectangles in the lower half of the diagram correspond to windowed versions of the pdf vector $\mathbf {p}_i$. In both cases, there is one windowed vector per row; the row numbers go from $-M$ to $M$ as labeled. Both the pink and blue rectangles correspond to vectors of length $2\gamma +1$, with $\gamma \ll M$. The matrix-vector multiplication $\mathcal {G} \mathbf {p}_i$ then corresponds to a collection of $2M+1$ vector-vector dot products. This representation of (\ref {eqn:matrixchapman}) makes efficient use of Scala, Breeze, and the Intel MKL. For more details, see the description in Section \ref {sect:scala}}{figure.1}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {2}{\ignorespaces We use Spark to parallelize the computation of the likelihood (\ref  {eqn:markov}). We accomplish this by converting the original time series (for states $\mathbf  {x}$, not observations $\mathbf  {y}$) from a vector of pairs to an array where each element is a vector of consecutive pairs. The original vector of pairs is labeled as $\overrightarrow {tx}$, and the Scala \texttt  {Array} of consecutive pairs is \texttt  {tslices}. This latter object can be easily converted into a Spark RDD; subsequent \texttt  {map} operations on this RDD are executed in parallel.}}{9}{figure.2}}
+\newlabel{fig:implementation2}{{2}{9}{We use Spark to parallelize the computation of the likelihood (\ref {eqn:markov}). We accomplish this by converting the original time series (for states $\mathbf {x}$, not observations $\mathbf {y}$) from a vector of pairs to an array where each element is a vector of consecutive pairs. The original vector of pairs is labeled as $\protect \overrightarrow {tx}$, and the Scala \texttt {Array} of consecutive pairs is \texttt {tslices}. This latter object can be easily converted into a Spark RDD; subsequent \texttt {map} operations on this RDD are executed in parallel}{figure.2}{}}
+\@writefile{toc}{\contentsline {section}{\numberline {4}Results}{9}{section.0.4}}
+\newlabel{sect:results}{{4}{9}{Results}{section.0.4}{}}
+\newlabel{eqn:ou}{{17}{9}{Results}{equation.0.4.17}{}}
+\newlabel{eqn:ou_obs}{{18}{9}{Results}{equation.0.4.18}{}}
+\citation{Scott2015}
 \@writefile{toc}{\contentsline {subsection}{\numberline {4.1}Equispaced Time Series}{10}{subsection.0.4.1}}
 \newlabel{sect:equispaced}{{4.1}{10}{Equispaced Time Series}{subsection.0.4.1}{}}
-\citation{Scott2015}
+\@writefile{toc}{\contentsline {subsection}{\numberline {4.2}Non-equispaced Time Series}{10}{subsection.0.4.2}}
+\newlabel{sect:nonequispaced}{{4.2}{10}{Non-equispaced Time Series}{subsection.0.4.2}{}}
 \@writefile{lof}{\contentsline {figure}{\numberline {3}{\ignorespaces Posterior densities for the inference/filtering problem with equispaced time series $(\mathbf  {t},\mathbf  {y})$. Each density is calculated on the basis of $9900$ post-burn-in Metropolis samples computed using the indicated value of the internal DTQ time step parameter $h$. Overall, we see reasonable agreement between the ground truth values (indicated by red vertical lines) and the posterior densities.}}{11}{figure.3}}
 \newlabel{fig:post_equi}{{3}{11}{Posterior densities for the inference/filtering problem with equispaced time series $(\mathbf {t},\mathbf {y})$. Each density is calculated on the basis of $9900$ post-burn-in Metropolis samples computed using the indicated value of the internal DTQ time step parameter $h$. Overall, we see reasonable agreement between the ground truth values (indicated by red vertical lines) and the posterior densities}{figure.3}{}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {4.2}Non-equispaced Time Series}{11}{subsection.0.4.2}}
-\newlabel{sect:nonequispaced}{{4.2}{11}{Non-equispaced Time Series}{subsection.0.4.2}{}}
 \@writefile{lof}{\contentsline {figure}{\numberline {4}{\ignorespaces Posterior densities for the inference/filtering problem with non-equispaced time series $(\mathbf  {t},\mathbf  {y})$. Each density is calculated on the basis of $9900$ post-burn-in Metropolis samples computed using the indicated value of the internal DTQ time step parameter $h$. Overall, we see reasonable agreement between the ground truth values (indicated by red vertical lines) and the posterior densities.}}{12}{figure.4}}
 \newlabel{fig:post_nonequi}{{4}{12}{Posterior densities for the inference/filtering problem with non-equispaced time series $(\mathbf {t},\mathbf {y})$. Each density is calculated on the basis of $9900$ post-burn-in Metropolis samples computed using the indicated value of the internal DTQ time step parameter $h$. Overall, we see reasonable agreement between the ground truth values (indicated by red vertical lines) and the posterior densities}{figure.4}{}}
-\citation{Fuchs2013}
+\@writefile{toc}{\contentsline {subsection}{\numberline {4.3}Scaling}{12}{subsection.0.4.3}}
+\newlabel{sect:scaling}{{4.3}{12}{Scaling}{subsection.0.4.3}{}}
 \@writefile{lof}{\contentsline {figure}{\numberline {5}{\ignorespaces We plot the observations (in red) together with each of the samples of the state series $\mathbf  {x}$. Each such sample is a grey curve, and the mean of all such grey curves is plotted in black. We refer to the black curve as the mean inferred state series.}}{13}{figure.5}}
 \newlabel{fig:timeseries1}{{5}{13}{We plot the observations (in red) together with each of the samples of the state series $\mathbf {x}$. Each such sample is a grey curve, and the mean of all such grey curves is plotted in black. We refer to the black curve as the mean inferred state series}{figure.5}{}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {4.3}Scaling}{13}{subsection.0.4.3}}
-\newlabel{sect:scaling}{{4.3}{13}{Scaling}{subsection.0.4.3}{}}
-\bibdata{BhatMaduRawatBigMine16}
-\@writefile{lof}{\contentsline {figure}{\numberline {6}{\ignorespaces We plot the observations (in red) together with the mean inferred state series (in black). The error bars (grey) are computed by adding/subtracting the mean inferred value of $\sigma _\epsilon $ to/from the observation series $\mathbf  {y}$. Note that the mean inferred state is typically within one $\sigma _\epsilon $ of the corresponding observation.}}{14}{figure.6}}
-\newlabel{fig:timeseries2}{{6}{14}{We plot the observations (in red) together with the mean inferred state series (in black). The error bars (grey) are computed by adding/subtracting the mean inferred value of $\sigma _\epsilon $ to/from the observation series $\mathbf {y}$. Note that the mean inferred state is typically within one $\sigma _\epsilon $ of the corresponding observation}{figure.6}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {6}{\ignorespaces We plot the observations (in red) together with the mean inferred state series (in black). The error bars (grey) are computed by adding/subtracting the mean inferred value of $\sigma _\epsilon $ to/from the observation series $\mathbf  {y}$. Note that the mean inferred state is typically within one $\sigma _\epsilon $ of the corresponding observation.}}{13}{figure.6}}
+\newlabel{fig:timeseries2}{{6}{13}{We plot the observations (in red) together with the mean inferred state series (in black). The error bars (grey) are computed by adding/subtracting the mean inferred value of $\sigma _\epsilon $ to/from the observation series $\mathbf {y}$. Note that the mean inferred state is typically within one $\sigma _\epsilon $ of the corresponding observation}{figure.6}{}}
+\citation{fuchs2013inference}
+\@writefile{lof}{\contentsline {figure}{\numberline {7}{\ignorespaces For each indicated value of $L$, we have generated a time series of length $L$, run our inference/filtering code, and recorded the amount of time $T$ required to generate $1000$ Metropolis samples of the posterior. We fit lines to $\qopname  \relax o{log}T$ as a function of $\qopname  \relax o{log}L$---both the lines and the original data are plotted on log-transformed axes. The slopes of the lines are less than $1$, consistent with $O(L)$ temporal scaling.}}{14}{figure.7}}
+\newlabel{fig:scaling}{{7}{14}{For each indicated value of $L$, we have generated a time series of length $L$, run our inference/filtering code, and recorded the amount of time $T$ required to generate $1000$ Metropolis samples of the posterior. We fit lines to $\log T$ as a function of $\log L$---both the lines and the original data are plotted on log-transformed axes. The slopes of the lines are less than $1$, consistent with $O(L)$ temporal scaling}{figure.7}{}}
 \@writefile{toc}{\contentsline {section}{\numberline {5}Discussion and Conclusion}{14}{section.0.5}}
 \newlabel{sect:conclusion}{{5}{14}{Discussion and Conclusion}{section.0.5}{}}
+\bibdata{BhatMaduRawatBigMine16}
 \bibcite{Sahaliaclosedform}{{1}{2002}{{A\"it-Sahalia}}{{}}}
 \bibcite{Archambeau2007}{{2}{2007{a}}{{Archambeau et~al.}}{{Archambeau, Cornford, Opper, and Shawe-Taylor}}}
 \bibcite{Archambeau2007a}{{3}{2007{b}}{{Archambeau et~al.}}{{Archambeau, Opper, Shen, Cornford, and Shawe-Taylor}}}
+\@writefile{lof}{\contentsline {figure}{\numberline {8}{\ignorespaces For a non-equispaced time series of length $2501$, and for each $h \in {0.02,0.01}$, we ran our code with the indicated number of Spark processors $\nu $. We recorded $T$, the time required to generate $10$ Metropolis samples of the posterior. We fit lines to $\qopname  \relax o{log}T$ as a function of $\qopname  \relax o{log}\nu $---both the lines and the original data are plotted on log-transformed axes. The slopes of the lines are close to $-0.5$, suggesting $O(\nu ^{-1/2})$ scaling.}}{15}{figure.8}}
+\newlabel{fig:scaling2}{{8}{15}{For a non-equispaced time series of length $2501$, and for each $h \in {0.02,0.01}$, we ran our code with the indicated number of Spark processors $\nu $. We recorded $T$, the time required to generate $10$ Metropolis samples of the posterior. We fit lines to $\log T$ as a function of $\log \nu $---both the lines and the original data are plotted on log-transformed axes. The slopes of the lines are close to $-0.5$, suggesting $O(\nu ^{-1/2})$ scaling}{figure.8}{}}
 \bibcite{BhatMadu2016}{{4}{2016}{{Bhat and Madushani}}{{}}}
-\@writefile{lof}{\contentsline {figure}{\numberline {7}{\ignorespaces For each indicated value of $L$, we have generated a time series of length $L$, run our inference/filtering code, and recorded the amount of time $T$ required to generate $1000$ Metropolis samples of the posterior. We fit lines to $\qopname  \relax o{log}T$ as a function of $\qopname  \relax o{log}L$---both the lines and the original data are plotted on log-transformed axes. The slopes of the lines are less than $1$, consistent with $O(L)$ temporal scaling.}}{15}{figure.7}}
-\newlabel{fig:scaling}{{7}{15}{For each indicated value of $L$, we have generated a time series of length $L$, run our inference/filtering code, and recorded the amount of time $T$ required to generate $1000$ Metropolis samples of the posterior. We fit lines to $\log T$ as a function of $\log L$---both the lines and the original data are plotted on log-transformed axes. The slopes of the lines are less than $1$, consistent with $O(L)$ temporal scaling}{figure.7}{}}
 \bibcite{fuchs2013inference}{{5}{2013}{{Fuchs}}{{}}}
 \bibcite{iacus2009simulation}{{6}{2009}{{Iacus}}{{}}}
 \bibcite{Pedersen1995}{{7}{1995}{{Pedersen}}{{}}}

@@ -3,10 +3,9 @@ Capacity: max_strings=35307, hash_size=35307, hash_prime=30011
 The top-level auxiliary file: BhatMaduRawatBigMine16.aux
 The style file: plainnat.bst
 Database file #1: BhatMaduRawatBigMine16.bib
-Warning--I didn't find a database entry for "Fuchs2013"
 You've used 13 entries,
             2773 wiz_defined-function locations,
-            685 strings with 7248 characters,
+            683 strings with 7230 characters,
 and the built_in function-call counts, 5400 in all, are:
 = -- 488
 > -- 248
@@ -45,4 +44,3 @@ warning$ -- 0
 while$ -- 55
 width$ -- 0
 write$ -- 177
-(There was 1 warning)

@@ -50,6 +50,7 @@
     "fig:timeseries2"
     "sect:scaling"
     "fig:scaling"
+    "fig:scaling2"
     "sect:conclusion")
    (LaTeX-add-bibliographies)))
 
