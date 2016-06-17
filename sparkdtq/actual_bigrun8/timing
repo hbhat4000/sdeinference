@@ -1,0 +1,6 @@
+[hbhat@ucmerced-169-236-72-226 sparkdtq]$ time ./myspark > myspark.out >& myspark.err
+
+real    235m30.585s
+user    3981m3.851s
+sys     6m53.437s
+
