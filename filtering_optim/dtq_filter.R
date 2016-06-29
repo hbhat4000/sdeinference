@@ -63,5 +63,7 @@ dtq <- function(theta, h, k, bigm, littlet, data)
       gradient[[i]][,(curcol-1)] = k*gdmat[[i]] %*% pdfmatrix[,(curcol-1)] + k*gammamat %*% qmattheta[[i]][,(curcol-1)]
   }
   
-  return(list(lik = likelihood, grad = gradient))
+  lastvec = pdfmatrix[,(ncol(data) - 1)]
+  return(list(lik = likelihood, grad = gradient, lv = lastvec))
 }
+
