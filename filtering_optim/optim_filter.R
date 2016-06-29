@@ -33,7 +33,7 @@ Gaussianderivsigeps2 <- function(xvec, yvec, sigeps2)
   return(sum(val))
 }
 
-gammavecderiv <- function(xval, grid)
+gammavecderiv <- function(xval, grid, theta, h)
 {
   part1 = (xval - grid - drift(grid, theta)*h)
   part2 = abs(diffusion(grid, theta))^2*h
@@ -47,6 +47,10 @@ gammavecderiv <- function(xval, grid)
 # likelihood is computed using the DTQ method
 logposterior <- function(paramvec)
 {
+  # TODO: confirm xvec, yvec
+  yvec = fd
+  xvec = fd
+
   theta = paramvec[1:3]
   x = paramvec[4]
   sigeps2 = paramvec[5]
@@ -58,7 +62,7 @@ logposterior <- function(paramvec)
   DTQlik[DTQlik < 0] = 0
 
   priorval = logprior(paramvec)
-  likval = logGaussian(paramvec)
+  likval = logGaussian(paramvec, xvec, yvec)
   objective = sum(log(DTQlik)) + priorval + likval
 
   ntheta = length(theta)
@@ -69,7 +73,7 @@ logposterior <- function(paramvec)
   deriv1 = -(theta[1] - 0.5)
   deriv2 = -(theta[2] - 2)/100
   deriv3 = 0
-  deriv4 = (y - x)/(sigeps2) + gammavecderiv(x, grid)
+  deriv4 = (yvec - x)/(sigeps2) + gammavecderiv(x, grid, theta, myh)
   deriv5 = Gaussianderivsigeps2(xvec, yvec, sigeps2) - 1
 
   # add the theta, x and sigeps2 derivs
@@ -92,7 +96,7 @@ mybigm = ceiling(pi/(myk^1.5))
 # optimize using theta, x_n, sigma_epsilon2
 # paramvec = c(theta, ytraj[1], sigeps2)
 # BigMine paper, initial theta = c(1.0,0.1,0.25), sigeps = 1.0
-paramvec = (2, 2, 1, fd[1], 1)
+paramvec = c(2, 2, 1, fd[1], 1)
 
 library('nloptr')
 res <- nloptr(x0 = paramvec, eval_f = logposterior, opts = list("algorithm"="NLOPT_LD_LBFGS", "print_level"=3, "check_derivatives" = TRUE, "xtol_abs"=1e-4))

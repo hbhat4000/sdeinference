@@ -1,4 +1,4 @@
-Dtheta <- function(xvec, yvec, h, theta)
+integrandmat <- function(xvec, yvec, h, theta)
 {
   # each column same and replicated, rows have xvec
   X = replicate(length(yvec), xvec)
