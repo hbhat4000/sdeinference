@@ -1,40 +1,30 @@
-driftfun <- function(theta, y) 
+drift <- function(theta, y) 
 {
   # computes drift as a matrix
   f = (theta[1])*(theta[2] - y)
   return(f)
 }
 
-difffun <- function(theta, y)
+diffusion <- function(theta, y)
 {
-  # replicates diffusion as a long vector
-  g = rep(theta[3], length(y))
+  # fills y by theta[3]
+  g = theta[3] + y*0
   return(g)
 }
 
-difffun1 <- function(theta, y)
-{
-  # replicates diffusion term as a matrix
-  dd1 = dim(y)[1]
-  dd2 = dim(y)[2]
-  vec = rep(theta[3], dd1)
-  return(replicate(dd2, vec)) 
-}
-
-# source('integrandmat.R')
 source('Dtheta.R')
+source('integrandmat.R')
 
-dtq <- function(paramvec, h, k, bigm, littlet, data)
+dtq <- function(theta, h, k, bigm, littlet, data)
 {
-  # paramvec = {theta, x, sigeps2}
   numsteps = ceiling(littlet/h)
   xvec = c((-bigm):bigm)*k
   npts = length(xvec)
   
-  A = integrandmat(xvec, xvec, h, driftfun, difffun, theta)
-  D = Dtheta(xvec, xvec, h, driftfun, difffun1, theta)
+  A = integrandmat(xvec, xvec, h, theta)
+  D = Dtheta(xvec, xvec, h, theta)
   
-  pdfmatrix = matrix(0,nrow=npts,ncol=(ncol(data)-1))
+  pdfmatrix = matrix(0, nrow = npts, ncol = (ncol(data)-1))
   
   ntheta = length(theta)
   qmattheta = list(NULL)
@@ -42,8 +32,8 @@ dtq <- function(paramvec, h, k, bigm, littlet, data)
   
   for (curcol in c(1:(ncol(data)-1)))
   {
-    pdfmatrix[,curcol] = rowMeans(integrandmat(xvec, data[,curcol], h, driftfun, difffun, theta))
-    initderivs = Dtheta(xvec, data[,curcol], h, driftfun, difffun1, theta)
+    pdfmatrix[,curcol] = rowMeans(integrandmat(xvec, data[,curcol], h, theta))
+    initderivs = Dtheta(xvec, data[,curcol], h, theta)
     for (i in c(1:ntheta))
       qmattheta[[i]][,curcol] = rowMeans(initderivs[[i]])
   }
@@ -66,9 +56,9 @@ dtq <- function(paramvec, h, k, bigm, littlet, data)
     # this is a matrix because we're also evaluating at xvec
     # also evaluate the derivative of the \Gamma vector across all the samples and evaulated at the grid points
     
-    gammamat = integrandmat(data[, curcol], xvec, h, driftfun, difffun, theta)
+    gammamat = integrandmat(data[, curcol], xvec, h, theta)
     likelihood[,(curcol-1)] = k*gammamat %*% pdfmatrix[,(curcol-1)]
-    gdmat = Dtheta(data[,curcol], xvec, h, driftfun, difffun1, theta)
+    gdmat = Dtheta(data[,curcol], xvec, h, theta)
     for (i in c(1:ntheta))
       gradient[[i]][,(curcol-1)] = k*gdmat[[i]] %*% pdfmatrix[,(curcol-1)] + k*gammamat %*% qmattheta[[i]][,(curcol-1)]
   }
