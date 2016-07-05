@@ -1,0 +1,13 @@
+1. Clarify the contribution:
+
+a) first time Metropolis algorithm is being used on full joint posterior with entire state series being considered on equal footing with parameter!  Super high-dimensional problem and it works.
+
+Dual Kalman filter
+Joint Kalman filter
+
+b) why is this necessary?  It's necessary if we want fully Bayesian inference that avoids approximations that are used in, e.g., particle filtering, sequential Monte Carlo, etc.  It's also necessary if we want to scale methods to massive data sets.  Neither has been broached, to our knowledge, using existing methods.  Existing methods focus on computing one of two marginal posteriors, but not the joint posterior.
+
+c) practical problems---give a few examples.
+
+2. Discuss other approaches and possibly include some other results, esp. accuracy/speed of inference versus length of time series for POMP etc.
+
