@@ -1,0 +1,101 @@
+setwd('~/Documents/sdeinference/sparkdtq')
+install.packages('pomp')
+setwd('./comparisons/')
+source('mypomp.R')
+source('mypomp.R')
+tvec
+xvec
+source('mypomp.R')
+mymod
+mymod.dat
+source('mypomp.R')
+mymod.dat
+dim(mymod.dat)
+mymod.dat = mymod.dat[1:21,2]
+mymod.dat
+mymod
+source('mypomp.R')
+mymod.dat
+source('mypomp.R')
+mymod
+simStates = simulate(mymod,nsim=10,params=c(theta0=.5,theta1=1,theta2=.25),states=TRUE)
+simStates = simulate(mymod,nsim=10,params=c(theta0=.5,theta1=1,theta2=.25,X.0=0),states=TRUE)
+simStates = simulate(mymod,nsim=10,params=c(theta1=.5,theta2=1,theta3=.25,X.0=0),states=TRUE)
+simStates
+simStates = simulate(mymod,nsim=10,params=c(theta1=.5,theta2=1,theta3=.25,X.0=0),states=TRUE)
+source('mypomp.R')
+source('mypomp.R')
+source('mypomp.R')
+? rnorm
+source('mypomp.R')
+source('mypomp.R')
+source('mypomp.R')
+? rnorm
+source('mypomp.R')
+source('mypomp.R')
+pf <- pfilter(mymod,Np=1000,params=c(theta1=.25,theta2=.3,theta3=1,N.0=0))
+pf <- pfilter(mymod,Np=1000,params=c(theta1=.25,theta2=.3,theta3=1,sigeps=0.4,N.0=0))
+pf <- pfilter(mymod,Np=1000,params=c(theta1=.25,theta2=.3,theta3=1,sigeps=0.4,X.0=0))
+source('mypomp.R')
+source('mypomp.R')
+source('mypomp.R')
+warnings()
+pf
+logLik(pf)
+summary(pf)
+attr(pf)
+pf[[1]]
+pf
+warnings(pf)
+error(pf)
+source('mypomp.R')
+logLik(pf)
+source('mypomp.R')
+logLik(pf)
+source('mypomp.R')
+logLik(pf)
+source('mypomp.R')
+logLik(pf)
+source('mypomp.R')
+logLik(pf)
+source('mypomp.R')
+logLik(pf)
+source('mypomp.R')
+logLik(pf)
+mymod$x
+source('mypomp.R')
+pf$saved.states
+dim(pf$saved.states)
+length(pf$saved.states)
+source('mypomp.R')
+length(pf$saved.states)
+logLik(pf)
+tvec[2]-tvec[1]
+source('mypomp.R')
+logLik(pf)
+length(pf$saved.states)
+pf$saved.states[[1]]
+class(pf$saved.states)
+pf$saved.states[[2]]
+pf$saved.states[[3]]
+length(pf$saved.states)
+pf$saved.states[[2501]]
+as.numeric(pf$saved.states[[2501]])
+plot(density(as.numeric(pf$saved.states[[2501]])))
+which(as.numeric(tvec)==20)
+tvec
+tvec[101]
+xvec[1]
+source('mypomp.R')
+source('mypomp.R')
+logLik(pf)
+pf$saved.states[[1]][1:10]
+? pfilter
+pf$saved.states[[2]][1:10]
+xvec[2]
+mean(pf$saved.states[[2]])
+lapply(X=pf$saved.states,FUN=mean)
+as.numeric(lapply(X=pf$saved.states,FUN=mean))
+plot(tvec,as.numeric(lapply(X=pf$saved.states,FUN=mean)))
+plot(as.numeric(tvec),as.numeric(lapply(X=pf$saved.states,FUN=mean)))
+? bake
