@@ -1,9 +1,8 @@
 library('pomp')
 
-tvec = read.csv('../actual_bigrun12/tvec.csv',header=FALSE)
-xvec = read.csv('../actual_bigrun12/xvec.csv',header=FALSE)
+tvec = read.csv('../actual_bigrun7/tvec.csv',header=FALSE)
+xvec = read.csv('../actual_bigrun7/xvec.csv',header=FALSE)
 mymod.dat = data.frame(t=as.numeric(tvec),Y=as.numeric(xvec))
-# mymod.dat = mymod.dat[1:21,]
 
 step.fun <- Csnippet("
   double dW = rnorm(0,sqrt(dt));

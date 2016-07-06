@@ -15,15 +15,16 @@ actual_bigrun3:
 - h=0.02
 - l=2500
 
-actual_bigrun6 (used in plot_nonequi_posteriors.R, Fig. 6):
+actual_bigrun6 (used in plot_nonequi_posteriors.R, Fig. 4):
 - non-equispaced
 - h=0.02
 - l=250
 
-actual_bigrun7 (used in plot_nonequi_posteriors.R, Fig. 7):
+actual_bigrun7 (used in plot_nonequi_posteriors.R, Fig. 4):
 - non-equispaced
 - h=0.01
 - l=250
+- also used in plottimeseries.R, Fig. 5 and Fig. 6
 
 actual_bigrun8:
 - non-equispaced
