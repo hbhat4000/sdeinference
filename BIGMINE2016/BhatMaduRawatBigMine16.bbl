@@ -1,4 +1,4 @@
-\begin{thebibliography}{13}
+\begin{thebibliography}{18}
 \providecommand{\natexlab}[1]{#1}
 \providecommand{\url}[1]{\texttt{#1}}
 \expandafter\ifx\csname urlstyle\endcsname\relax
@@ -25,10 +25,22 @@ C.~Archambeau, M.~Opper, Y.~Shen, D.~Cornford, and J.~Shawe-Taylor.
 \newblock In \emph{Advances in Neural Information Processing Systems 20}, pages
   17--24, 2007{\natexlab{b}}.
 
+\bibitem[Barber et~al.(2011)Barber, Cemgil, and Chiappa]{barber2011bayesian}
+D.~Barber, A.~T. Cemgil, and S.~Chiappa.
+\newblock \emph{Bayesian Time Series Models}.
+\newblock Cambridge University Press, 2011.
+
 \bibitem[Bhat and Madushani(2016)]{BhatMadu2016}
 Harish~S. Bhat and R.~W.~M.~A. Madushani.
 \newblock Density tracking by quadrature for stochastic differential equations.
 \newblock Preprint, 2016.
+
+\bibitem[Chen(2003)]{chen2003}
+Zhe Chen.
+\newblock Bayesian filtering: From {K}alman filters to particle filters, and
+  beyond.
+\newblock Technical report, Adaptive Systems Lab, McMaster University,
+  Hamilton, ON, Canada, 2003.
 
 \bibitem[Fuchs(2013)]{fuchs2013inference}
 C.~Fuchs.
@@ -41,6 +53,22 @@ S.~M. Iacus.
 \newblock \emph{Simulation and {I}nference for {S}tochastic {D}ifferential
   {E}quations: {W}ith {R} {E}xamples}.
 \newblock Springer Series in Statistics. Springer, New York, 2009.
+
+\bibitem[King et~al.()King, Nguyen, and Ionides]{pomp}
+Aaron~A. King, Dao Nguyen, and Edward~L. Ionides.
+\newblock Statistical inference for partially observed {M}arkov processes via
+  the {R} package pomp.
+\newblock \emph{Journal of Statistical Software}, 69\penalty0 (12):\penalty0
+  1--43.
+
+\bibitem[Kneissler et~al.(2015)Kneissler, Drugowitsch, Friston, and
+  Butz]{Kneissler2015}
+Jan Kneissler, Jan Drugowitsch, Karl Friston, and Martin~V. Butz.
+\newblock Simultaneous learning and filtering without delusions: A
+  {B}ayes-optimal derivation of combining predictive inference and adaptive
+  filtering.
+\newblock \emph{Frontiers in Computational Neuroscience}, 9\penalty0 (47),
+  2015.
 
 \bibitem[Pedersen(1995)]{Pedersen1995}
 Asger~Roer Pedersen.
@@ -80,6 +108,12 @@ H.~S{\o}rensen.
   points in time: a survey.
 \newblock \emph{International Statistical Review}, 72\penalty0 (3):\penalty0
   337--354, 2004.
+
+\bibitem[Sun et~al.(2008)Sun, Jin, and Xiong]{Sun2008}
+Xiaodian Sun, Li~Jin, and Momiao Xiong.
+\newblock Extended {K}alman filter for estimation of parameters in nonlinear
+  state-space models of biochemical networks.
+\newblock \emph{PLoS ONE}, 3\penalty0 (11):\penalty0 1--13, 2008.
 
 \bibitem[Vrettas et~al.(2015)Vrettas, Opper, and Cornford]{Vrettas2015}
 M.~D. Vrettas, M.~Opper, and D.~Cornford.
