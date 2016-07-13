@@ -75,6 +75,9 @@ mat dtq(const vec &thetavec, const vec &xc, const vec &yc, const vec &xr, const 
   // loop over the timesteps
   for (int step = 1; step < numsteps; step++)
   {
+    // Runner's data used from the previous time step throughout the whole summation
+    xrun = xr(step - 1);
+    yrun = yr(step - 1);
     mat approxpdfvecnew = zeros<mat>(nr,datapoints);
 #pragma omp parallel for
     for (int newspace = 0; newspace < nr; newspace++)
@@ -92,12 +95,12 @@ mat dtq(const vec &thetavec, const vec &xc, const vec &yc, const vec &xr, const 
             int jpeff = jp - j + gamma;
             if ((ipeff >= 0) && (ipeff <= 2*gamma) && (jpeff >= 0) && (jpeff <= 2*gamma))
             {
-              double y1 = (ip - M)*k;
-              double y2 = (jp - M)*k;
-              double mu1 = y1 + f1(y1, y2, thetavec)*h;
-              double mu2 = y2 + f2(y1, y2, thetavec)*h;
-              double sigma1 = h12*g1(y1, y2, thetavec);
-              double sigma2 = h12*g2(y1, y2, thetavec);
+              double xiter = (ip - M)*k;
+              double yiter = (jp - M)*k;
+              double mu1 = xiter + f1(xiter, yiter, xrun, yrun, thetavec)*h;
+              double mu2 = yiter + f2(xiter, yiter, xrun, yrun, thetavec)*h;
+              double sigma1 = h12*g1(xiter, yiter, xrun, yrun, thetavec);
+              double sigma2 = h12*g2(xiter, yiter, xrun, yrun, thetavec);
               double locbigg1 = gaussian_pdf(xvec(i), mu1, sigma1);
               double locbigg2 = gaussian_pdf(xvec(j), mu2, sigma2);
               approxpdfvecnew.row(newspace) += k*k*locbigg1*locbigg2*approxpdfvec.row(test);

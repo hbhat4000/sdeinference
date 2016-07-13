@@ -9,26 +9,30 @@ library('fields')
 
 # load fake data which has 2 lists, chaser and runner, each with t, x, y
 load('fakedata.RData')
-# chaser[[1]] = tvec, chaser[[2]] = xchase, chaser[[3]] = ychase
-# runner[[1]] = tvec, runner[[2]] = xrun, runner[[3]] = yrun
+tchase = chaser[[1]]
+xchase = chaser[[2]]
+ychase = chaser[[3]]
+trun = runner[[1]]
+xrun = runner[[2]]
+yrun = runner[[3]]
 
 truethetavec = c(1.2, 1, 1)
 
 # algorithm parameters
-mydatapoints = length(chaser[[1]]) - 1
+mydatapoints = length(tchase) - 1
 myh = 0.005
 myk = 0.8*myh^0.75
 xylimit = 94    # court dimension is 94*50
-# xylimit = max(abs(chaser[[2]]), abs(chaser[[3]]))
+# xylimit = max(abs(xchase), abs(ychase))
 
 # check PDF
 mycheck = PDFcheck(thetavec = truethetavec, h = myh, k = myk, yM = xylimit)
 print(c(min(mycheck), mean(mycheck), max(mycheck)))
 
-C1 = chaser[[2]]
-C1 = C1[1:mydatapoints]
-C2 = chaser[[3]]
-C2 = C2[1:mydatapoints]
+xchase = xchase[1:mydatapoints]
+ychase = ychase[1:mydatapoints]
+xrun = xrun[1:mydatapoints]
+yrun = yrun[1:mydatapoints]
 
 # Metropolis Hastings parameters
 burnin = 100
@@ -38,7 +42,7 @@ mcmc = numeric(length = totsteps)
 mcmc[1] = 0.1
 
 # time increment from data
-timeinc = chaser[[1]][2] - chaser[[1]][1]
+timeinc = tchase[2] - tchase[1]
 myns = floor(timeinc/myh)
 print(myns)
 
@@ -57,12 +61,13 @@ mm = length(xvec)
 myposterior <- function(likden, dat, prior)
 {
     steps = ncol(likden)
-    # for scenario 2, likden has 'datapoints' pdfs  
+    datamat = matrix(c(dat[[2]], dat[[3]]), ncol = 2)
     logpost = 0
+
     for(i in c(1:steps))
     { 
-      myloc = matrix(dat[(i+1),c(1:2)],ncol=2)
-      likdat = interp.surface(obj = list(x = xvec, y = xvec, z = matrix(likden[,i],nrow=mm)),loc=myloc)
+      myloc = datamat[(i+1),c(1:2)]
+      likdat = interp.surface(obj = list(x = xvec, y = xvec, z = matrix(likden[,i], nrow = mm)), loc = myloc)
       likdat[likdat <= 2.2e-16] = 2.2e-16
       logpost = logpost + sum(log(likdat))
     }
@@ -72,7 +77,7 @@ myposterior <- function(likden, dat, prior)
 
 thetavec = truethetavec
 thetavec[1] = mcmc[1]
-oldden = Rdtq2d(thetavec, C1, C2, h = myh, numsteps = myns, k = myk, yM = xylimit)
+oldden = Rdtq2d(thetavec, xchase, ychase, xrun, yrun, h = myh, numsteps = myns, k = myk, yM = xylimit)
 checkk = PDFcheck(thetavec, h = myh, k = myk, yM = xylimit)
 print(checkk)
 oldpost = myposterior(likden = oldden, dat = chaser, prior = myprior(mcmc[1]))
