@@ -92,8 +92,8 @@ for (i in c(1:nsaves))
         yc = yc + (f2(xc, yc, xr, yr, t))*(h) + (h12)*(g2(xc, yc, t))*(rnorm(n = 1))
     }
 
-    xchase[i+1] = xc
-    ychase[i+1] = yc
+    xchase[i + 1] = xc
+    ychase[i + 1] = yc
 }
 
 lines(xchase, ychase, type = "b", col = "black")

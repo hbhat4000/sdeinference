@@ -1,0 +1,73 @@
+\documentclass[a4paper,11pt]{article}
+
+\usepackage[left=2.5cm,right=2.5cm,top=3cm,bottom=3cm,pdftex]{geometry}
+\usepackage{amssymb, amsmath, url, natbib, float, subcaption, listings,mathtools}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\renewcommand{\topfraction}{0.9}
+\lstset{basicstyle=\scriptsize\tt,}
+\usepackage[pdftex]{graphicx}
+\pdfcompresslevel=9 
+\DeclareGraphicsExtensions{.png, .pdf, .jpg}
+\usepackage[pdftex, colorlinks, linkcolor=blue, urlcolor=blue, citecolor=blue, pagecolor=blue, breaklinks=true]{hyperref}
+\usepackage{tikz}
+
+\begin{document}
+\pagestyle{empty}
+\title{Pursuit Models}
+\section{Introduction}
+We consider the setup where a player is running and another player is chasing the runner inside the court. We assume that the goal of the chaser is to get in the vicinity of the runner and thus the chaser is running towards the current position of the runner. The current spatial coordinates of the runner is $(x^{r}, y^{r})$ and those of the chaser is $(x^{c}, y^{c})$. Since the chaser is moving towards the runner, the velocity vector of the chaser is pointed towards the runner's current position.
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.8\textwidth]{pursuit.png}
+\caption{Paths for runner and chaser}
+\end{figure}
+
+The velocity of the chaser, $(\dot{x}^c, \dot{y}^c)$, can thus be given as
+\begin{align*}
+(\dot{x}^c, \dot{y}^c) = \gamma(t) (x^{r} - x^{c}, y^{r} - y^{c})
+\end{align*}
+
+where the velocity vector of the chaser is $\vec{\phi} = (x^{r} - x^{c}, y^{r} - y^{c})$ and the speed of the chaser is $\gamma(t)$. If we know the runner's position at different time points, the system of ODEs for the chaser is as follows,
+
+\begin{align*}
+d(x^{c}, y^{c}) & = \gamma(t) \frac{\vec{\phi}}{||\vec{\phi}||} dt + (\nu_1 dW^1_t, \nu_2 dW^2_t) \\
+\implies d x^{c} & = \frac{\gamma(t) (x^{r} - x^{c})}{\sqrt{(x^{r} - x^{c})^2 + (y^{r} - y^{c})^2}}dt + \nu_1 dW^1_t \\
+d y^{c} & = \frac{\gamma(t) (y^{r} - y^{c})}{\sqrt{(x^{r} - x^{c})^2 + (y^{r} - y^{c})^2}}dt + \nu_2 dW^2_t
+\end{align*}
+
+The Euler-Maruyama approximation of the above system of ODEs is
+
+\begin{align*}
+x^{c}_{i+1} & = x^{c}_{i} + \frac{\gamma(t) (x^{r}_{i} - x^{c}_{i})}{\sqrt{(x^{r}_{i} - x^{c}_{i})^2 + (y^{r}_{i} - y^{c}_{i})^2}} h + \nu_1 \sqrt{h} Z_1 \\
+y^{c}_{i+1} & = y^{c}_{i} + \frac{\gamma(t) (y^{r}_{i} - y^{c}_{i})}{\sqrt{(x^{r}_{i} - x^{c}_{i})^2 + (y^{r}_{i} - y^{c}_{i})^2}}h + \nu_2 \sqrt{h} Z_2
+\end{align*}
+Some examples of  \href{http://home2.fvcc.edu/~dhicketh/DiffEqns/Spring11projects/Jonah_Franchi_Katy_Steiner/Diff%20EQ%20Project.pdf}{Pursuit Curves} and proofs of the trajectory for different models considered.
+
+\section{Simulations}
+For the purposes of simulation, the 2D grid considered is of the size of the standard basketball court, 94 ft. $\times$ 50 ft.  \\
+
+The first simulation creates the runner's trajectory as $y^{r} = 5\log(x^{r})$. The chaser's speed is $\gamma(t) = 1+2t$ and we consider 10 points along the trajectory.
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.7\textwidth]{simulation.jpeg}
+\caption{Runner (red), Chaser (black) simulation for well-defined runner trajectory}
+\end{figure}
+
+For the second simulation, we consider 50 points on both the trajectories. The runner's trajectory in this case is randomized. $y^{r} = ((x^{r})^2)/100 + (x^{r}/20) + \mathcal{N}(\mu = 0, \sigma = 2)$.
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.8\textwidth]{sim50points.jpeg}
+\caption{Simulation with random runner movement, time proportional speed of the chaser}
+\end{figure}
+
+In the third simulation, we take the speed of the chaser constant (upto some noise), $y^{c} = $
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.8\textwidth]{sim100points_randomizedtraj.jpeg}
+\caption{Simulation with constant speed (upto some noise) of the chaser}
+\end{figure}
+\end{document}
+
