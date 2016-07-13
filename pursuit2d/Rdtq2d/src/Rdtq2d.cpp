@@ -76,8 +76,8 @@ mat dtq(const vec &thetavec, const vec &xc, const vec &yc, const vec &xr, const 
   for (int step = 1; step < numsteps; step++)
   {
     // Runner's data used from the previous time step throughout the whole summation
-    xrun = xr(step - 1);
-    yrun = yr(step - 1);
+    double xrun = xr(step - 1);
+    double yrun = yr(step - 1);
     mat approxpdfvecnew = zeros<mat>(nr,datapoints);
 #pragma omp parallel for
     for (int newspace = 0; newspace < nr; newspace++)
@@ -115,50 +115,50 @@ mat dtq(const vec &thetavec, const vec &xc, const vec &yc, const vec &xr, const 
   return approxpdfvec;
 }
 
-mat PDFcheck(const vec &thetavec, double h, double k, double yM)
-{
-  double h12 = sqrt(h);
-  int M = ceil(yM/k);
-  int veclen = 2*M+1;
-  int nr = veclen*veclen;
-  vec xvec = k*linspace<vec>(-M,M,veclen);
+// mat PDFcheck(const vec &thetavec, double h, double k, double yM)
+// {
+//   double h12 = sqrt(h);
+//   int M = ceil(yM/k);
+//   int veclen = 2*M+1;
+//   int nr = veclen*veclen;
+//   vec xvec = k*linspace<vec>(-M,M,veclen);
 
-  double supg = 0.5;
-  int gamma = ceil(5*h12*supg/k);
-  int dimg = 2*gamma;
+//   double supg = 0.5;
+//   int gamma = ceil(5*h12*supg/k);
+//   int dimg = 2*gamma;
 
-  mat Gnorm = zeros<mat>(veclen-dimg,veclen-dimg);
+//   mat Gnorm = zeros<mat>(veclen-dimg,veclen-dimg);
 
-#pragma omp parallel for
-  for (int newspace=0; newspace<nr; newspace++)
-  {
-    int j = floor(newspace/veclen); // subtract M to get math i, j \in [-M,M]
-    int i = newspace - veclen*floor(newspace/veclen);      
-    for (int ip=gamma; ip<(veclen-gamma); ip++)
-    {
-      for (int jp=gamma; jp<(veclen-gamma); jp++)
-      {
-        int test = jp*veclen + ip;
-        if ((test >= 0) && (test < nr))
-        {
-          {
-            double y1 = (ip-M)*k;
-            double y2 = (jp-M)*k;
-            double mu1 = y1 + f1(y1,y2,thetavec)*h;
-            double mu2 = y2 + f2(y1,y2,thetavec)*h;
-            double sigma1 = h12*g1(y1,y2,thetavec);
-            double sigma2 = h12*g2(y1,y2,thetavec);
-            double locbigg1 = gaussian_pdf(xvec(i), mu1, sigma1);
-            double locbigg2 = gaussian_pdf(xvec(j), mu2, sigma2);
-            Gnorm(ip-gamma,jp-gamma) += k*k*locbigg1*locbigg2;
-          }
-        }
-      }
-    }
-  }
-#pragma omp barrier
-  return Gnorm;
-}
+// #pragma omp parallel for
+//   for (int newspace = 0; newspace < nr; newspace++)
+//   {
+//     int j = floor(newspace/veclen); // subtract M to get math i, j \in [-M,M]
+//     int i = newspace - veclen*floor(newspace/veclen);      
+//     for (int ip = gamma; ip < (veclen - gamma); ip++)
+//     {
+//       for (int jp = gamma; jp < (veclen - gamma); jp++)
+//       {
+//         int test = jp*veclen + ip;
+//         if ((test >= 0) && (test < nr))
+//         {
+//           {
+//             double y1 = (ip - M)*k;
+//             double y2 = (jp - M)*k;
+//             double mu1 = y1 + f1(y1, y2, thetavec)*h;
+//             double mu2 = y2 + f2(y1, y2, thetavec)*h;
+//             double sigma1 = h12*g1(y1, y2, thetavec);
+//             double sigma2 = h12*g2(y1, y2, thetavec);
+//             double locbigg1 = gaussian_pdf(xvec(i), mu1, sigma1);
+//             double locbigg2 = gaussian_pdf(xvec(j), mu2, sigma2);
+//             Gnorm(ip-gamma,jp-gamma) += k*k*locbigg1*locbigg2;
+//           }
+//         }
+//       }
+//     }
+//   }
+// #pragma omp barrier
+//   return Gnorm;
+// }
 
 SEXP dtq2dCPP(SEXP s_thetavec, SEXP s_xc, SEXP s_yc, SEXP s_xr, SEXP s_yr, SEXP s_h, SEXP s_numsteps, SEXP s_k, SEXP s_yM)
 {
@@ -178,15 +178,15 @@ SEXP dtq2dCPP(SEXP s_thetavec, SEXP s_xc, SEXP s_yc, SEXP s_xr, SEXP s_yr, SEXP 
 }
 
 
-SEXP GCPP(SEXP s_thetavec, SEXP s_h, SEXP s_k, SEXP s_yM)
-{
-    vec thetavec = Rcpp::as<arma::vec>(s_thetavec);
-    double h = Rcpp::as<double>(s_h);
-    double k = Rcpp::as<double>(s_k);
-    double yM = Rcpp::as<double>(s_yM);
+// SEXP GCPP(SEXP s_thetavec, SEXP s_h, SEXP s_k, SEXP s_yM)
+// {
+//     vec thetavec = Rcpp::as<arma::vec>(s_thetavec);
+//     double h = Rcpp::as<double>(s_h);
+//     double k = Rcpp::as<double>(s_k);
+//     double yM = Rcpp::as<double>(s_yM);
 
-    mat Gnorm = PDFcheck(thetavec, h, k, yM);
-    return Rcpp::wrap( Gnorm );
-}
+//     mat Gnorm = PDFcheck(thetavec, h, k, yM);
+//     return Rcpp::wrap( Gnorm );
+// }
 
 

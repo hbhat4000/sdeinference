@@ -26,8 +26,8 @@ xylimit = 94    # court dimension is 94*50
 # xylimit = max(abs(xchase), abs(ychase))
 
 # check PDF
-mycheck = PDFcheck(thetavec = truethetavec, h = myh, k = myk, yM = xylimit)
-print(c(min(mycheck), mean(mycheck), max(mycheck)))
+# mycheck = PDFcheck(thetavec = truethetavec, h = myh, k = myk, yM = xylimit)
+# print(c(min(mycheck), mean(mycheck), max(mycheck)))
 
 xchase = xchase[1:mydatapoints]
 ychase = ychase[1:mydatapoints]
@@ -78,8 +78,10 @@ myposterior <- function(likden, dat, prior)
 thetavec = truethetavec
 thetavec[1] = mcmc[1]
 oldden = Rdtq2d(thetavec, xchase, ychase, xrun, yrun, h = myh, numsteps = myns, k = myk, yM = xylimit)
-checkk = PDFcheck(thetavec, h = myh, k = myk, yM = xylimit)
-print(checkk)
+
+# checkk = PDFcheck(thetavec, h = myh, k = myk, yM = xylimit)
+# print(checkk)
+
 oldpost = myposterior(likden = oldden, dat = chaser, prior = myprior(mcmc[1]))
 artrack = numeric(length = (totsteps-1))
 
