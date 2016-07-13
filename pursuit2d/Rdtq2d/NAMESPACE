@@ -1,2 +1,2 @@
-useDynLib(Rgdtq)
+useDynLib(Rdtq2d)
 exportPattern("^[[:alpha:]]+")

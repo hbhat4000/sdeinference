@@ -1,11 +1,11 @@
-fakedatanum = 3
-mcmcdatanum = 3
-hmcdatanum = 3
+fakedatanum = 4
+mcmcdatanum = 4
+hmcdatanum = 4
 
 # parameters for fakedata
 fakedatah = 1e-4
 littlet = 1
-bigt = 10
+bigt = 25
 ntrials = 50
 
 # true parameter for RMSE calculation
@@ -18,12 +18,12 @@ gridk = (gridh)^0.75
 gridM = ceiling(pi/(gridk)^1.5)
 
 # initial condition
-theta = c(0.5, 0.5, 0.5)
+theta = c(1, 2, 1)
 numparam = length(theta)
 
 # samples
-burnin = 1
-samplesteps = 2
+burnin = 200
+samplesteps = 500
 totsteps = burnin + samplesteps
 
 ##### MCMC specific parameters #####

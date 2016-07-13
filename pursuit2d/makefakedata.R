@@ -71,8 +71,11 @@ h12 = sqrt(h)
 
 xchase <- vector(length = nsaves + 1)
 ychase <- vector(length = nsaves + 1)
-xchase[1] = rnorm(n = 1, mean = xrun[1], sd = sqrt(h)) 
-ychase[1] = rnorm(n = 1, mean = yrun[1], sd = sqrt(h))
+# xchase[1] = rnorm(n = 1, mean = xrun[1], sd = sqrt(h)) 
+# ychase[1] = rnorm(n = 1, mean = yrun[1], sd = sqrt(h))
+
+xchase[1] = rnorm(n = 1, mean = xrun[1], sd = 5) 
+ychase[1] = rnorm(n = 1, mean = yrun[1], sd = 5)
 
 for (i in c(1:nsaves))
 {
@@ -95,7 +98,8 @@ for (i in c(1:nsaves))
     xchase[i+1] = xc
     ychase[i+1] = yc
 }
-
+# xchase[1] = rnorm(n = 1, mean = xrun[1], sd = sqrt(h)) 
+# ychase[1] = rnorm(n = 1, mean = yrun[1], sd = sqrt(h))
 lines(xchase, ychase, type = "b", col = "black")
 chaser = list(tvec, xchase, ychase)
 save(runner, chaser, file = 'fakedata.RData')
