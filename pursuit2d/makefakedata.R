@@ -2,7 +2,7 @@ rm(list = ls(all = TRUE))
 
 # creating the runner's trajectory
 t = 1
-T = 100
+T = 2
 tvec = seq(from = 0, to = T, by = t)
 xrun = seq(from = 1, to = 94, by = 0.001)
 # yrun = 5*log(xrun) 
