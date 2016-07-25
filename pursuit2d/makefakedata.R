@@ -1,18 +1,22 @@
 rm(list = ls(all = TRUE))
 
 # creating the runner's trajectory
-t = 1
-T = 2
-tvec = seq(from = 0, to = T, by = t)
-xrun = seq(from = 1, to = 94, by = 0.001)
-# yrun = 5*log(xrun) 
-yrun = rnorm(n = length(xrun), mean = 0, sd = 2) + xrun*xrun/500 + xrun/20 + 5
-xrun = xrun[seq(from = 1, to = length(xrun), length.out = T+t)]
-yrun = yrun[seq(from = 1, to = length(yrun), length.out = T+t)]
+t = 0.4
+T = 0.4
 
+xmin = c(0,0)
+xmax = c(5,5)
+tvec = seq(from = 0, to = T, by = t)
+xrun = seq(from = 1, to = xmax[1], by = 0.001)
+# yrun = 5*log(xrun) 
+yrun = abs(rnorm(n = length(xrun), mean = 0, sd = 2) + xrun*xrun/500 + xrun/20 + 1)
+xrun = xrun[seq(from = 1, to = length(xrun), length.out = T/t + 1)]
+yrun = yrun[seq(from = 1, to = length(yrun), length.out = T/t + 1)]
+
+xrun[2] = rnorm(n = 1, mean = xrun[1], sd = 2)
 # Basketbal court's dimension
-xaxis = c(0,94)
-yaxis = c(0,50)
+xaxis = c(0,xmax[1])
+yaxis = c(0,xmax[2])
 # plot(xrun, yrun, xaxis, yaxis, type = "o", col = "red")
 plot(xrun, yrun, xaxis, yaxis, type = "l", col = "red")
 # lines(xrun, yrun, type = "l", col = "blue")
@@ -23,7 +27,7 @@ speed <- function(t)
 {
   # sval = 1 + 2*t
   # sval = -1 + 2*t + rnorm(n = length(t))
-  sval = 1.2 + rnorm(n = length(t))
+  sval = 1.2 # + rnorm(n = length(t))
   return(sval)
 }
 
@@ -43,13 +47,15 @@ f2 <- function(x, y, xr, yr, t)
 
 g1 <- function(x, y, t)
 {
-  nu1 = rnorm(n = 1, mean = 0.5, sd = 1)
+  nu1 = 0.5
+  # nu1 = rnorm(n = 1, mean = 0.5, sd = 1)
   return(nu1)
 }
 
 g2 <- function(x, y, t)
 {
-  nu2 = rnorm(n = 1, mean = 0.5, sd = 1)
+  nu2 = 0.5
+  #nu2 = rnorm(n = 1, mean = 0.5, sd = 1)
   return(nu2)
 }
 
@@ -74,8 +80,8 @@ ychase <- vector(length = nsaves + 1)
 # xchase[1] = rnorm(n = 1, mean = xrun[1], sd = sqrt(h)) 
 # ychase[1] = rnorm(n = 1, mean = yrun[1], sd = sqrt(h))
 
-xchase[1] = rnorm(n = 1, mean = xrun[1], sd = 5) 
-ychase[1] = rnorm(n = 1, mean = yrun[1], sd = 5)
+xchase[1] = abs(rnorm(n = 1, mean = xrun[1], sd = 1)) 
+ychase[1] = abs(rnorm(n = 1, mean = yrun[1], sd = 1))
 
 for (i in c(1:nsaves))
 {
@@ -102,4 +108,4 @@ for (i in c(1:nsaves))
 # ychase[1] = rnorm(n = 1, mean = yrun[1], sd = sqrt(h))
 lines(xchase, ychase, type = "b", col = "black")
 chaser = list(tvec, xchase, ychase)
-save(runner, chaser, file = 'fakedata.RData')
+save(runner, chaser, file = 'fakedata4.RData')

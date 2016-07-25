@@ -8,19 +8,20 @@ library('Rdtq2d')
 library('fields')
 
 # load fake data which has 2 lists, chaser and runner, each with t, x, y
-load('fakedata2.RData')
+load('fakedata3.RData')
 tchase = chaser[[1]]
 xchase = chaser[[2]]
 ychase = chaser[[3]]
 runner = matrix(unlist(runner),ncol=3)
 
-truethetavec = c(0.5, 0.5)
+truethetavec = c(0.3, 0.5)
 
 # algorithm parameters
 mydatapoints = length(tchase) - 1
-myh = 0.1
-myk = 0.8*(myh)^0.9
-xylimit = 10    # court dimension is 94*50
+myh = 0.4
+# myk = 0.8*(myh)^0.9
+myk = 0.5
+xylimit = 5    # court dimension is 94*50
 # xylimit = max(abs(xchase), abs(ychase))
 
 # check PDF
@@ -85,7 +86,8 @@ thetavec[1] = mcmc[1]
 
 # print("Pass 1")
 
-gammavec = rep(1,mydatapoints+1)
+# gammavec = rep(1,mydatapoints+1)
+gammavec = c(1, 0.8)
 
 oldden = Rdtq2d(thetavec, gammavec, runner, c1=xchase, c2=ychase, h = myh, numsteps = myns, k = myk, yM = xylimit)
 
