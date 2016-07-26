@@ -8,34 +8,30 @@ library('Rdtq2d')
 library('fields')
 
 # load fake data which has 2 lists, chaser and runner, each with t, x, y
-load('fakedata4.RData')
-tchase = chaser[[1]]
-xchase = chaser[[2]]
-ychase = chaser[[3]]
-runner = matrix(unlist(runner),ncol=3)
+load('fakedata5.RData')
+chaser = matrix(unlist(chaser), ncol = 3)
+runner = matrix(unlist(runner), ncol = 3)
 
 # algorithm parameters
-mydatapoints = length(tchase) - 1
+mydatapoints = nrow(chaser) - 1
 myh = 0.4
 myk = 0.8*(myh)^0.9
 xylimit = 5    # court dimension is 94*50
-# xylimit = max(abs(xchase), abs(ychase))
-
-xchase = xchase[1:mydatapoints]
-ychase = ychase[1:mydatapoints]
 
 # time increment from data
-timeinc = tchase[2] - tchase[1]
+timeinc = runner[2,1] - runner[1,1]
 myns = floor(timeinc/myh)
-
+print(myns)
 M = ceiling(xylimit/myk)
 xvec = myk*c(-M:M)
 mm = length(xvec)
 
-myposterior <- function(likden, dat, prior)
+chasernew = chaser[1:mydatapoints, ]
+
+mylik <- function(likden, dat)
 {
     steps = ncol(likden)
-    datamat = matrix(c(dat[[2]], dat[[3]]), ncol = 2)
+    datamat = dat[,-1]
     logpost = 0
 
     for(i in c(1:steps))
@@ -52,22 +48,23 @@ myposterior <- function(likden, dat, prior)
       likdat[likdat <= 2.2e-16] = 2.2e-16
       logpost = logpost + sum(log(likdat))
     }
-    logpost = logpost
     return(logpost)
 }
 
-posterior = {}
+lik = {}
+gammavec = rep(1, myns)
 gamma1 = {}
+
 for(i in seq(from = 1, to = 200, by = 1))
 { 
   gamma1[i] = i/100
-  gammavec = c(gamma1[i], 1)
-  nuvec = c(0.5, 0.5)
+  gammavec[1] = gamma1[i]
+  nuvec = c(0.5,0.5)
 
-  oldden = Rdtq2d(nuvec, gammavec, runner, c1=xchase, c2=ychase, h = myh, numsteps = myns, k = myk, yM = xylimit)
-  posterior[i] = myposterior(likden = oldden, dat = chaser, prior = myprior(c(gammavec, nuvec)))
-  print(posterior[i])
+  oldden = Rdtq2d(nuvec, gammavec, runner, chasernew, myh, myns, myk, xylimit)
+  lik[i] = mylik(likden = oldden, dat = chaser)
+  print(lik[i])
 }
 
-plot(gamma1, posterior)
+plot(gamma1, lik)
 
