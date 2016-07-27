@@ -45,7 +45,7 @@ g2 <- function(x, y, t)
 }
 
 # simulating the pursuit model
-h = 0.0001
+h = 0.4
 
 nsteps = ceiling(T/h)   # 250000
 nsaves = ceiling(T/t)   # 25
@@ -99,4 +99,4 @@ runner = list(tvec, xrun, yrun)
 lines(xchase, ychase, xaxis, yaxis, type = "b", col = "black")
 chaser = list(tvec, xchase, ychase)
 
-save(runner, chaser, file = 'fakedata5.RData')
+save(runner, chaser, file = 'fakedata_h_0.04.RData')

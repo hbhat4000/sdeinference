@@ -8,7 +8,7 @@ library('Rdtq2d')
 library('fields')
 
 # load fake data which has 2 lists, chaser and runner, each with t, x, y
-load('fakedata5.RData')
+load('fakedata_h_0.04.RData')
 chaser = matrix(unlist(chaser), ncol = 3)
 runner = matrix(unlist(runner), ncol = 3)
 
