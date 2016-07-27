@@ -27,6 +27,8 @@ xvec = myk*c(-M:M)
 mm = length(xvec)
 
 chasernew = chaser[1:mydatapoints, ]
+if (class(chasernew)=="numeric")
+  chasernew = t(as.matrix(chasernew))
 
 mylik <- function(likden, dat)
 {

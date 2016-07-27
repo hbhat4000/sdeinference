@@ -234,4 +234,4 @@ SEXP GCPP(SEXP s_nuvec, SEXP s_gammavec, SEXP s_runner, SEXP s_h, SEXP s_k, SEXP
     return Rcpp::wrap( Gnorm );
 }
 
-
+ 
