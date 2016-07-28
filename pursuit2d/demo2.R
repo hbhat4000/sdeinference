@@ -59,8 +59,8 @@ gamma1 = {}
 
 for(i in seq(from = 1, to = 200, by = 1))
 { 
-  gamma1[i] = i/100
-  gammavec[1] = gamma1[i]
+# gamma1[i] = i/100
+  gammavec = rep(i/100,2)
   nuvec = c(0.5,0.5)
 
   oldden = Rdtq2d(nuvec, gammavec, runner, chasernew, myh, myns, myk, xylimit)
