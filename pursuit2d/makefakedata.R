@@ -1,5 +1,8 @@
 rm(list = ls(all = TRUE))
 
+for (iii in c(1:100))
+{
+
 # creating the runner's trajectory
 t = 0.4
 T = 0.4
@@ -14,7 +17,8 @@ tvec = seq(from = 0, to = T, by = t)
 # setting the parameters for the pursuit model
 speedchaser <- function(t)
 {
-  sval = .5 # + rnorm(n = length(t))
+  if (t <= 0.2) sval = .25
+  else sval = .5
   return(sval)
 }
 
@@ -45,7 +49,7 @@ g2 <- function(x, y, t)
 }
 
 # simulating the pursuit model
-h = 0.4
+h = 0.2
 
 nsteps = ceiling(T/h)   # 250000
 nsaves = ceiling(T/t)   # 25
@@ -99,4 +103,8 @@ runner = list(tvec, xrun, yrun)
 lines(xchase, ychase, xaxis, yaxis, type = "b", col = "black")
 chaser = list(tvec, xchase, ychase)
 
-save(runner, chaser, file = 'fakedata_h_0.04.RData')
+myfname = paste('./data/fakedata_h_0.04_',iii,'.RData',sep='')
+
+save(runner, chaser, file=myfname)
+
+}

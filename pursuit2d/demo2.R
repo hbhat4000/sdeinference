@@ -8,27 +8,34 @@ library('Rdtq2d')
 library('fields')
 
 # load fake data which has 2 lists, chaser and runner, each with t, x, y
-load('fakedata_h_0.04.RData')
-chaser = matrix(unlist(chaser), ncol = 3)
-runner = matrix(unlist(runner), ncol = 3)
+chaserlist = list(NULL)
+runnerlist = list(NULL)
+chasernew = list(NULL)
+for (iii in c(1:100))
+{
+  fname = paste('./data/fakedata_h_0.04_',iii,'.RData',sep='')
+  load(fname)
+  chaserlist[[iii]] = matrix(unlist(chaser), ncol = 3)
+  runnerlist[[iii]] = matrix(unlist(runner), ncol = 3)
+  mydatapoints = nrow(chaserlist[[iii]]) - 1
+  chasernew[[iii]] = (chaserlist[[iii]])[1:mydatapoints,]
+  if (class(chasernew[[iii]])=="numeric") chasernew[[iii]] = t(as.matrix(chasernew[[iii]]))
+}
+print(max(unlist(chaserlist)))
+print(max(unlist(runnerlist)))
 
 # algorithm parameters
-mydatapoints = nrow(chaser) - 1
-myh = 0.4
-myk = 0.8*(myh)^0.9
-xylimit = 5    # court dimension is 94*50
+myh = 0.2
+myk = 0.1 # 0.2*(myh)^0.9
+xylimit = 22  # court dimension is 94*50
 
 # time increment from data
-timeinc = runner[2,1] - runner[1,1]
+timeinc = (runnerlist[[1]])[2,1] - (runnerlist[[1]])[1,1]
 myns = floor(timeinc/myh)
 print(myns)
 M = ceiling(xylimit/myk)
 xvec = myk*c(-M:M)
 mm = length(xvec)
-
-chasernew = chaser[1:mydatapoints, ]
-if (class(chasernew)=="numeric")
-  chasernew = t(as.matrix(chasernew))
 
 mylik <- function(likden, dat)
 {
@@ -53,19 +60,20 @@ mylik <- function(likden, dat)
     return(logpost)
 }
 
-lik = {}
-gammavec = rep(1, myns)
-gamma1 = {}
+lik = numeric(length=200)
+gammavec = c(0,0.5)
 
-for(i in seq(from = 1, to = 200, by = 1))
+for(i in seq(from = 5, to = 50, by = 5))
 { 
-  gamma1[i] = i/100
-  gammavec[1] = gamma1[i]
+  gammavec[1] = i/100
   nuvec = c(0.5,0.5)
 
-  oldden = Rdtq2d(nuvec, gammavec, runner, chasernew, myh, myns, myk, xylimit)
-  lik[i] = mylik(likden = oldden, dat = chaser)
-  print(lik[i])
+  for (iii in c(1:50))
+  {
+    oldden = Rdtq2d(nuvec, gammavec, runnerlist[[iii]], chasernew[[iii]], myh, myns, myk, xylimit)
+    lik[i] = lik[i] + mylik(likden = oldden, dat = chaserlist[[iii]])
+  }
+  print(c(i/100,lik[i]))
 }
 
 plot(gamma1, lik)
