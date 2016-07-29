@@ -8,16 +8,18 @@ driftfun <- function(c0, y)
 difffun <- function(c0, y)
 {
   # replicates diffusion as a long vector
-  g = rep(c0[3], length(y))
+  diffcoeff = exp(c0[3])
+  g = rep(diffcoeff, length(y))
   return(g)
 }
 
 difffun1 <- function(c0, y)
 {
   # replicates diffusion term as a matrix
+  diffcoeff = exp(c0[3])
   dd1 = dim(y)[1]
   dd2 = dim(y)[2]
-  vec = rep(c0[3], dd1)
+  vec = rep(diffcoeff, dd1)
   return(replicate(dd2, vec)) 
 }
 
