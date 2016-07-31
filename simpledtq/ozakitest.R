@@ -4,7 +4,22 @@ rm(list = ls(all = TRUE))
 load('doublewell.RData')
 
 # load necessary functions
-source('dtq.R')
+library('sde')
+
+drift <- function(t,x,theta)
+{
+  theta[1]*x*(theta[2] - x^2)
+}
+
+driftx <- function(t,x,theta)
+{
+  -3*x^2*theta[1] + theta[1]*theta[2]
+}
+
+diffusion <- function(t,x,theta)
+{
+  exp(theta[3])
+}
 
 myh = 0.05
 myk = myh^(0.75)
@@ -34,18 +49,32 @@ loglik = numeric(length=(nsamples+1))
 logpost = numeric(length=(nsamples+1))
 ar = numeric(length=nsamples)
 
-rawlik = cdt(thetamat[1,],h=myh,k=myk,bigm=mybigm,littlet=1,data=xtraj)
-rawlik[rawlik <= 2.2e-16] = 0
-loglik[1] = sum(log(rawlik))
+ozakilik <- function(theta,h,k,bigm,littlet,data)
+{
+  lik = 0
+  for (i in c(1:nrow(data)))
+  {
+    for (j in c(1:(ncol(data)-1)))
+    {
+      temp = dcOzaki(x=data[i,j+1],t=littlet*j,x0=data[i,j],t0=littlet*(j-1),theta,d=drift,dx=driftx,s=diffusion,log=TRUE)
+      lik = lik + temp
+    }
+  }
+  return(lik)
+}
+
+loglik[1] = ozakilik(thetamat[1,],h=myh,k=myk,bigm=mybigm,littlet=1,data=xtraj)
+# rawlik[rawlik <= 2.2e-16] = 0
+# loglik[1] = sum(log(rawlik))
 logpost[1] = loglik[1] + logprior(thetamat[1,])
 
 # Metropolis algorithm
 for (i in c(1:nsamples))
 {
   thetastar = thetamat[i,] + propZ(n=1)
-  rawlik = cdt(thetastar,h=myh,k=myk,bigm=mybigm,littlet=1,data=xtraj)
-  rawlik[rawlik <= 2.2e-16] = 0
-  thisloglik = sum(log(rawlik))
+  thisloglik = ozakilik(thetastar,h=myh,k=myk,bigm=mybigm,littlet=1,data=xtraj)
+  # rawlik[rawlik <= 2.2e-16] = 0
+  # thisloglik = sum(log(rawlik))
   thislogpost = thisloglik + logprior(thetastar)
   ratio = exp(thislogpost - logpost[i])
   if (ratio > runif(n=1))
@@ -64,6 +93,6 @@ for (i in c(1:nsamples))
   print(mean(ar[1:i]))
 }
 
-save.image(file="dtqresults.RData")
+save.image(file="ozakiresults.RData")
 
 
