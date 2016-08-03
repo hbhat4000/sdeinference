@@ -18,7 +18,7 @@ tvec = seq(from = 0, to = T, by = t)
 speedchaser <- function(t)
 {
   if (t <= 0.2) sval = .25
-  else sval = .5
+  else sval = .75
   return(sval)
 }
 
@@ -49,7 +49,7 @@ g2 <- function(x, y, t)
 }
 
 # simulating the pursuit model
-h = 0.2
+h = 0.4
 
 nsteps = ceiling(T/h)   # 250000
 nsaves = ceiling(T/t)   # 25
@@ -97,13 +97,13 @@ for (i in c(1:nsaves))
 xaxis = c(min(xchase, xrun), max(xchase, xrun))
 yaxis = c(min(ychase, yrun), max(ychase, yrun))
 
-plot(xrun, yrun, xaxis, yaxis, type = "l", col = "red")
 runner = list(tvec, xrun, yrun)
-
-lines(xchase, ychase, xaxis, yaxis, type = "b", col = "black")
 chaser = list(tvec, xchase, ychase)
 
-myfname = paste('./data/fakedata_h_0.04_',iii,'.RData',sep='')
+# plot(xrun, yrun, xaxis, yaxis, type = "l", col = "red")
+# lines(xchase, ychase, xaxis, yaxis, type = "b", col = "black")
+
+myfname = paste('fakedata100/fakedata_h_0.4_',iii,'.RData',sep='')
 
 save(runner, chaser, file=myfname)
 

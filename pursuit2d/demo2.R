@@ -11,9 +11,10 @@ library('fields')
 chaserlist = list(NULL)
 runnerlist = list(NULL)
 chasernew = list(NULL)
+
 for (iii in c(1:100))
 {
-  fname = paste('./data/fakedata_h_0.04_',iii,'.RData',sep='')
+  fname = paste('fakedata100/fakedata_h_0.4_',iii,'.RData',sep='')
   load(fname)
   chaserlist[[iii]] = matrix(unlist(chaser), ncol = 3)
   runnerlist[[iii]] = matrix(unlist(runner), ncol = 3)
@@ -21,13 +22,11 @@ for (iii in c(1:100))
   chasernew[[iii]] = (chaserlist[[iii]])[1:mydatapoints,]
   if (class(chasernew[[iii]])=="numeric") chasernew[[iii]] = t(as.matrix(chasernew[[iii]]))
 }
-print(max(unlist(chaserlist)))
-print(max(unlist(runnerlist)))
 
 # algorithm parameters
-myh = 0.2
-myk = 0.1 # 0.2*(myh)^0.9
-xylimit = 22  # court dimension is 94*50
+myh = 0.4
+myk = 0.05 # 0.05*(myh)^(1.2)
+xylimit = ceiling(max(unlist(chaserlist), unlist(runnerlist)))
 
 # time increment from data
 timeinc = (runnerlist[[1]])[2,1] - (runnerlist[[1]])[1,1]
@@ -60,25 +59,21 @@ mylik <- function(likden, dat)
     return(logpost)
 }
 
-lik = numeric(length=200)
+
+lik = numeric(length = 200)
 gammavec = c(0,0.5)
 
-for(i in seq(from = 5, to = 50, by = 5))
-{ 
-<<<<<<< HEAD:pursuit2d/demo2_local.R
-<<<<<<< HEAD
-  gammavec[1] = i/100
-=======
-# gamma1[i] = i/100
+for(i in seq(from = 10, to = 85, by = 1))
+{
   gammavec = rep(i/100,2)
->>>>>>> 33550ec4e10fb8f972a9b5ea79a10de0007919b1
-=======
-# gamma1[i] = i/100
-  gammavec = rep(i/100,2)
->>>>>>> 33550ec4e10fb8f972a9b5ea79a10de0007919b1:pursuit2d/demo2.R
+  print(gammavec)
   nuvec = c(0.5,0.5)
 
-  for (iii in c(1:50))
+  # gammavec = c(0.2, 0.5)
+  # nuvec = rep(i/100, 2)
+  # # print(nuvec)
+
+  for (iii in c(1:100))
   {
     oldden = Rdtq2d(nuvec, gammavec, runnerlist[[iii]], chasernew[[iii]], myh, myns, myk, xylimit)
     lik[i] = lik[i] + mylik(likden = oldden, dat = chaserlist[[iii]])
@@ -86,5 +81,6 @@ for(i in seq(from = 5, to = 50, by = 5))
   print(c(i/100,lik[i]))
 }
 
-plot(gamma1, lik)
+print(which.max(lik)/100)
 
+plot(seq(from = 10, to = 85, by = 1)/100, lik)
