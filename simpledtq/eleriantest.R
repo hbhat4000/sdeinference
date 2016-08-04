@@ -41,24 +41,8 @@ myk = myh^(0.75)
 mybigm = ceiling(pi/(myk^1.5))
 nsamples = 10000
 thetamat = matrix(nrow=(nsamples+1),ncol=3)
-thetamat[1,] = c(0.925,3.990,0.430)
 
-propZ <- function(n)
-{
-  outmat = matrix(0,nrow=n,ncol=3)
-  outmat[,1] = rnorm(n=n,mean=0,sd=0.02)
-  outmat[,2] = rnorm(n=n,mean=0,sd=0.02)
-  outmat[,3] = rnorm(n=n,mean=0,sd=0.01)
-  return(outmat)
-}
-
-logprior <- function(theta)
-{
-  out = dnorm(theta[1],mean=0.5,sd=4,log=TRUE)
-  out = out + dnorm(theta[2],mean=0.5,sd=4,log=TRUE)
-  out = out + dnorm(theta[3],mean=0,sd=4,log=TRUE)
-  return(out)
-}
+source('mcmcstuff.R')
 
 loglik = numeric(length=(nsamples+1))
 logpost = numeric(length=(nsamples+1))

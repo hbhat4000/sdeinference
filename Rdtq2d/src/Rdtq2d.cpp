@@ -35,14 +35,14 @@ static inline vec gaussian_pdf_vec(const vec& x, const double mu, const double s
 // the matrix runner has three columns: time, x-coord, y-coord (of runner)
 
 // f function for 2d
-static inline vec fv(const vec& chase, const vec& gammavec, const mat& runner, double tval)
+static inline vec fv(const vec& chase, const vec& gammavec, const mat& runner, double tval, double h)
 {
   // figure out time series time that is closest to t
   vec temptimes = tval - runner.col(0);
 
   unsigned int i;
   for (i=0; i<runner.n_rows; i++) if (temptimes(i) < 0) break;
-  unsigned int ci = i-1;
+  unsigned int ci = i-1; // ci = closest index
 
   // interpolated runner's position
   vec ri = (runner((ci+1),span(1,2))*(tval - runner(ci,0)) + runner(ci,span(1,2))*(runner((ci+1),0) - tval)).t();
@@ -53,7 +53,11 @@ static inline vec fv(const vec& chase, const vec& gammavec, const mat& runner, d
   vec drift = ri - chase;
   double denom = norm(drift);
   drift /= denom;
-  drift *= gammavec(ci);
+
+  unsigned int istar = floor(tval/h);
+//  cout << "time = " << tval << ", speed = " << gammavec(istar) << '\n';
+  drift *= gammavec(istar);
+
   return(drift);
 }
 
@@ -93,7 +97,9 @@ mat dtq(const vec &nuvec, const vec &gammavec, const mat &runner, const mat &cha
   vec ourcheck = fv(chaser, gammavec, runner, h);
 */
 
-omp_set_num_threads(24);
+#ifdef _OPENMP
+  omp_set_num_threads(24);
+#endif
 
 #pragma omp parallel for
   for (int i = 0; i < datapoints; i++)
@@ -101,7 +107,7 @@ omp_set_num_threads(24);
     vec yvec(2);
     yvec(0) = C1(i);
     yvec(1) = C2(i);
-    vec ftemp = fv(yvec, gammavec, runner, tvec(i));
+    vec ftemp = fv(yvec, gammavec, runner, tvec(i), h);
     vec gtemp = gv(yvec, nuvec);
     vec v1 = gaussian_pdf_vec(xvec, C1(i) + ftemp(0)*h, h12*gtemp(0));
     vec v2 = gaussian_pdf_vec(xvec, C2(i) + ftemp(1)*h, h12*gtemp(1));
@@ -143,7 +149,7 @@ omp_set_num_threads(24);
               for (int tp=0; tp<datapoints; tp++)
               {
                 double lefttime = runner(tp,0);
-                vec mu = yvec + h*fv(yvec, gammavec, runner, (lefttime+step*h));
+                vec mu = yvec + h*fv(yvec, gammavec, runner, (lefttime+step*h), h);
                 locbigg1(tp) = gaussian_pdf(xvec(i), mu(0), sigma(0));
                 locbigg2(tp) = gaussian_pdf(xvec(j), mu(1), sigma(1));
               }
@@ -189,7 +195,7 @@ mat PDFcheck(const vec &nuvec, const vec &gammavec, const mat &runner, double h,
             vec yvec(2);
             yvec(0) = (ip-M)*k;
             yvec(1) = (jp-M)*k;
-            vec mu = yvec + h*fv(yvec, gammavec, runner, h);
+            vec mu = yvec + h*fv(yvec, gammavec, runner, h, h);
             vec sigma = h12*gv(yvec, nuvec);
             double locbigg1 = gaussian_pdf(xvec(i), mu(0), sigma(0));
             double locbigg2 = gaussian_pdf(xvec(j), mu(1), sigma(1));
@@ -244,4 +250,3 @@ SEXP GCPP(SEXP s_nuvec, SEXP s_gammavec, SEXP s_runner, SEXP s_h, SEXP s_k, SEXP
     return Rcpp::wrap( Gnorm );
 }
 
- 

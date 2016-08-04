@@ -14,7 +14,7 @@ chasernew = list(NULL)
 
 for (iii in c(1:100))
 {
-  fname = paste('fakedata100/fakedata_h_0.4_',iii,'.RData',sep='')
+  fname = paste('fakedataswitch/fakedata_h_0.2_',iii,'.RData',sep='')
   load(fname)
   chaserlist[[iii]] = matrix(unlist(chaser), ncol = 3)
   runnerlist[[iii]] = matrix(unlist(runner), ncol = 3)
@@ -24,9 +24,9 @@ for (iii in c(1:100))
 }
 
 # algorithm parameters
-myh = 0.4
-myk = 0.05 # 0.05*(myh)^(1.2)
-xylimit = ceiling(max(unlist(chaserlist), unlist(runnerlist)))
+myh = 0.2
+myk = 0.1 # 0.05*(myh)^(1.2)
+xylimit = 1.5*ceiling(max(unlist(chaserlist), unlist(runnerlist)))
 
 # time increment from data
 timeinc = (runnerlist[[1]])[2,1] - (runnerlist[[1]])[1,1]
@@ -58,26 +58,25 @@ mylik <- function(likden, dat)
       # loc : a matrix of irregular locations to interpolate, first column of loc is the X coordinates
       # and second column is the Y's
       likdat = interp.surface(obj = list(x = xvec, y = xvec, z = matrix(likden[,i], nrow = mm)), loc = myloc)
-      likdat[likdat <= 2.2e-16] = 2.2e-16
-      logpost = logpost + sum(log(likdat))
+#       likdat[likdat <= 2.2e-16] = 2.2e-16
+      logpost = logpost + sum(log(likdat[likdat >= 2.2e-16]))
     }
     return(logpost)
 }
 
 
 lik = numeric(length = 200)
-gammavec = c(0.1,0.5)
 
-for(i in seq(from = 30, to = 60, by = 5))
+for(i in seq(from = 90, to = 140, by = 5))
 {
   # gammavec = rep(i/100,2)
   # gammavec = c(i/100, 1.2)
   # gammavec = c(0.25, i/100)
   # gammavec = c(0.25, 0.75)
   # nuvec = c(i/100, 0.5)
-  gammavec = c(0.5, 1.2)
-
-  nuvec = c(0.5, i/100)
+  # gammavec = c(0.5,1.2)
+  gammavec = c(0.5,i/100)
+  nuvec = c(0.1,0.2)
   # print(nuvec)
   # gammavec = c(0.2, 0.5)
   # nuvec = rep(i/100, 2)
