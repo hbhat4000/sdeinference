@@ -5,7 +5,7 @@ for (iii in c(1:100))
 
 # creating the runner's trajectory
 deltat = 0.4
-T = 0.4
+T = 8
 tvec = seq(from = 0, to = T, by = deltat)
 
 # xrun = seq(from = 1, to = xmax[1], by = 0.001)
@@ -17,8 +17,8 @@ tvec = seq(from = 0, to = T, by = deltat)
 # setting the parameters for the pursuit model
 speedchaser <- function(localt)
 {
-  if (localt < 0.2) sval = .5
-  else sval = 1.2
+  if (localt < 4) sval = .2
+  else sval = 1.0
   return(sval)
 }
 
@@ -38,18 +38,18 @@ f2 <- function(x, y, xr, yr, localt)
 
 g1 <- function(x, y, localt)
 {
-  nu1 = 0.1
+  nu1 = 0.15
   return(nu1)
 }
 
 g2 <- function(x, y, localt)
 {
-  nu2 = 0.2
+  nu2 = 0.1
   return(nu2)
 }
 
 # simulating the pursuit model
-h = 0.2
+h = 0.0001
 
 nsteps = ceiling(T/h)        # 250000
 nsaves = ceiling(T/deltat)   # 25
@@ -68,12 +68,13 @@ ychase <- vector(length = nsaves + 1)
 # yrun[1] = abs(rnorm(n = 1, mean = 0, sd = 1)) 
 # xchase[1] = abs(rnorm(n = 1, mean = xrun[1], sd = 0.5)) 
 # ychase[1] = abs(rnorm(n = 1, mean = yrun[1], sd = 0.5))
-xchase[1] = 0.4 + rnorm(n=1, mean=0, sd=0.1)
-ychase[1] = rnorm(n=1,mean=0,sd=0.1)
-xrun[1] = 0
-yrun[1] = 0
-xrun[2] = 0
-yrun[2] = 0.4
+for (i in c(0:nsaves))
+{
+  xrun[i+1] = -1 + 2*i/nsaves
+  yrun[i+1] = sin(pi*xrun[i+1])
+}
+xchase[1] = -1 + rnorm(n=1,mean=0,sd=0.1)
+ychase[1] = 1 + rnorm(n=1,mean=0, sd=0.1)
 
 for (i in c(1:nsaves))
 {
@@ -92,8 +93,8 @@ for (i in c(1:nsaves))
     for (j in c(1:hilt))
     {
         localt = tvec[i] + (j-1)*h
-        xc = abs(xc + (f1(xc, yc, xr, yr, localt))*(h) + (h12)*(g1(xc, yc, localt))*(rnorm(n = 1)))     
-        yc = abs(yc + (f2(xc, yc, xr, yr, localt))*(h) + (h12)*(g2(xc, yc, localt))*(rnorm(n = 1)))
+        xc = xc + (f1(xc, yc, xr, yr, localt))*(h) + (h12)*(g1(xc, yc, localt))*(rnorm(n = 1))
+        yc = yc + (f2(xc, yc, xr, yr, localt))*(h) + (h12)*(g2(xc, yc, localt))*(rnorm(n = 1))
     }
 
     xchase[i+1] = xc
@@ -109,7 +110,7 @@ chaser = list(tvec, xchase, ychase)
 # plot(xrun, yrun, xaxis, yaxis, type = "l", col = "red")
 # lines(xchase, ychase, xaxis, yaxis, type = "b", col = "black")
 
-myfname = paste('fakedataswitch/fakedata_h_0.2_',iii,'.RData',sep='')
+myfname = paste('fakedataswitch2/fakedata_h_0.0001_',iii,'.RData',sep='')
 
 save(runner, chaser, file=myfname)
 
