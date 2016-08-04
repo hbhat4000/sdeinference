@@ -68,15 +68,16 @@ mylik <- function(likden, dat)
 lik = numeric(length = 200)
 gammavec = c(0.1,0.5)
 
-for(i in seq(from = 5, to = 150, by = 5))
+for(i in seq(from = 30, to = 60, by = 5))
 {
   # gammavec = rep(i/100,2)
-  gammavec = c(i/100, 1.2)
+  # gammavec = c(i/100, 1.2)
   # gammavec = c(0.25, i/100)
   # gammavec = c(0.25, 0.75)
   # nuvec = c(i/100, 0.5)
+  gammavec = c(0.5, 1.2)
 
-  nuvec = c(0.5,0.5)
+  nuvec = c(0.5, i/100)
   # print(nuvec)
   # gammavec = c(0.2, 0.5)
   # nuvec = rep(i/100, 2)
@@ -90,6 +91,7 @@ for(i in seq(from = 5, to = 150, by = 5))
   print(c(i/100,lik[i]))
 }
 
-print(which.max(lik)/100)
 liknew = lik[-which(lik==0)]
+print(which.max(liknew))
+
 # plot(seq(from = 10, to = 55, by = 5)/100, liknew)
