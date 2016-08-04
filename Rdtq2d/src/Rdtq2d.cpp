@@ -68,12 +68,21 @@ mat dtq(const vec &nuvec, const vec &gammavec, const mat &runner, const mat &cha
   vec tvec = runner.col(0);
   vec C1 = chaser.col(1);
   vec C2 = chaser.col(2);
+  // cout << "chaser.col(0) = " << tvec << endl;
+  // cout << "chaser.col(1) = " << C1 << endl;
+  // cout << "chaser.col(2) = " << C2 << endl;
 
   double h12 = sqrt(h);
   int M = ceil(yM/k);
   int veclen = 2*M+1;
   int nr = veclen*veclen;
   int datapoints = C1.n_elem;
+
+  // cout << "h12 = " << h12 << endl;
+  // cout << "M = " << M << endl;
+  // cout << "nr = " << nr << endl;
+  // cout << "datapoints = " << datapoints << endl;
+
   vec xvec = k*linspace<vec>(-M,M,veclen);
   mat approxpdfvec(nr,datapoints);
 
@@ -101,6 +110,7 @@ omp_set_num_threads(24);
   }
 #pragma omp barrier
 
+  // cout << "approxpdfvec = " << approxpdfvec << endl;
   double supg = 1;
   int gamma = ceil(5*h12*supg/k);
 

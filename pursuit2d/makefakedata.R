@@ -17,8 +17,8 @@ tvec = seq(from = 0, to = T, by = t)
 # setting the parameters for the pursuit model
 speedchaser <- function(t)
 {
-  if (t <= 0.2) sval = .25
-  else sval = .75
+  if (t <= 0.2) sval = .5
+  else sval = 1.2
   return(sval)
 }
 
