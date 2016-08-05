@@ -67,20 +67,20 @@ static inline vec gv(const vec& chase, const vec& nuvec)
   return(nuvec);
 }
 
-mat dtq(const vec &nuvec, const vec &gammavec, const mat &runner, const mat &chaser, double h, int numsteps, double k, double yM)
+vec dtq(const vec &nuvec, const vec &gammavec, const mat &runner, const mat &chaser, double h, int numsteps, double k, double yM)
 {
   vec tvec = runner.col(0);
   vec C1 = chaser.col(1);
   vec C2 = chaser.col(2);
-  // cout << "chaser.col(0) = " << tvec << endl;
-  // cout << "chaser.col(1) = " << C1 << endl;
-  // cout << "chaser.col(2) = " << C2 << endl;
+//  cout << "chaser.col(0) = " << tvec << endl;
+//  cout << "chaser.col(1) = " << C1 << endl;
+//  cout << "chaser.col(2) = " << C2 << endl;
 
   double h12 = sqrt(h);
   int M = ceil(yM/k);
   int veclen = 2*M+1;
   int nr = veclen*veclen;
-  int datapoints = C1.n_elem;
+  int datapoints = C1.n_elem - 1;
 
   // cout << "h12 = " << h12 << endl;
   // cout << "M = " << M << endl;
@@ -89,6 +89,7 @@ mat dtq(const vec &nuvec, const vec &gammavec, const mat &runner, const mat &cha
 
   vec xvec = k*linspace<vec>(-M,M,veclen);
   mat approxpdfvec(nr,datapoints);
+  vec outpdf = zeros<vec>(datapoints);
 
 /*
   vec chaser(2);
@@ -101,27 +102,47 @@ mat dtq(const vec &nuvec, const vec &gammavec, const mat &runner, const mat &cha
   omp_set_num_threads(24);
 #endif
 
-#pragma omp parallel for
-  for (int i = 0; i < datapoints; i++)
+  if (numsteps > 1)
   {
-    vec yvec(2);
-    yvec(0) = C1(i);
-    yvec(1) = C2(i);
-    vec ftemp = fv(yvec, gammavec, runner, tvec(i), h);
-    vec gtemp = gv(yvec, nuvec);
-    vec v1 = gaussian_pdf_vec(xvec, C1(i) + ftemp(0)*h, h12*gtemp(0));
-    vec v2 = gaussian_pdf_vec(xvec, C2(i) + ftemp(1)*h, h12*gtemp(1));
+#pragma omp parallel for
+    for (int i = 0; i < datapoints; i++)
+    {
+      vec yvec(2);
+      yvec(0) = C1(i);
+      yvec(1) = C2(i);
+      vec ftemp = fv(yvec, gammavec, runner, tvec(i), h);
+      vec gtemp = gv(yvec, nuvec);
+      vec v1 = gaussian_pdf_vec(xvec, C1(i) + ftemp(0)*h, h12*gtemp(0));
+      vec v2 = gaussian_pdf_vec(xvec, C2(i) + ftemp(1)*h, h12*gtemp(1));
 
-    approxpdfvec.col(i) = vectorise(kron(v1, v2.t()));
-  }
+      approxpdfvec.col(i) = vectorise(kron(v1, v2.t()));
+    }
 #pragma omp barrier
+  }
+  else // should only run if numsteps = 1
+  {
+#pragma omp parallel for
+    for (int i = 0; i < datapoints; i++)
+    {
+      vec yvec(2);
+      yvec(0) = C1(i);
+      yvec(1) = C2(i);
+      vec ftemp = fv(yvec, gammavec, runner, tvec(i), h);
+      vec gtemp = gv(yvec, nuvec);
+      double v1 = gaussian_pdf(C1(i+1), C1(i) + ftemp(0)*h, h12*gtemp(0));
+      double v2 = gaussian_pdf(C2(i+1), C2(i) + ftemp(1)*h, h12*gtemp(1));
+
+      outpdf(i) = v1*v2;
+    }
+#pragma omp barrier
+  }
 
   // cout << "approxpdfvec = " << approxpdfvec << endl;
-  double supg = 1;
-  int gamma = ceil(5*h12*supg/k);
+  double supg = 0.2;
+  int gamma = ceil(2*h12*supg/k);
 
   // loop over the timesteps
-  for (int step=1; step<numsteps; step++)
+  for (int step=1; step<(numsteps-1); step++)
   {
     mat approxpdfvecnew = zeros<mat>(nr,datapoints);
 #pragma omp parallel for
@@ -162,7 +183,48 @@ mat dtq(const vec &nuvec, const vec &gammavec, const mat &runner, const mat &cha
 #pragma omp barrier
     approxpdfvec = approxpdfvecnew;
   }
-  return approxpdfvec;
+
+  // need to update chaser so that it includes the very last time point
+  if (numsteps > 1)
+  {
+    int gamma1 = gamma + 1;
+#pragma omp parallel for
+    for (int tp=1; tp<=datapoints; tp++)
+    {
+      int i = floor(C1(tp)/k) + M;
+      int j = floor(C2(tp)/k) + M;
+//      if ((i < 0) || (i >= veclen)) cout << "i = " << i << "\n";
+//      if ((j < 0) || (j >= veclen)) cout << "j = " << j << "\n";
+      for (int ip=(i-gamma1); ip<=(i+gamma1); ip++)
+      {
+        for (int jp=(j-gamma1); jp<=(j+gamma1); jp++)
+        {
+          int test = jp*veclen + ip;
+          if ((test >= 0) && (test < nr))
+          {
+            int ipeff = ip - i + gamma1;
+            int jpeff = jp - j + gamma1;
+            if ((ipeff >= 0) && (ipeff <= 2*gamma1) && (jpeff >= 0) && (jpeff <= 2*gamma1))
+            {
+//              cout << "datapoints = " << datapoints << ", tp = " << tp << ", test = " << test << '\n';
+              vec yvec(2);
+              yvec(0) = (ip-M)*k;
+              yvec(1) = (jp-M)*k;
+              vec sigma = h12*gv(yvec, nuvec);
+              double lefttime = runner(tp-1,0);
+              vec mu = yvec + h*fv(yvec, gammavec, runner, (lefttime+(numsteps-1)*h), h);
+              double locbigg1 = gaussian_pdf(C1(tp), mu(0), sigma(0));
+              double locbigg2 = gaussian_pdf(C2(tp), mu(1), sigma(1));
+              outpdf(tp-1) += k*k*(locbigg1 * locbigg2 * approxpdfvec(test,tp-1));
+            }
+          }
+        }
+      }
+    }
+#pragma omp barrier
+  }
+  // return approxpdfvec;
+  return outpdf;
 }
 
 mat PDFcheck(const vec &nuvec, const vec &gammavec, const mat &runner, double h, double k, double yM)
@@ -232,8 +294,8 @@ SEXP dtq2dCPP(SEXP s_nuvec, SEXP s_gammavec, SEXP s_runner, SEXP s_chaser, SEXP 
     double k = Rcpp::as<double>(s_k);
     double yM = Rcpp::as<double>(s_yM);
 
-    mat mymat = dtq(nuvec, gammavec, runner, chaser, h, numsteps, k, yM);
-    return Rcpp::wrap( mymat );
+    vec myvec = dtq(nuvec, gammavec, runner, chaser, h, numsteps, k, yM);
+    return Rcpp::wrap( myvec );
 }
 
 
@@ -249,4 +311,5 @@ SEXP GCPP(SEXP s_nuvec, SEXP s_gammavec, SEXP s_runner, SEXP s_h, SEXP s_k, SEXP
     mat Gnorm = PDFcheck(nuvec, gammavec, runner, h, k, yM);
     return Rcpp::wrap( Gnorm );
 }
+
 

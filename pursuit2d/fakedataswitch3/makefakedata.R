@@ -1,10 +1,10 @@
 rm(list = ls(all = TRUE))
 
-for (iii in c(1:1))
+for (iii in c(1:100))
 {
 
 # creating the runner's trajectory
-deltat = 0.01
+deltat = 0.1
 T = 8
 tvec = seq(from = 0, to = T, by = deltat)
 
@@ -17,7 +17,7 @@ tvec = seq(from = 0, to = T, by = deltat)
 # setting the parameters for the pursuit model
 speedchaser <- function(localt)
 {
-  if (localt < 4) sval = .4
+  if (localt < 4) sval = .2
   else sval = 1.0
   return(sval)
 }
@@ -110,7 +110,7 @@ chaser = list(tvec, xchase, ychase)
 # plot(xrun, yrun, xaxis, yaxis, type = "l", col = "red")
 # lines(xchase, ychase, xaxis, yaxis, type = "b", col = "black")
 
-myfname = paste('fakedataswitch4/fakedata_dt_',deltat,'.RData',sep='')
+myfname = paste('fakedataswitch3/fakedata_h_0.0001_',iii,'.RData',sep='')
 
 save(runner, chaser, file=myfname)
 

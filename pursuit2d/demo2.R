@@ -13,9 +13,9 @@ runnerlist = list(NULL)
 chasernew = list(NULL)
 
 xymax = 0
-for (iii in c(1:100))
+for (iii in c(1:1))
 {
-  fname = paste('fakedataswitch2/fakedata_h_0.0001_',iii,'.RData',sep='')
+  fname = paste('fakedataswitch3/fakedata_h_0.0001_',iii,'.RData',sep='')
   load(fname)
   chaserlist[[iii]] = matrix(unlist(chaser), ncol = 3)
   runnerlist[[iii]] = matrix(unlist(runner), ncol = 3)
@@ -27,8 +27,8 @@ for (iii in c(1:100))
 }
 
 # algorithm parameters
-myh = 0.4
-myk = 0.1 # 0.05*(myh)^(1.2)
+myh = 0.05
+myk = 0.04 # 0.05*(myh)^(1.2)
 xylimit = 1.5*xymax # ceiling(max(unlist(chaserlist), unlist(runnerlist)))
 
 # time increment from data
@@ -70,7 +70,9 @@ mylik <- function(likden, dat)
 
 lik = numeric(length = 200)
 
-for(i in seq(from = 80, to = 120, by = 5))
+gammalen = 8/myh
+
+for(i in seq(from = 60, to = 120, by = 5))
 {
   # gammavec = rep(i/100,2)
   # gammavec = c(i/100, 1.2)
@@ -78,14 +80,14 @@ for(i in seq(from = 80, to = 120, by = 5))
   # gammavec = c(0.25, 0.75)
   # nuvec = c(i/100, 0.5)
   # gammavec = c(0.5,1.2)
-  gammavec = c(rep(0.2,10),rep(i/100,10))
+  gammavec = c(rep(0.2,gammalen/2),rep(i/100,gammalen/2))
   nuvec = c(0.15,0.1)
   # print(nuvec)
   # gammavec = c(0.2, 0.5)
   # nuvec = rep(i/100, 2)
   # # print(nuvec)
 
-  for (iii in c(1:100))
+  for (iii in c(1:1))
   {
     oldden = Rdtq2d(nuvec, gammavec, runnerlist[[iii]], chasernew[[iii]], myh, myns, myk, xylimit)
     lik[i] = lik[i] + mylik(likden = oldden, dat = chaserlist[[iii]])
