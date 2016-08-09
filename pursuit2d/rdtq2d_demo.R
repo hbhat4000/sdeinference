@@ -8,21 +8,22 @@ library('Rdtq2d')
 library('fields')
 
 # load fake data which has 2 lists, chaser and runner, each with t, x, y
-load('fakedata.RData')
+load('fakedata3.RData')
 tchase = chaser[[1]]
 xchase = chaser[[2]]
 ychase = chaser[[3]]
-trun = runner[[1]]
-xrun = runner[[2]]
-yrun = runner[[3]]
+runner = matrix(unlist(runner),ncol=3)
 
-truethetavec = c(1.2, 1, 1)
+truethetavec = c(0.3, 0.5)
 
 # algorithm parameters
 mydatapoints = length(tchase) - 1
-myh = 0.05
-myk = (0.8*myh)^0.75
-xylimit = 94    # court dimension is 94*50
+
+myh = 0.4
+# myk = 0.8*(myh)^0.9
+myk = 0.5
+xylimit = 5    # court dimension is 94*50
+
 # xylimit = max(abs(xchase), abs(ychase))
 
 # check PDF
@@ -31,12 +32,10 @@ xylimit = 94    # court dimension is 94*50
 
 xchase = xchase[1:mydatapoints]
 ychase = ychase[1:mydatapoints]
-xrun = xrun[1:mydatapoints]
-yrun = yrun[1:mydatapoints]
 
 # Metropolis Hastings parameters
-burnin = 100
-numsteps = 1000
+burnin = 10
+numsteps = 100
 totsteps = numsteps + burnin
 mcmc = numeric(length = totsteps)
 mcmc[1] = 0.1
@@ -61,12 +60,21 @@ mm = length(xvec)
 myposterior <- function(likden, dat, prior)
 {
     steps = ncol(likden)
+    # print(steps)
     datamat = matrix(c(dat[[2]], dat[[3]]), ncol = 2)
+    # print(datamat)
     logpost = 0
 
     for(i in c(1:steps))
     { 
-      myloc = datamat[(i+1),c(1:2)]
+      myloc = matrix(datamat[(i+1),c(1:2)], ncol = 2)
+      # print(myloc)
+
+      # interp.surface(obj, loc)
+      # obj : a list with components x, y and z s.t. x and y are the X and Y grid values and z is a matrix
+      # with the corresponding values of the surface
+      # loc : a matrix of irregular locations to interpolate, first column of loc is the X coordinates
+      # and second column is the Y's
       likdat = interp.surface(obj = list(x = xvec, y = xvec, z = matrix(likden[,i], nrow = mm)), loc = myloc)
       likdat[likdat <= 2.2e-16] = 2.2e-16
       logpost = logpost + sum(log(likdat))
@@ -77,14 +85,22 @@ myposterior <- function(likden, dat, prior)
 
 thetavec = truethetavec
 thetavec[1] = mcmc[1]
-oldden = Rdtq2d(thetavec, xchase, ychase, xrun, yrun, h = myh, numsteps = myns, k = myk, yM = xylimit)
 
+# print("Pass 1")
+
+# gammavec = rep(1,mydatapoints+1)
+gammavec = c(1, 0.8)
+
+oldden = Rdtq2d(thetavec, gammavec, runner, c1=xchase, c2=ychase, h = myh, numsteps = myns, k = myk, yM = xylimit)
+
+# print("Pass 2")
 # checkk = PDFcheck(thetavec, h = myh, k = myk, yM = xylimit)
 # print(checkk)
 
 oldpost = myposterior(likden = oldden, dat = chaser, prior = myprior(mcmc[1]))
 artrack = numeric(length = (totsteps-1))
 
+# print("Pass 3")
 for (i in c(1:(totsteps-1)))
 {
     # generate proposal
@@ -94,7 +110,7 @@ for (i in c(1:(totsteps-1)))
     # calculate likelihood and posterior density
     thetavec = truethetavec
     thetavec[1] = prop
-    propden = Rdtq2d(thetavec, C1, C2, h = myh, numsteps = myns, k = myk, yM = xylimit)
+    propden = Rdtq2d(thetavec, gammavec, runner, c1=xchase, c2=ychase, h = myh, numsteps = myns, k = myk, yM = xylimit)
     proppost = myposterior(likden = propden, dat = chaser, prior = myprior(prop)) 
     rho = exp(proppost - oldpost)
     maxcolsumerr = max(abs(colSums(propden)*myk^2 - 1))

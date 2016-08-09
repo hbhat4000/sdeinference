@@ -1,81 +1,80 @@
 rm(list = ls(all = TRUE))
 
-# creating the runner's trajectory
-t = 1
-T = 100
-tvec = seq(from = 0, to = T, by = t)
-xrun = seq(from = 1, to = 94, by = 0.001)
-# yrun = 5*log(xrun) 
-yrun = rnorm(n = length(xrun), mean = 0, sd = 2) + xrun*xrun/500 + xrun/20 + 5
-xrun = xrun[seq(from = 1, to = length(xrun), length.out = T+t)]
-yrun = yrun[seq(from = 1, to = length(yrun), length.out = T+t)]
+for (iii in c(1:1))
+{
 
-# Basketbal court's dimension
-xaxis = c(0,94)
-yaxis = c(0,50)
-# plot(xrun, yrun, xaxis, yaxis, type = "o", col = "red")
-plot(xrun, yrun, xaxis, yaxis, type = "l", col = "red")
-# lines(xrun, yrun, type = "l", col = "blue")
-runner = list(tvec, xrun, yrun)
+# creating the runner's trajectory
+deltat = 0.01
+T = 8
+tvec = seq(from = 0, to = T, by = deltat)
+
+# xrun = seq(from = 1, to = xmax[1], by = 0.001)
+# # yrun = 5*log(xrun) 
+# yrun = abs(rnorm(n = length(xrun), mean = 0, sd = 2) + xrun*xrun/500 + xrun/20 + 1)
+# xrun = xrun[seq(from = 1, to = length(xrun), length.out = T/t + 1)]
+# yrun = yrun[seq(from = 1, to = length(yrun), length.out = T/t + 1)]
 
 # setting the parameters for the pursuit model
-speed <- function(t)
+speedchaser <- function(localt)
 {
-  # sval = 1 + 2*t
-  # sval = -1 + 2*t + rnorm(n = length(t))
-  sval = 1.2 + rnorm(n = length(t))
+  if (localt < 4) sval = .4
+  else sval = 1.0
   return(sval)
 }
 
-f1 <- function(x, y, xr, yr, t)
+f1 <- function(x, y, xr, yr, localt)
 {
-  numerator = speed(t) * (xr - x)
+  numerator = speedchaser(localt) * (xr - x)
   denominator = sqrt((xr - x)^2 + (yr - y)^2)
   return(numerator/denominator)
 }
 
-f2 <- function(x, y, xr, yr, t)
+f2 <- function(x, y, xr, yr, localt)
 {
-  numerator = speed(t) * (yr - y)
+  numerator = speedchaser(localt) * (yr - y)
   denominator = sqrt((xr - x)^2 + (yr - y)^2)
   return(numerator/denominator)
 }
 
-g1 <- function(x, y, t)
+g1 <- function(x, y, localt)
 {
-  nu1 = rnorm(n = 1, mean = 0.5, sd = 1)
+  nu1 = 0.15
   return(nu1)
 }
 
-g2 <- function(x, y, t)
+g2 <- function(x, y, localt)
 {
-  nu2 = rnorm(n = 1, mean = 0.5, sd = 1)
+  nu2 = 0.1
   return(nu2)
 }
 
 # simulating the pursuit model
 h = 0.0001
 
-
-nsteps = ceiling(T/h)   # 250000
-nsaves = ceiling(T/t)   # 25
-hilt = ceiling(t/h)		# 1000
+nsteps = ceiling(T/h)        # 250000
+nsaves = ceiling(T/deltat)   # 25
+hilt = ceiling(deltat/h)     # 1000
 stopifnot((nsteps == (nsaves*hilt)))
 
 h12 = sqrt(h)
 
-# xchase = matrix(0, nrow = ntrials, ncol = (nsaves + 1))
-# xchase[,1] = rnorm(n = ntrials, mean = xrun[1], sd = sqrt(h)) 
-# ychase = matrix(0, nrow = ntrials, ncol = (nsaves + 1))
-# ychase[,1] = rnorm(n = ntrials, mean = yrun[1], sd = sqrt(h)) 
-
+xrun <- vector(length = nsaves + 1)
+yrun <- vector(length = nsaves + 1)
 xchase <- vector(length = nsaves + 1)
 ychase <- vector(length = nsaves + 1)
-# xchase[1] = rnorm(n = 1, mean = xrun[1], sd = sqrt(h)) 
-# ychase[1] = rnorm(n = 1, mean = yrun[1], sd = sqrt(h))
 
-xchase[1] = rnorm(n = 1, mean = xrun[1], sd = 5) 
-ychase[1] = rnorm(n = 1, mean = yrun[1], sd = 5)
+# xrun[1] = abs(rnorm(n = 1, mean = 0, sd = 1)) 
+# yrun[1] = exp(xrun[1])
+# yrun[1] = abs(rnorm(n = 1, mean = 0, sd = 1)) 
+# xchase[1] = abs(rnorm(n = 1, mean = xrun[1], sd = 0.5)) 
+# ychase[1] = abs(rnorm(n = 1, mean = yrun[1], sd = 0.5))
+for (i in c(0:nsaves))
+{
+  xrun[i+1] = -1 + 2*i/nsaves
+  yrun[i+1] = sin(pi*xrun[i+1])
+}
+xchase[1] = -1 + rnorm(n=1,mean=0,sd=0.1)
+ychase[1] = 1 + rnorm(n=1,mean=0, sd=0.1)
 
 for (i in c(1:nsaves))
 {
@@ -85,21 +84,34 @@ for (i in c(1:nsaves))
 
     xc = xchase[i]
     yc = ychase[i]
-    t = tvec[i]
     xr = xrun[i]
     yr = yrun[i]
     
+#    xrun[i+1] = abs(xrun[i] + rnorm(n = 1, mean = 0, sd = 0.25))
+#    yrun[i+1] = abs(yrun[i] + rnorm(n = 1, mean = 0, sd = 0.25))
+
     for (j in c(1:hilt))
     {
-        xc = xc + (f1(xc, yc, xr, yr, t))*(h) + (h12)*(g1(xc, yc, t))*(rnorm(n = 1))      
-        yc = yc + (f2(xc, yc, xr, yr, t))*(h) + (h12)*(g2(xc, yc, t))*(rnorm(n = 1))
+        localt = tvec[i] + (j-1)*h
+        xc = xc + (f1(xc, yc, xr, yr, localt))*(h) + (h12)*(g1(xc, yc, localt))*(rnorm(n = 1))
+        yc = yc + (f2(xc, yc, xr, yr, localt))*(h) + (h12)*(g2(xc, yc, localt))*(rnorm(n = 1))
     }
 
     xchase[i+1] = xc
     ychase[i+1] = yc
 }
-# xchase[1] = rnorm(n = 1, mean = xrun[1], sd = sqrt(h)) 
-# ychase[1] = rnorm(n = 1, mean = yrun[1], sd = sqrt(h))
-lines(xchase, ychase, type = "b", col = "black")
+
+xaxis = c(min(xchase, xrun), max(xchase, xrun))
+yaxis = c(min(ychase, yrun), max(ychase, yrun))
+
+runner = list(tvec, xrun, yrun)
 chaser = list(tvec, xchase, ychase)
-save(runner, chaser, file = 'fakedata.RData')
+
+# plot(xrun, yrun, xaxis, yaxis, type = "l", col = "red")
+# lines(xchase, ychase, xaxis, yaxis, type = "b", col = "black")
+
+myfname = paste('fakedataswitch4/fakedata_dt_',deltat,'.RData',sep='')
+
+save(runner, chaser, file=myfname)
+
+}

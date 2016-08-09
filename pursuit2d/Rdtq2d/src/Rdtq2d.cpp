@@ -70,7 +70,7 @@ mat dtq(const vec &thetavec, const vec &xc, const vec &yc, const vec &xr, const 
 #pragma omp barrier
 
   double supg = 0.5;
-  int gamma = ceil(5*h12*supg/k);
+  int gamma = ceil(2*h12*supg/k);
 
   // loop over the timesteps
   for (int step = 1; step < numsteps; step++)
