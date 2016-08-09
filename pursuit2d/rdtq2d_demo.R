@@ -20,8 +20,8 @@ truethetavec = c(1.2, 1, 1)
 
 # algorithm parameters
 mydatapoints = length(tchase) - 1
-myh = 0.005
-myk = 0.8*myh^0.75
+myh = 0.05
+myk = (0.8*myh)^0.75
 xylimit = 94    # court dimension is 94*50
 # xylimit = max(abs(xchase), abs(ychase))
 
