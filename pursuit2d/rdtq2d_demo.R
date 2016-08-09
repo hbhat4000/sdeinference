@@ -18,10 +18,12 @@ truethetavec = c(0.3, 0.5)
 
 # algorithm parameters
 mydatapoints = length(tchase) - 1
+
 myh = 0.4
 # myk = 0.8*(myh)^0.9
 myk = 0.5
 xylimit = 5    # court dimension is 94*50
+
 # xylimit = max(abs(xchase), abs(ychase))
 
 # check PDF

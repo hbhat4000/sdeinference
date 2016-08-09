@@ -1,0 +1,58 @@
+\begin{thebibliography}{1}
+\providecommand{\url}[1]{{#1}}
+\providecommand{\urlprefix}{URL }
+\expandafter\ifx\csname urlstyle\endcsname\relax
+  \providecommand{\doi}[1]{DOI~\discretionary{}{}{}#1}\else
+  \providecommand{\doi}{DOI~\discretionary{}{}{}\begingroup
+  \urlstyle{rm}\Url}\fi
+
+\bibitem{Archambeau2007}
+Archambeau, C., Cornford, D., Opper, M., Shawe-Taylor, J.: Gaussian process
+  approximations of stochastic differential equations.
+\newblock Journal of Machine Learning Research: Workshop and Conference
+  Proceedings \textbf{1}, 1--16 (2007)
+
+\bibitem{Archambeau2007a}
+Archambeau, C., Opper, M., Shen, Y., Cornford, D., Shawe-Taylor, J.:
+  Variational inference for diffusion processes.
+\newblock In: Advances in Neural Information Processing Systems 20, pp. 17--24
+  (2007)
+
+\bibitem{BhatMadu2016}
+Bhat, H.S., Madushani, R.W.M.A.: Density tracking by quadrature for stochastic
+  differential equations (2016).
+\newblock Preprint
+
+\bibitem{fuchs2013inference}
+Fuchs, C.: Inference for Diffusion Processes: With Applications in Life
+  Sciences.
+\newblock Springer, Berlin (2013)
+
+\bibitem{iacus2009simulation}
+Iacus, S.M.: Simulation and {I}nference for {S}tochastic {D}ifferential
+  {E}quations: {W}ith {R} {E}xamples.
+\newblock Springer Series in Statistics. Springer, New York (2009)
+
+\bibitem{Picchini2014}
+Picchini, U.: Inference for {SDE} models via approximate {B}ayesian
+  computation.
+\newblock Journal of Computational and Graphical Statistics \textbf{23}(4),
+  1080--1100 (2014)
+
+\bibitem{Ruttor2013}
+Ruttor, A., Batz, P., Opper, M.: Approximate {G}aussian process inference for
+  the drift function in stochastic differential equations.
+\newblock In: Advances in Neural Information Processing Systems 26, pp.
+  2040--2048 (2013)
+
+\bibitem{sorensen2004parametric}
+S{\o}rensen, H.: Parametric inference for diffusion processes observed at
+  discrete points in time: a survey.
+\newblock International Statistical Review \textbf{72}(3), 337--354 (2004)
+
+\bibitem{Vrettas2015}
+Vrettas, M.D., Opper, M., Cornford, D.: Variational mean-field algorithm for
+  efficient inference in large systems of stochastic differential equations.
+\newblock Physical Review E \textbf{91}(012148) (2015)
+
+\end{thebibliography}
