@@ -1,6 +1,6 @@
-PDFcheck <- function (thetavec, h, k, yM)
+PDFcheck <- function (thetavec, gammavec, runner, h, k, yM)
 {
-    mylist = .Call("GCPP", thetavec, h, k, yM, PACKAGE = "Rdtq2d")
+    mylist = .Call("GCPP", thetavec, gammavec, runner, h, k, yM, PACKAGE = "Rdtq2d")
     return(mylist)
 }
 
