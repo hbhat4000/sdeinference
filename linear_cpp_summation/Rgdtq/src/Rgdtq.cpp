@@ -62,8 +62,8 @@ cube gDTQ(const vec &thetavec, const double h, const double k, const int M, cons
 // qmattheta.slice(0) = pdfmatrix, rest qmattheta.slice(i)
 
   cube D = Dtheta(xvec, xvec, h, thetavec);
-  cout << "Dimensions of cube D: " << D.n_rows << ", " << D.n_cols << ", " << D.n_slices << endl;
-  cout << "Sum of cube D: " << accu(D) << endl;
+  // cout << "Dimensions of cube D: " << D.n_rows << ", " << D.n_cols << ", " << D.n_slices << endl;
+  // cout << "Sum of cube D: " << accu(D) << endl;
   // cout << "3*3 matrix for objective function: " << D.subcube(0, 0, 0, 2, 2, 3) << endl;
 
   cube qmattheta = zeros<cube>(veclen, datapoints - 1, numtheta + 1);
@@ -71,11 +71,11 @@ cube gDTQ(const vec &thetavec, const double h, const double k, const int M, cons
   for(int curcol = 0; curcol < datapoints - 1; curcol++)
   {
     cube initderivs = Dtheta(xvec, init_data.col(curcol), h, thetavec);
-    if(curcol == 10)
-    {
-      cout << "Dimensions of cube initderivs:" << initderivs.n_rows << ", " << initderivs.n_cols << ", " << initderivs.n_slices << endl;
-      cout << "Sum of cube initderivs: " << accu(initderivs) << endl;
-    }
+    // if(curcol == 10)
+    // {
+    //   cout << "Dimensions of cube initderivs:" << initderivs.n_rows << ", " << initderivs.n_cols << ", " << initderivs.n_slices << endl;
+    //   cout << "Sum of cube initderivs: " << accu(initderivs) << endl;
+    // }
 
     for(int i = 0; i < numtheta + 1; i++)
     {
@@ -92,8 +92,8 @@ cube gDTQ(const vec &thetavec, const double h, const double k, const int M, cons
       qmattheta.slice(i) = k * D.slice(0) * qmattheta.slice(i) + k * D.slice(i) * qmattheta.slice(0);
     }
   }
-  cout << "Dimensions of cube qmattheta:" << qmattheta.n_rows << ", " << qmattheta.n_cols << ", " << qmattheta.n_slices << endl;
-  cout << "Sum of cube qmattheta: " << accu(qmattheta) << endl;
+  // cout << "Dimensions of cube qmattheta:" << qmattheta.n_rows << ", " << qmattheta.n_cols << ", " << qmattheta.n_slices << endl;
+  // cout << "Sum of cube qmattheta: " << accu(qmattheta) << endl;
 
 // gradient.slice(0) = likelihood
 // gdmat.slice(0) = gammamat
@@ -101,30 +101,30 @@ cube gDTQ(const vec &thetavec, const double h, const double k, const int M, cons
   for(int curcol = 1; curcol < datapoints; curcol++)
   {
     cube gdmat = Dtheta(init_data.col(curcol), xvec, h, thetavec);
-    // if(curcol == 1)
-    {
-      cout << "Dimensions of cube gdmat:" << gdmat.n_rows << ", " << gdmat.n_cols << ", " << gdmat.n_slices << endl;
-      cout << "Sum of cube gdmat: " << accu(gdmat) << endl;
-    // cout << "gdmat for curcol " << curcol << ": " << gdmat << endl;
-    }
+    // // if(curcol == 1)
+    // {
+    //   cout << "Dimensions of cube gdmat:" << gdmat.n_rows << ", " << gdmat.n_cols << ", " << gdmat.n_slices << endl;
+    //   cout << "Sum of cube gdmat: " << accu(gdmat) << endl;
+    // // cout << "gdmat for curcol " << curcol << ": " << gdmat << endl;
+    // }
 
     (gradient.slice(0)).col(curcol - 1) = k * gdmat.slice(0) * (qmattheta.slice(0)).col(curcol - 1);
 
     for(int i = 1; i < numtheta + 1; i++)
     {
-  cout << "Dimensions of cube gradient:" << gradient.n_rows << ", " << gradient.n_cols << ", " << gradient.n_slices << endl;
-  cout << "Sum of cube gradient: " << accu(gradient) << endl;
+  // cout << "Dimensions of cube gradient:" << gradient.n_rows << ", " << gradient.n_cols << ", " << gradient.n_slices << endl;
+  // cout << "Sum of cube gradient: " << accu(gradient) << endl;
       (gradient.slice(i)).col(curcol - 1) = k * gdmat.slice(i) * (qmattheta.slice(0)).col(curcol - 1) + k * (gdmat.slice(0)) * (qmattheta.slice(i)).col(curcol - 1);
     }
   }
-  cout << "Dimensions of cube gradient:" << gradient.n_rows << ", " << gradient.n_cols << ", " << gradient.n_slices << endl;
-  cout << "Sum of cube gradient: " << accu(gradient) << endl;
+  // cout << "Dimensions of cube gradient:" << gradient.n_rows << ", " << gradient.n_cols << ", " << gradient.n_slices << endl;
+  // cout << "Sum of cube gradient: " << accu(gradient) << endl;
 
   // // to check that the right values are getting passed to R
-  cout << "objective: " << -accu(log(gradient.slice(0))) << endl;
-  cout << "gradient 1: " << -accu(gradient.slice(1)/gradient.slice(0)) << endl;
-  cout << "gradient 2: " << -accu(gradient.slice(2)/gradient.slice(0)) << endl;
-  cout << "gradient 3: " << -accu(gradient.slice(3)/gradient.slice(0)) << endl;
+  // cout << "objective: " << -accu(log(gradient.slice(0))) << endl;
+  // cout << "gradient 1: " << -accu(gradient.slice(1)/gradient.slice(0)) << endl;
+  // cout << "gradient 2: " << -accu(gradient.slice(2)/gradient.slice(0)) << endl;
+  // cout << "gradient 3: " << -accu(gradient.slice(3)/gradient.slice(0)) << endl;
 
 
 return gradient;

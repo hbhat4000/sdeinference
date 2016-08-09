@@ -20,7 +20,7 @@
 % The following command is just for this sample document:
 \newcommand{\cs}[1]{\texttt{\char`\\#1}}
 
-\jmlrvolume{XX}
+\jmlrvolume{53}
 \jmlryear{2016}
 \jmlrworkshop{BIGMINE 2016}
 
@@ -53,20 +53,17 @@ of California, Merced, 5200 N. Lake Rd., Merced, CA, 95343, USA}
 \begin{abstract}
 In this paper, we consider the problem of Bayesian filtering and
 inference for time series data modeled as noisy, discrete-time
-observations of a stochastic differential equation (SDE) model.  We
-develop a Metropolis algorithm to sample from the joint posterior
-density of the parameters and the SDE state; the dimension of this
-posterior equals the number of parameters plus the length of the time
-series data.  The efficiency of our approach relies on an innovative
+observations of a stochastic differential equation (SDE) with undetermined
+parameters.  We develop a Metropolis algorithm to sample from the
+high-dimensional joint posterior density of all SDE parameters and
+state time series.  Our approach relies on an innovative
 density tracking by quadrature (DTQ) method to compute the likelihood
 of the SDE, the part of the posterior that requires the most
 computational effort to evaluate.  As we show, the DTQ method lends
 itself to a natural implementation using Scala and Apache Spark, an
-open source framework for scalable data mining.  Through several tests, we
-study the performance of our algorithm on filtering and inference
-problems for both regularly and irregularly spaced time series.  We
-also study the algorithm's scalability, both with regards to the
-length of the time series and the number of processors.
+open source framework for scalable data mining.  We
+study the performance and scalability of our algorithm on filtering and 
+inference problems for both regularly and irregularly spaced time series.
 \end{abstract}
 
 \begin{keywords}
@@ -81,42 +78,49 @@ In this paper, we focus on the problem of Bayesian
 inference and filtering for time series.  The time series consist 
 of noisy observations of a process that satisfies a stochastic
 differential equation (SDE).  The drift and diffusion terms of this
-SDE contain parameters.  Our goal is to use the observations to infer
-both the time series of the SDE's actual state (the filtering
+SDE contain undetermined parameters.  Our goal is to use the observations 
+to infer both the time series of the SDE's actual state (the filtering
 problem) and the parameters in the drift/diffusion terms (the
 inference problem).  While there are existing packages (e.g., for use
-with the R language for statistical computing) for solving this
-problem, we believe the method and implementation described here is
+with the R language for statistical computing) for solving either the
+inference problem or the filtering problem, we are not aware of an
+existing package that solves both problems simultaneously in a Bayesian
+fashion. The method and implementation described here is
 the first to make use of Apache Spark, an open source framework for
 scalable data processing and machine learning on computing clusters
 (\url{http://spark.apache.org}).
 
+The problem we consider arises in many recent studies in neuroscience 
+\citep{Kneissler2015} and systems biology \citep{Sun2008}.  In
+these fields, advances in measurement technology has led to
+large amounts of experimental data on biophysical processes.  The data
+often consist of noisy and/or incomplete time series measurements of the system's
+state.  Due to intrinsic noise on the cellular scale, these processes are often
+modeled by SDE's with undetermined parameters.  The task is then to
+use the data to infer these parameters and the true states of the process. 
+
 To solve the Bayesian inference and filtering problem, we develop a
 Metropolis algorithm to sample from the joint posterior density of the
-state series and the SDE parameters.  The main bottleneck in this
-Metropolis algorithm is the evaluation of the posterior density at
-proposed values of the parameters and state series.  The posterior
-consists of priors multiplied by two likelihood functions: the density
-of the observation series given the state series, and the density of
-the state series given the parameters.  This latter conditional
-density, the likelihood function for the SDE, is clearly the most
-computationally expensive term to evaluate in the overall posterior.
-
-The exact likelihood function for the SDE can only be computed in very
-special cases, i.e., when we can solve analytically for the SDE's
+state series and the SDE parameters.  A key bottleneck in the
+inference/filtering problem for SDE's, identified by many authors, is
+the evaluation of the
+conditional density of the state series given the parameters, i.e.,
+the likelihood function for the SDE.  The exact likelihood function for the SDE can only be computed in 
+special cases when we can solve analytically for the SDE's
 transition density.  Therefore, prior work has focused on
 approximating the exact likelihood, either through analytical methods,
 numerical methods, or a combination of the two.  For a thorough review
-of past work on this problem, we refer the reader to \citet{sorensen2004parametric, iacus2009simulation, fuchs2013inference}.  
+of past work on this problem, we refer the reader to
+\citet{chen2003, sorensen2004parametric, iacus2009simulation,
+  barber2011bayesian, 
+  fuchs2013inference}.  
 
 Consider the
 computation of the transition density $p_{X_{t_{j+1}}}(x_{j+1} |
 X_{t_j} = x_j, \theta)$.  Here $X_t$ stands for the state of a process that evolves
-forward in time via an SDE with parameter vector $\theta$.  The data
-consists of the state at two times, $t_j$ and $t_{j+1}$; we label
-these states, respectively, as $x_j$ and $x_{j+1}$.
-
-Let $p(x,t)$ denote the density function of $X_t$.  Then one approach
+forward in time via an SDE with parameter vector $\theta$.  We let
+$x_j$ and $x_{j+1}$ denote the true states of the system at times
+$t_j$ and $t_{j+1}$.  Let $p(x,t)$ denote the density function of $X_t$.  Then one approach
 to approximating the transition density is to numerically solve the
 forward Kolmogorov (or Fokker-Planck) equation with the initial
 condition $p(x,t_j) = \delta(x-x_j)$ up to time $t_{j+1}$.  Then
@@ -139,17 +143,34 @@ how these features of the DTQ method enable it to
 naturally take advantage of the efficiency and parallelism of Apache
 Spark and Scala.
 
+The central contribution of this paper is a DTQ-based Metropolis algorithm, and
+ensuing implementation in Scala and Spark, to sample from the joint posterior of the parameters and the
+state series given the observations.   To clarify, we note that in our problem, the data consists of \emph{noisy} observations of the
+process $X_t$: we let $y_j$ denote the observation at time $t_j$.
+Equipped with the DTQ method, we develop a Metropolis algorithm to
+sample from the joint posterior $p(\theta, \mathbf{x} |
+\mathbf{y})$.  Note
+that this is in contrast to numerous prior studies that treat the
+state series $\mathbf{x}$ as a hidden or latent variable; in such
+approaches, the term ``posterior'' is used to denote $p(\theta |
+\mathbf{y})$.  The \texttt{pomp} R package implements such an approach using
+particle filtering and particle Markov Chain Monte Carlo \citep{pomp}.  Our approach treats the state series
+$\mathbf{x}$ as a parameter vector.  This is necessary in situations
+where there is significant and/or interdependent uncertainty in both
+the parameters and the state series.
+
 In Section \ref{sect:results}, we describe experimental tests of our
 algorithm using both regularly and irregularly spaced time series.
 While there is further room for improvement, especially with regards
-to the classical Metropolis algorithm that we use here, the tests show
+to the classical Metropolis accept/reject step used here, the tests show
 that our current code does solve the Bayesian inference and filtering
 problem at a baseline acceptable level.  The tests also establish the
 scalability of the algorithm, both as a function of the number of
 Spark processors and as a function of the length of the time series.
 
-Other methods similar to ours are those of \citep{Pedersen1995} and
-\citep{SantaClara1997}.  In these methods, one also starts with the
+As far as computing the likelihood function of the SDE is concerned,
+the DTQ method is most similar to the methods of \cite{Pedersen1995} and
+\cite{SantaClara1997}.  In these methods, one also starts with the
 Chapman-Kolmogorov equation for the Euler-Maruyama scheme applied to
 (\ref{eqn:sde}).  However, instead of evaluating the resulting
 integrals by deterministic quadrature, Pedersen and Santa-Clara
@@ -158,7 +179,7 @@ generating numerical sample paths of the SDE at times in between the
 observation times.  Unless one generates sample paths conditional on
 both $X_{t_j} = x_j$ and  $X_{t_{j+1}} = x_{j+1}$, this approach is problematic.
 
-The work of \citep{Sahaliaclosedform} shares our goal of computing an accurate approximation of the exact transition density and resulting likelihood function.  Instead of applying quadrature, A\"it-Sahalia expands the transition density in a Gram-Charlier series and then computes the expansion coefficients up to a certain order.  
+The work of \cite{Sahaliaclosedform} shares our goal of computing an accurate approximation of the exact transition density and resulting likelihood function.  Instead of applying quadrature, A\"it-Sahalia expands the transition density in a Gram-Charlier series and then computes the expansion coefficients up to a certain order.  
 
 Other approaches that have been explored in the literature include
 likelihood-free methods such as Approximate Bayesian Computation
@@ -379,15 +400,14 @@ we require access to random vectors/variables $Z_\mathbf{x} \in \mathbb{R}^{L+1}
 $Z_\theta \in \mathbb{R}^N$, and $Z_\sigma \in \mathbb{R}$.  Then the
 Metropolis algorithm is as follows:
 \begin{itemize}
-\item Generate proposals by combining the old iterates with samples
-  from the $Z$ random variables:
-\begin{align*}
-\mathbf{x}^\ast_{i+1} &= \mathbf{x}_i + Z_{\mathbf{x}} \\
-\theta^\ast_{i+1} &= \theta_i + Z_\theta \\
-\log (\sigma_\epsilon^2)^\ast_{i+1} &= \log (\sigma_\epsilon^2)_i + Z_\sigma
-\end{align*}
-The $\log$ transformation ensures that the variance parameter
-$\sigma_\epsilon^2$ only takes positive values.
+\item Generate proposals by combining old iterates with samples:
+\begin{gather*}
+\mathbf{x}^\ast_{i+1} = \mathbf{x}_i + Z_{\mathbf{x}} \qquad \qquad
+\theta^\ast_{i+1} = \theta_i + Z_\theta \\
+\log (\sigma_\epsilon^2)^\ast_{i+1} = \log (\sigma_\epsilon^2)_i + Z_\sigma
+\end{gather*}
+The $\log$ transformation ensures that 
+$\sigma_\epsilon^2 > 0$.
 \item Calculate the ratio
 \begin{equation}
 \label{eqn:rho}
@@ -397,9 +417,9 @@ $\sigma_\epsilon^2$ only takes positive values.
   \mathbf{y} )  }.
 \end{equation}
 In practice, the denominator of this ratio has already been calculated at the
-previous step; only the numerator needs to be calculated.  To
+previous step; only the numerator must be calculated.  To
 compute the numerator, we use (\ref{eqn:post2}) together with the
-procedure described in Section \ref{sect:likelihood}, including
+procedure from Section \ref{sect:likelihood}, including
 (\ref{eqn:DTQfirst}), (\ref{eqn:chapman2}), and (\ref{eqn:DTQlast}).
 \item Let $u$ be a sample from a uniform random variable on $[0,1]$.
   If $\rho > u$, we accept the proposal, setting $\mathbf{x}_{i+1} =
@@ -575,7 +595,7 @@ assigns tasks to workers to compute the overall log likelihood efficiently.
 
 \begin{figure}[ht]
 \begin{center}
-\includegraphics[width=6in]{vec_to_slice}
+\includegraphics[width=5in]{vec_to_slice}
 \end{center}
 \vspace{-0.5in}
 \caption{We use Spark to parallelize the computation of the likelihood
@@ -592,18 +612,16 @@ on this RDD are executed in parallel.}
 
 \section{Results}
 \label{sect:results}
-We begin with results on artificial data sets.  The model used to
-generate these data sets is the Ornstein-Uhlenbeck SDE
-\begin{equation}
+We present results on artificial data sets.  The model used to
+generate these data sets is the Ornstein-Uhlenbeck SDE together with
+an observation process:
+\begin{align}
 \label{eqn:ou}
-{d}X_t = \theta_1 (\theta_2 - X_t) {d}t + \theta_3 {d}W_t
-\end{equation}
-together with the observation process
-\begin{equation}
+{d}X_t &= \theta_1 (\theta_2 - X_t) {d}t + \theta_3 {d}W_t \\
 \label{eqn:ou_obs}
-Y_t = X_t + \epsilon_t.
-\end{equation}
-Specifically, what we do is apply the Euler-Maruyama discretization to
+Y_t &= X_t + \epsilon_t.
+\end{align}
+Specifically, we apply the Euler-Maruyama discretization to
 (\ref{eqn:ou}) with a time step of $\kappa = 10^{-6}$.  Suppose our
 temporal grid consists of $t_j = n(j) \kappa$, where $n(0) = 0$,
 and $n(j+1) > n(j)$.  In some of the examples we pursue, $n(j)$ will
@@ -662,11 +680,8 @@ samples of the posterior (\ref{eqn:post2}).  Note that $h=0.02$
 implies $M=257$ and $h=0.01$ implies $M=559$; hence $\gamma=25$
 gives at least a $10$-fold reduction in computational effort.
 
-We discard the first $100$ samples as burn-in samples, i.e., samples
-that are taken before the Metropolis Markov chain has, to a good
-approximation, reached equilibrium.
-
-Using the samples thus obtained, we plot the posterior densities for
+We discard the first $100$ samples as burn-in samples.
+Using the $9900$ remaining samples, we plot the posterior densities for
 $\theta_1$, $\theta_2$ and $\log_{10} \sigma_\epsilon^2$ in Figure
 \ref{fig:post_equi}.  In this paper, all density plots use a Gaussian
 kernel with the ``nrd'' (or normal reference rule) bandwidth
@@ -676,7 +691,7 @@ corresponds to the samples produced using the DTQ method with $h=0.02$
 truth values for each parameter.
 
 Overall, we see that the Metropolis algorithm does a reasonable job of
-inferring the parameters.  For the Orstein-Uhlenbeck model
+inferring the parameters.  For the Ornstein-Uhlenbeck model
 (\ref{eqn:ou}), Bayesian inference is non-trivial when the temporal
 spacing between observations is sufficiently large.  Keeping in mind
 the logarithmic scale for the density of the third parameter, we still
@@ -708,13 +723,10 @@ main difference is that the temporal grid is defined by $t_j = n(j)
 \kappa$ where $n(j)$ is uniformly distributed on the integers between
 $4 \times 10^{4}$ and $4 \times 10^5 - 4 \times 10^4$.  Effectively,
 this generates a time series with minimum, mean, and maximum spacings
-$t_{j+1} - t_j$ of, respectively, $0.04$, $0.2$, and $0.36$.
-
-We use the same priors and Metropolis initial conditions as in Section \ref{sect:equispaced}.  We change
+$t_{j+1} - t_j$ of, respectively, $0.04$, $0.2$, and $0.36$.  We use the same priors and Metropolis initial conditions as in Section \ref{sect:equispaced}.  We change
 the proposal distributions slightly.  The parameters for
 $Z_{\mathbf{x}}$ and $Z_\sigma$ are now $(\mu=0,\sigma=0.01)$, while
 for $Z_\theta$ the parameters are still $(\mu=0,\sigma=0.05)$.
-
 For two values of the DTQ internal time step ($h = 0.02$ and
 $h=0.01$), we apply the Metropolis algorithm to generate $10,000$
 samples of the posterior (\ref{eqn:post2}).  Again, we discard the
@@ -745,6 +757,21 @@ accurate.
 \label{fig:post_nonequi}
 \end{figure}
 
+Using precisely the same data, priors, and initial
+conditions, we used the particle MCMC method from \texttt{pomp}
+\citep{pomp} to
+produce $10000$ post-burn-in samples from the posterior $p(\theta_1,
+\theta_2, \log \sigma_\epsilon |
+\mathbf{y})$.  The mean of this posterior is
+$(0.00539,-0.765,-2.088)$.  Only the final estimate is acceptable; the
+estimates for $\theta_1$ and $\theta_2$ are highly inaccurate.  Here
+we have given an initial guess for $x_0 = y_0 \approx 0.280$, exactly what
+we do in our method.  If we instead provide a bit of external
+assistance to \texttt{pomp} and guess $x_0 = 0$, the true mean of the
+$X_0$ used to generate the artificial data, we obtain an excellent posterior
+mean of $(0.477,0.973,-1.986)$.  Though further testing is required, we believe these results
+indicate that our method may be a viable alternative to the more established
+methods implemented in \texttt{pomp}.
 
 We turn to the filtering results, focusing on the post-burn-in samples of
 $\mathbf{x}$ generated with DTQ parameter $h=0.01$.  In Figure
@@ -806,27 +833,33 @@ of the observation series.  For each $L \in \{124, 250, 500,
 2500\}$, and for each $h \in \{0.02, 0.01\}$, we have generated a
 time series of the indicated length, run our inference/filtering code, and
 recorded the amount of time $T$ required to generate $1000$ Metropolis
-samples of the posterior.  The results are plotted in Figure
+samples of the posterior.  The results are plotted in the left panel
+of Figure
 \ref{fig:scaling} with log-transformed axes. For each set of points,
 we fit a line of the form $\log T = \beta_0 + \beta_1 \log L$, which
 corresponds to the law $T = e^{\beta_0} L^{\beta_1}$.  The solid lines
-in Figure \ref{fig:scaling} correspond to this latter law, plotted on
+in the left panel of Figure \ref{fig:scaling} correspond to this latter law, plotted on
 the same log-transformed axes.  For the $h=0.02$ line, we obtain
 $\beta_1 = 0.9092$; for the $h=0.01$ line, we obtain
 $\beta_1=0.9639$.  These results are consistent with $O(L)$ temporal scaling.
 
 \begin{figure}[th]
 \begin{center}
-\includegraphics[width=4in]{scaling}
+\includegraphics[height=2.5in]{scaling}
+\hspace{-0.25in} \includegraphics[height=2.5in,clip=true,trim=0 0 80 0]{scaling2}
 \end{center}
 \vspace{-0.25in}
-\caption{For each indicated value of $L$, we have generated a time
+\caption{\textbf{Left panel}: For each indicated value of $L$, we have generated a time
   series of length $L$, run our inference/filtering code, and recorded
   the amount of time $T$ required to generate $1000$ Metropolis samples of
   the posterior.  We fit lines to $\log T$ as a function of $\log
   L$---both the lines and the original data are plotted on
   log-transformed axes.  The slopes of the lines are less than $1$,
-  consistent with $O(L)$ temporal scaling.}
+  consistent with $O(L)$ temporal scaling. \textbf{Right panel}: For a non-equispaced time series of length $2501$, we ran our code with $\nu$ Spark
+  processors where $\nu \in \{3,6,12,24\}$.  We recorded $T$, the time required to generate
+  $10$ Metropolis samples of the posterior.  We fit lines to $\log T$ as a function of $\log
+  \nu$---both the lines and the original data are plotted on
+  log-transformed axes.  The slopes of the lines are close to $-0.5$, suggesting $O(\nu^{-1/2})$ scaling.}
 \label{fig:scaling}
 \end{figure}
 
@@ -837,22 +870,10 @@ each $h \in \{0.02,0.01\}$, we
 recorded the time $T$ required to 
 generate $10$ Metropolis samples.  For each set of points, we fit a
 line of the form $\log T = \beta_0 + \beta_1 \log \nu$.  Both the raw
-data and lines are plotted on log-transformed axes in Figure \ref{fig:scaling2}.  For the
+data and lines are plotted on log-transformed axes in the right panel
+of Figure \ref{fig:scaling}.  For the
 $h=0.02$ line, we obtain $\beta_1=-0.4164$, while for the $h=0.01$
 line, we obtain $\beta_1=-0.4699$.  These results suggest $O(\nu^{-1/2})$ scaling.
-
-\begin{figure}[th]
-\begin{center}
-\includegraphics[width=4in]{scaling2}
-\end{center}
-\vspace{-0.25in}
-\caption{For a non-equispaced time series of length $2501$, we ran our code with $\nu$ Spark
-  processors where $\nu \in \{3,6,12,24\}$.  We recorded $T$, the time required to generate
-  $10$ Metropolis samples of the posterior.  We fit lines to $\log T$ as a function of $\log
-  \nu$---both the lines and the original data are plotted on
-  log-transformed axes.  The slopes of the lines are close to $-0.5$, suggesting $O(\nu^{-1/2})$ scaling.}
-\label{fig:scaling2}
-\end{figure}
 
 \section{Discussion and Conclusion}
 \label{sect:conclusion}

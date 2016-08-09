@@ -2,6 +2,7 @@ import breeze.linalg._
 import breeze.stats.distributions._
 import scala.math
 import java.io._
+import org.apache.spark.mllib.optimization._
 
 // global parameters
 val h: Double = 0.01
@@ -159,28 +160,28 @@ val metro = new Uniform(0,1)
 // must pass in tyvec, the data
 // and also the previous iteration's values for txvec, theta, sigeps2
 // and the old likelihood 
-def metropolis(tyvec: DenseVector[(Double,Double)], txvec: DenseVector[(Double,Double)], theta: DenseVector[Double], sigeps2: Double, oldlik: Double) = {
+// def metropolis(tyvec: DenseVector[(Double,Double)], txvec: DenseVector[(Double,Double)], theta: DenseVector[Double], sigeps2: Double, oldlik: Double) = {
 
-    // create proposal
-    val xvec = txvec.map(x => x._2)
-    val xvecstar = xvec + DenseVector(xvecproposal.sample(xvec.size).toArray)
-    val txvecstar = vec2tuples(txvec.map(x=>x._1),xvecstar)
-    var thetastar = DenseVector[Double](theta(0),theta(1),math.log(theta(2)))
-    thetastar = thetastar + DenseVector(thetaproposal.sample(theta.size).toArray)
-    thetastar(2) = 0.25
-    val sigeps2star = math.exp(math.log(sigeps2) + sigeps2proposal.sample(1)(0))
+//     // create proposal
+//     val xvec = txvec.map(x => x._2)
+//     val xvecstar = xvec + DenseVector(xvecproposal.sample(xvec.size).toArray)
+//     val txvecstar = vec2tuples(txvec.map(x=>x._1),xvecstar)
+//     var thetastar = DenseVector[Double](theta(0),theta(1),math.log(theta(2)))
+//     thetastar = thetastar + DenseVector(thetaproposal.sample(theta.size).toArray)
+//     thetastar(2) = 0.25
+//     val sigeps2star = math.exp(math.log(sigeps2) + sigeps2proposal.sample(1)(0))
 
-    // evaluate likelihood
-    val likstar = fulllik(tyvec, txvecstar, thetastar, sigeps2star)
+//     // evaluate likelihood
+//     val likstar = fulllik(tyvec, txvecstar, thetastar, sigeps2star)
 
-    // accept/reject step
-    val u = metro.sample(1)(0)
-    val ratio = math.exp(likstar - oldlik)
-    if (ratio > u)
-        (1,txvecstar,thetastar,sigeps2star,likstar)
-    else
-        (0,txvec,theta,sigeps2,oldlik)
-}
+//     // accept/reject step
+//     val u = metro.sample(1)(0)
+//     val ratio = math.exp(likstar - oldlik)
+//     if (ratio > u)
+//         (1,txvecstar,thetastar,sigeps2star,likstar)
+//     else
+//         (0,txvec,theta,sigeps2,oldlik)
+// }
 
 // aux function to output vector to file
 def outvec(v: DenseVector[Double], fname: String) = {
@@ -192,42 +193,42 @@ def outvec(v: DenseVector[Double], fname: String) = {
 }
 
 // mcmc loop
-def mcmc(timeseries: DenseVector[(Double,Double)], numsamples: Int) = {
-    // initial value of theta
-    var theta: DenseVector[Double] = DenseVector(1.0,0.1,0.25)
+// def mcmc(timeseries: DenseVector[(Double,Double)], numsamples: Int) = {
+//     // initial value of theta
+//     var theta: DenseVector[Double] = DenseVector(1.0,0.1,0.25)
 
-    // initial value of txvec
-    var txvec: DenseVector[(Double,Double)] = timeseries.copy
+//     // initial value of txvec
+//     var txvec: DenseVector[(Double,Double)] = timeseries.copy
 
-    // initial value of sigeps2
-    var sigeps2: Double = 1.0
+//     // initial value of sigeps2
+//     var sigeps2: Double = 1.0
 
-    // compute initial likelihood
-    var lik = fulllik(timeseries, txvec, theta, sigeps2)
+//     // compute initial likelihood
+//     var lik = fulllik(timeseries, txvec, theta, sigeps2)
 
-    // initial value of accept/ratio flag
-    var accept = 1
+//     // initial value of accept/ratio flag
+//     var accept = 1
    
-    for (i <- 1 to numsamples) {
-        // concatenate everything and save to disk
-        var everything = DenseVector.vertcat(theta,txvec.map(x => x._2))
-        everything = DenseVector.vertcat(everything,DenseVector(sigeps2))
-        everything = DenseVector.vertcat(everything,DenseVector(lik))
-        everything = DenseVector.vertcat(everything,DenseVector(accept))
-        val tmp = outvec(everything,"mcmc.out")
+//     for (i <- 1 to numsamples) {
+//         // concatenate everything and save to disk
+//         var everything = DenseVector.vertcat(theta,txvec.map(x => x._2))
+//         everything = DenseVector.vertcat(everything,DenseVector(sigeps2))
+//         everything = DenseVector.vertcat(everything,DenseVector(lik))
+//         everything = DenseVector.vertcat(everything,DenseVector(accept))
+//         val tmp = outvec(everything,"mcmc.out")
 
-        // take a metropolis step
-        val metrostep = metropolis(timeseries, txvec, theta, sigeps2, lik)
-        accept = metrostep._1
-        if (accept == 1) {
-            txvec = metrostep._2
-            theta = metrostep._3
-            sigeps2 = metrostep._4
-            lik = metrostep._5
-        }
-    }
-    0
-}
+//         // take a metropolis step
+//         val metrostep = metropolis(timeseries, txvec, theta, sigeps2, lik)
+//         accept = metrostep._1
+//         if (accept == 1) {
+//             txvec = metrostep._2
+//             theta = metrostep._3
+//             sigeps2 = metrostep._4
+//             lik = metrostep._5
+//         }
+//     }
+//     0
+// }
 
 // fake data created in R
 import scala.io.Source

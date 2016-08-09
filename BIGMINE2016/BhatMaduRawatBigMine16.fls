@@ -144,6 +144,7 @@ INPUT /usr/local/texlive/2014/texmf-dist/fonts/tfm/public/amsfonts/symbols/msbm1
 INPUT /usr/local/texlive/2014/texmf-dist/fonts/tfm/public/amsfonts/symbols/msbm10.tfm
 INPUT /usr/local/texlive/2014/texmf-dist/fonts/tfm/public/amsfonts/symbols/msbm7.tfm
 INPUT /usr/local/texlive/2014/texmf-var/fonts/map/pdftex/updmap/pdftex.map
+INPUT /usr/local/texlive/2014/texmf-dist/fonts/tfm/public/cm/cmti10.tfm
 INPUT /usr/local/texlive/2014/texmf-dist/fonts/tfm/public/cm/cmbx8.tfm
 INPUT /usr/local/texlive/2014/texmf-dist/fonts/tfm/public/cm/cmbx6.tfm
 INPUT /usr/local/texlive/2014/texmf-dist/fonts/tfm/public/cm/cmtt8.tfm
@@ -174,7 +175,6 @@ INPUT ./scaling2.pdf
 INPUT ./scaling2.pdf
 INPUT BhatMaduRawatBigMine16.bbl
 INPUT BhatMaduRawatBigMine16.bbl
-INPUT /usr/local/texlive/2014/texmf-dist/fonts/tfm/public/cm/cmti10.tfm
 INPUT BhatMaduRawatBigMine16.aux
 INPUT ./BhatMaduRawatBigMine16.out
 INPUT ./BhatMaduRawatBigMine16.out

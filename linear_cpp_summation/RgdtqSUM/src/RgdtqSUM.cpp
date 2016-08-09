@@ -78,8 +78,8 @@ cube gDTQ(const vec& thetavec, const double h, const double k, const int M, cons
       // DSUM.slice(3)(i, j) = Dvec(3);
     }
   }
-  cout << "Dimensions of cube DSUM: " << DSUM.n_rows << ", " << DSUM.n_cols << ", " << DSUM.n_slices << endl;
-  cout << "Sum of cube DSUM: " << accu(DSUM) << endl;
+  // cout << "Dimensions of cube DSUM: " << DSUM.n_rows << ", " << DSUM.n_cols << ", " << DSUM.n_slices << endl;
+  // cout << "Sum of cube DSUM: " << accu(DSUM) << endl;
   // cout << "3*3 matrix for objective function: " << DSUM.subcube(0, 0, 0, 2, 2, 3) << endl;
 
 /**** NEW SEGMENT ****/  
@@ -99,11 +99,11 @@ cube gDTQ(const vec& thetavec, const double h, const double k, const int M, cons
         initderivsSUM.subcube(span(i), span(j), span()) = gaussian_pdf(x, y, h, thetavec);
       }
     }
-    if (curcol == 10)
-    {
-      cout << "Dimensions of cube initderivsSUM:" << initderivsSUM.n_rows << ", " << initderivsSUM.n_cols << ", " << initderivsSUM.n_slices << endl;
-      cout << "Sum of cube initderivsSUM: " << accu(initderivsSUM) << endl;
-    }
+    // if (curcol == 10)
+    // {
+    //   cout << "Dimensions of cube initderivsSUM:" << initderivsSUM.n_rows << ", " << initderivsSUM.n_cols << ", " << initderivsSUM.n_slices << endl;
+    //   cout << "Sum of cube initderivsSUM: " << accu(initderivsSUM) << endl;
+    // }
     for(int thetavals = 0; thetavals < numtheta + 1; thetavals++)
     {
       (qmatthetaSUM.slice(thetavals)).col(curcol) = mean(initderivsSUM.slice(thetavals), 1);
@@ -121,26 +121,8 @@ cube gDTQ(const vec& thetavec, const double h, const double k, const int M, cons
       qmatthetaSUM.slice(i) = k * DSUM.slice(0) * qmatthetaSUM.slice(i) + k * DSUM.slice(i) * qmatthetaSUM.slice(0);
     }
   }
-  cout << "Dimensions of cube qmatthetaSUM:" << qmatthetaSUM.n_rows << ", " << qmatthetaSUM.n_cols << ", " << qmatthetaSUM.n_slices << endl;
-  cout << "Sum of cube qmatthetaSUM: " << accu(qmatthetaSUM) << endl;
-
-/**** NEW SEGMENT ****/
-  // cube gdmatSUM = zeros<cube>(numtrials, veclen, numtheta + 1);
-  // for(int curcol = 1; curcol < datapoints; curcol++)
-  // {
-  //   for(int i = 0; i < numtrials; i++)
-  //   {
-  //     for(int j = 0; j < veclen; j++)
-  //     {
-  //       double x = init_data(i, curcol);
-  //       double y = xvec(j);
-
-  //       // gaussian_pdf returns a vector of length numtheta + 1
-  //       // the subcube is selected as Dsum(i, j, :)
-  //       gdmatSUM.subcube(span(i), span(j), span()) = gaussian_pdf(x, y, h, thetavec);
-  //     }
-  //   }
-  // }
+  // cout << "Dimensions of cube qmatthetaSUM:" << qmatthetaSUM.n_rows << ", " << qmatthetaSUM.n_cols << ", " << qmatthetaSUM.n_slices << endl;
+  // cout << "Sum of cube qmatthetaSUM: " << accu(qmatthetaSUM) << endl;
 
 /**** OLD SEGMENT reused after changing the gaussian_pdf function call****/  
 // gradient.slice(0) = likelihood
@@ -163,26 +145,26 @@ cube gDTQ(const vec& thetavec, const double h, const double k, const int M, cons
         gdmatSUM.subcube(span(i), span(j), span()) = gaussian_pdf(x, y, h, thetavec);
       }
     }
-    cout << "Dimensions of cube gdmatSUM:" << gdmatSUM.n_rows << ", " << gdmatSUM.n_cols << ", " << gdmatSUM.n_slices << endl;
-    cout << "Sum of cube gdmatSUM: " << accu(gdmatSUM) << endl;
+    // cout << "Dimensions of cube gdmatSUM:" << gdmatSUM.n_rows << ", " << gdmatSUM.n_cols << ", " << gdmatSUM.n_slices << endl;
+    // cout << "Sum of cube gdmatSUM: " << accu(gdmatSUM) << endl;
 
     (gradientSUM.slice(0)).col(curcol - 1) = k * gdmatSUM.slice(0) * (qmatthetaSUM.slice(0)).col(curcol - 1);
 
     for(int i = 1; i < numtheta + 1; i++)
     {
-  cout << "Dimensions of cube gradientSUM:" << gradientSUM.n_rows << ", " << gradientSUM.n_cols << ", " << gradientSUM.n_slices << endl;
-  cout << "Sum of cube gradientSUM: " << accu(gradientSUM) << endl;
+  // cout << "Dimensions of cube gradientSUM:" << gradientSUM.n_rows << ", " << gradientSUM.n_cols << ", " << gradientSUM.n_slices << endl;
+  // cout << "Sum of cube gradientSUM: " << accu(gradientSUM) << endl;
       (gradientSUM.slice(i)).col(curcol - 1) = k * gdmatSUM.slice(i) * (qmatthetaSUM.slice(0)).col(curcol - 1) + k * (gdmatSUM.slice(0)) * (qmatthetaSUM.slice(i)).col(curcol - 1);
     }
   }
-  cout << "Dimensions of cube gradientSUM:" << gradientSUM.n_rows << ", " << gradientSUM.n_cols << ", " << gradientSUM.n_slices << endl;
-  cout << "Sum of cube gradientSUM: " << accu(gradientSUM) << endl;
+  // cout << "Dimensions of cube gradientSUM:" << gradientSUM.n_rows << ", " << gradientSUM.n_cols << ", " << gradientSUM.n_slices << endl;
+  // cout << "Sum of cube gradientSUM: " << accu(gradientSUM) << endl;
 
   // // to check that the right values are getting passed to R
-  cout << "objective: " << -accu(log(gradientSUM.slice(0))) << endl;
-  cout << "gradientSUM 1: " << -accu(gradientSUM.slice(1)/gradientSUM.slice(0)) << endl;
-  cout << "gradientSUM 2: " << -accu(gradientSUM.slice(2)/gradientSUM.slice(0)) << endl;
-  cout << "gradientSUM 3: " << -accu(gradientSUM.slice(3)/gradientSUM.slice(0)) << endl;
+  // cout << "objective: " << -accu(log(gradientSUM.slice(0))) << endl;
+  // cout << "gradientSUM 1: " << -accu(gradientSUM.slice(1)/gradientSUM.slice(0)) << endl;
+  // cout << "gradientSUM 2: " << -accu(gradientSUM.slice(2)/gradientSUM.slice(0)) << endl;
+  // cout << "gradientSUM 3: " << -accu(gradientSUM.slice(3)/gradientSUM.slice(0)) << endl;
 
 return gradientSUM;
 }
