@@ -71,6 +71,34 @@ very challenging problem, due to the fact that the likelihood function is genera
 
 In our work we have developed a Markov Chain Monte Carlo Method (MCMC) algorithm for Bayesian inference of parameters in SDE.  The MCMC algorithm is derived using a Metropolis scheme; our innovation is to evaluate the log likelihood efficiently using density tracking by quadrature (DTQ).  The DTQ method applies quadrature to the Chapman-Kolmogorov equation associated with a time-discretization of the original SDE \cite{BhatMadu2016}. For the case of scalar SDE, the DTQ method's density function converges to the true density of the SDE at a rate that is linear in the time step.  The method we have developed is applicable to the case where inter-observation times are large and/or irregular.  In this paper, we present a Metropolis algorithm for Bayesian inference of unknown parameters of a 2-D SDE.
 
+We consider the setup where a player is running and another player is chasing the runner inside the court. We assume that the goal of the chaser is to get in the vicinity of the runner and thus the chaser is running towards the current position of the runner. The current spatial coordinates of the runner is $(x^{r}, y^{r})$ and those of the chaser is $(x^{c}, y^{c})$. Since the chaser is moving towards the runner, the velocity vector of the chaser is pointed towards the runner's current position.
+
+\begin{figure}
+\centering
+\includegraphics[width=0.8\textwidth]{pursuit.png}
+\caption{Paths for runner and chaser}
+\end{figure}
+
+The velocity of the chaser, $(\dot{x}^c, \dot{y}^c)$, can thus be given as
+\begin{align*}
+(\dot{x}^c, \dot{y}^c) = \gamma(t) (x^{r} - x^{c}, y^{r} - y^{c})
+\end{align*}
+
+where the velocity vector of the chaser is $\vec{\phi} = (x^{r} - x^{c}, y^{r} - y^{c})$ and the speed of the chaser is $\gamma(t)$. If we know the runner's position at different time points, the system of ODEs for the chaser is as follows,
+
+\begin{align*}
+\mathrm{d}(x^{c}, y^{c}) & = \gamma(t) \frac{\vec{\phi}}{||\vec{\phi}||} \mathrm{d}t + (\nu_1 \mathrm{d}W^1_t, \nu_2 \mathrm{d}W^2_t) \\
+\implies \mathrm{d} x^{c} & = \frac{\gamma(t) (x^{r} - x^{c})}{\sqrt{(x^{r} - x^{c})^2 + (y^{r} - y^{c})^2}} \mathrm{d}t + \nu_1 \mathrm{d}W^1_t \\
+\mathrm{d} y^{c} & = \frac{\gamma(t) (y^{r} - y^{c})}{\sqrt{(x^{r} - x^{c})^2 + (y^{r} - y^{c})^2}} \mathrm{d}t + \nu_2 \mathrm{d} W^2_t
+\end{align*}
+
+The Euler-Maruyama approximation of the above system of ODEs is
+
+\begin{align*}
+x^{c}_{i+1} & = x^{c}_{i} + \frac{\gamma(t) (x^{r}_{i} - x^{c}_{i})}{\sqrt{(x^{r}_{i} - x^{c}_{i})^2 + (y^{r}_{i} - y^{c}_{i})^2}} h + \nu_1 \sqrt{h} Z_1 \\
+y^{c}_{i+1} & = y^{c}_{i} + \frac{\gamma(t) (y^{r}_{i} - y^{c}_{i})}{\sqrt{(x^{r}_{i} - x^{c}_{i})^2 + (y^{r}_{i} - y^{c}_{i})^2}}h + \nu_2 \sqrt{h} Z_2
+\end{align*}
+
 \section{Derivation of the Numerical Method}
 \label{sec:2}
 % Always give a unique label
@@ -78,12 +106,12 @@ In our work we have developed a Markov Chain Monte Carlo Method (MCMC) algorithm
 % and \cite{<label>} for bibliographic references
 % use \sectionmark{}
 % to alter or adjust the section heading in the running head
-Let $W_{1,t}$ and $W_{2,t}$ denote two independent Wiener processes with $W_{1,0} = W_{2,0} = 0$ almost surely. In this work, we deal with coupled SDE of the form:
+Let $W_{1,t}$ and $W_{2,t}$ denote two independent Wiener processes with $W_{1,0} = W_{2,0} = 0$ almost surely. In this work, we deal with time-dependent coupled SDE of the form:
 \begin{subequations}
 \label{eqn:sde}
 \begin{align}
-\mathrm{d}X_{1,t} &= f_1(\mathbf{X}_t, \btheta)\mathrm{d}t + g_1(\mathbf{X}_t, \btheta) \mathrm{d}W_{1,t} \\
-\mathrm{d}X_{2,t} &= f_2(\mathbf{X}_t, \btheta)\mathrm{d}t + g_2(\mathbf{X}_t, \btheta) \mathrm{d}W_{2,t}.
+\mathrm{d}X_{1,t} &= f_1(t, \mathbf{X}_t, \btheta)\mathrm{d}t + g_1(t, \mathbf{X}_t, \btheta) \mathrm{d}W_{1,t} \\
+\mathrm{d}X_{2,t} &= f_2(t, \mathbf{X}_t, \btheta)\mathrm{d}t + g_2(t, \mathbf{X}_t, \btheta) \mathrm{d}W_{2,t}.
 \end{align}
 \end{subequations}
 Here $\mathbf{X}_t = (X_{1,t}, X_{2,t})$ is a two-dimensional stochastic process. For $j=1, 2$, we refer to $f_j$ and $g_j$ as, respectively, drift and diffusion functions.  Both drift and diffusion functions may depend on a parameter vector $\boldsymbol{\theta}\in \mathbb{R}^{N}$.
@@ -96,10 +124,11 @@ where $p( \mathbf{x} \, | \, \btheta)$ is the likelihood and $p(\btheta)$ is the
 \begin{subequations}
 \label{eqn:discretesde}
 \begin{align}
-X_1^{n+1} &= X_1^{n} + f_1(X_1^n, X_2^n, \btheta)h + g_1(X_1^n, X_2^n,  \btheta) \sqrt{h} Z_1^{n} \\
-X_2^{n+1} &= X_2^{n} + f_2(X_1^n, X_2^n,\btheta)h + g_2(X_1^n, X_2^n,\btheta) \sqrt{h} Z_2^{n}.
+X_1^{n+1} &= X_1^{n} + f_1(t_n, X_1^n, X_2^n, \btheta)h + g_1(t_n, X_1^n, X_2^n,  \btheta) \sqrt{h} Z_1^{n+1} \\
+X_2^{n+1} &= X_2^{n} + f_2(t_n, X_1^n, X_2^n,\btheta)h + g_2(t_n, X_1^n, X_2^n,\btheta) \sqrt{h} Z_2^{n+1}.
 \end{align}
 \end{subequations}
+
 Here $h > 0$ is a fixed time step, the time step of our numerical method.  We shall choose $h$ to be a fraction of $\Delta t$, i.e., $F h = \Delta t$ for integer $F \geq 2$.  The random variables $X_i^n$ for $i=1,2$ are approximations of $X_{i,n h}$.  The $Z_i^n$ are independent and identically distributed random variables, normally distributed with mean $0$ and variance $1$, i.e., $Z_i^n \sim \mathcal{N}(0,1)$.
 
 Let $\widetilde{p}(\mathbf{x} \, | \, \btheta)$ denote the likelihood under the discrete-time model (\ref{eqn:discretesde}), an approximation to the true likelihood $p(\mathbf{x} \, | \, \btheta)$.  Note that (\ref{eqn:discretesde}) describes a discrete-time Markov chain.  By the Markov property, the likelihood $\widetilde{p}(\mathbf{x} \, | \, \btheta)$ factors and we can write:
