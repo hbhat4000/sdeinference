@@ -24,7 +24,8 @@
 \usepackage{multicol}        % used for the two-column index
 \usepackage[bottom]{footmisc}% places footnotes at page bottom
 \usepackage{amsmath,amssymb,latexsym}
-
+\usepackage[font=small,labelfont=bf]{caption}
+\usepackage{verbatim}
 %% change footnote numbers to symbols
 \renewcommand{\thefootnote}{\fnsymbol{footnote}}
 \newcommand{\bxi}{\ensuremath{\boldsymbol{\xi}}}
@@ -143,29 +144,31 @@ The term $\widetilde{p}(\mathbf{x}_{m+1} \, | \, \mathbf{x}_m, \btheta)$ is the 
 Equation (\ref{eqn:discretesde}) describes a Markov chain over a continuous state space.  If we let $\widetilde{p}^n(x_1,x_2 \, | \, \btheta)$ denote the joint probability density function of $X_1^n$ and $X_2^n$ given $\btheta$, then the Chapman-Kolmogorov equation associated with (\ref{eqn:discretesde})  is
 \begin{equation}
 \label{eqn:chapman}
-\widetilde{p}^{n+1}(x_1,x_2 \, | \, \btheta) = \int_{y_1,y_2 \in \mathbb{R}^2} K(x_1,x_2,y_1,y_2; \btheta) \widetilde{p}^n(y_1,y_2 \, | \, \btheta) \, dy,
+\widetilde{p}^{n+1}(x_1,x_2,t_{n+1} \, | \, \btheta) = \int_{y_1,y_2 \in \mathbb{R}^2} K^n (x_1,x_2,y_1,y_2,t_n; \btheta) \widetilde{p}^n(y_1,y_2, t_n \, | \, \btheta) \, dy,
 \end{equation}
 where
 \begin{align}
-&K(x_1,x_2,y_1,y_2; \theta) = \widetilde{p}^{{n+1} | {n}}(x_1,x_2 | y_1,y_2,\theta) \nonumber\\
+&K^n(x_1,x_2,y_1,y_2,  t_n; \theta) = \widetilde{p}^{{n+1} | {n}}(x_1,x_2 | y_1,y_2, t_n;\theta) \nonumber\\
 &= (2 \pi \sigma_1^2)^{-1/2} \exp \left[ -(x_1 - \mu_1)^2/(2 \sigma_1^2) \right] (2 \pi \sigma_2^2)^{-1/2} \exp \left[ -(x_2 - \mu_2)^2/(2 \sigma_2^2) \right]\nonumber.
 \end{align}
-Here $\mu_1 = y_1 + f_1(y_1,y_2; \theta) h,  \mu_2 = y_2 + f_2(y_1,y_2; \theta) h,  \sigma_1^2 = g_1^2(y_1,y_2; \theta) h$ and  $\sigma_2^2 = g_2^2(y_1,y_2; \theta) h$. That is, $K(x_1,x_2,y_1,y_2; \theta)$ is the conditional density of $X_1^{n+1}$ and $X_2^{n+1}$ given $X_1^n = y_1$, $X_2^n = y_2$ and $\btheta = \theta$, evaluated at the point $(x_1,x_2)$.  The fact that the conditional density is a product of normal distributions with means $\mu_1, \mu_2$ and variances $\sigma_1^2, \sigma_2^2$ can be shown using (\ref{eqn:discretesde}) together with the fact that $X_1^{n+1}$ and $X_2^{n+1}$ are conditionally independent given $X_1^n$ and $X_2^n$. This conditional independence is a direct consequence of having two independent random variables $Z_1^n$ and $Z_2^n$ in (\ref{eqn:discretesde}).
+Here $\mu_1 = y_1 + f_1(y_1,y_2,t_n; \theta) h,  \mu_2 = y_2 + f_2(y_1,y_2,t_n; \theta) h,  \sigma_1^2 = g_1^2(y_1,y_2,t_n; \theta) h$ and  $\sigma_2^2 = g_2^2(y_1,y_2,t_n; \theta) h$. That is, $K(x_1,x_2,y_1,y_2; \theta)$ is the conditional density of $X_1^{n+1}$ and $X_2^{n+1}$ given $X_1^n = y_1$, $X_2^n = y_2$ and $\btheta = \theta$, evaluated at the point $(x_1,x_2)$.  The fact that the conditional density is a product of normal distributions with means $\mu_1, \mu_2$ and variances $\sigma_1^2, \sigma_2^2$ can be shown using (\ref{eqn:discretesde}) together with the fact that $X_1^{n+1}$ and $X_2^{n+1}$ are conditionally independent given $X_1^n$ and $X_2^n$. This conditional independence is a direct consequence of having two independent random variables $Z_1^n$ and $Z_2^n$ in (\ref{eqn:discretesde}).
 
 The crux of the DTQ method is to apply quadrature to (\ref{eqn:chapman}) to evolve an initial density forward in time.  Consider a spatial grid with fixed spacing $k > 0$ and grid points $x_1^i = ik$, $x_2^j = jk$, $y_1^{i'} = i'k$, and $y_2^{j'} = j'k$.  Then we apply the trapezoidal rule in both the $y_1$ and $y_2$ variables to obtain:
 \begin{equation}
-\hat{p}^{n+1}(x_1^i, x_2^j ;\theta) = k^2 \sum\limits_{i' = -\infty}^{\infty} \sum\limits_{j' = -\infty}^{\infty} K(x_1^i, x_2^j, y_i^{i'}, y_2^{j'}; \theta) ) \hat{p}^n(y_1^{i'}, y_2^{j'}; \theta)
+\hat{p}^{n+1}(x_1^i, x_2^j, t_{n+1};\theta) = k^2 \sum\limits_{i' = -\infty}^{\infty} \sum\limits_{j' = -\infty}^{\infty} K^n(x_1^i, x_2^j, y_i^{i'}, y_2^{j'},t_n; \theta) \hat{p}^n(y_1^{i'}, y_2^{j'},t_n; \theta)
 \end{equation}
-It is unnecessary to sum over all of $\mathbb{Z}^2$.  We know that a two-dimensional Gaussian decays to zero far from its mean.  Since the mean $(\mu_1,\mu_2)$ is approximately $(y_1,y_2)$, we sum only from $y_1 = x_1 - \gamma k$ to $y_1 = x_1 + \gamma k$ and similarly for $y_2$:
+It is unnecessary to sum over all of $\mathbb{Z}^2$.  We know that a two-dimensional Gaussian decays to zero far from its mean so we sum over a window of $2 \gamma +1$.  Since the mean $(\mu_1,\mu_2)$ is approximately $(y_1,y_2)$, we sum only from $y_1 = x_1 - \gamma k$ to $y_1 = x_1 + \gamma k$ and similarly for $y_2$, where $\gamma = \frac{2 \sqrt{h} \sup(g)}{k}$:
 \begin{equation}
 \label{eqn:phatalg}
-\hat{p}^{n+1}(x_1^i, x_2^j;\theta ) = k^2 \sum\limits_{i' = i - \gamma}^{i+ \gamma} \sum\limits_{j' = j-\gamma}^{j+\gamma} K(x_1^i, x_2^j, y_i^{i'}, y_2^{j'}; \theta) \hat{p}^n(y_1^{i'}, y_2^{j'}; \theta)
+\hat{p}^{n+1}(x_1^i, x_2^j, t_{n+1};\theta ) = k^2 \sum\limits_{i' = i - \gamma}^{i+ \gamma} \sum\limits_{j' = j-\gamma}^{j+\gamma} K^n(x_1^i, x_2^j, y_i^{i'}, y_2^{j'}, t_n; \theta) \hat{p}^n(y_1^{i'}, y_2^{j'}, t_n; \theta)
 \end{equation}
 We now have our method to evaluate $\widetilde{p}(\mathbf{x}_{m+1} \, | \, \mathbf{x}_m, \btheta)$.  Let us take $n=0$ in (\ref{eqn:phatalg}) to correspond to the time $t_m$.  We start with the deterministic initial condition $\mathbf{X}^0 = \mathbf{x}_m$, corresponding to the density $\widetilde{p}^0(\mathbf{x}) = \delta(\mathbf{x} - \mathbf{x}_m)$.  Inserting this point mass into (\ref{eqn:chapman}), we obtain a Gaussian density for $\widetilde{p}^1(\mathbf{x})$.  For each $i,j \in [-y_M/k, y_M/k]$, we set
 $$
 \hat{p}^1(x_1^i, x_2^j; \theta) = \widetilde{p}^1(x_1^i, x_2^j; \theta).
 $$
 Now that we have $\hat{p}^1$, we use (\ref{eqn:phatalg}) repeatedly to compute $\hat{p}^2$, $\hat{p}^3$, and so on until we reach $\hat{p}^F$.  The object $\hat{p}^F$ is then a spatially discrete approximation of the transition density from time $t_m$ to time $t_m + Fh = t_{m+1}$.  Interpolating this density at the point $\mathbf{x}_{m+1}$, we compute a numerical approximation of $\widetilde{p}(\mathbf{x}_{m+1} \, | \, \mathbf{x}_m, \btheta)$, as required for the likelihood function.
+
+ TODO: Add last interpolation step
 
 \subsection{Metropolis Algorithm}
 \label{subsec:2-2}
@@ -188,7 +191,12 @@ Once we have obtained all the samples $q_0, q_1, \cdots, q_N$ from the Metropoli
 
 \section{Numerical Results}
 \label{sec:3}
-We implement the Metropolis algorithm in R. Inside the Metropolis algorithm, we evaluate the  likelihood function using the DTQ method, which is implemented in C++ as an R package. To test the performance of our method, we consider the SDE
+
+We implement the Metropolis algorithm in R. Inside the Metropolis algorithm, we evaluate the  likelihood function using the DTQ method, which is implemented in C++ as an R package. 
+
+\subsection{LC circuit test problem}
+\label{subsec:3-1}
+To test the performance of our method, we consider the SDE
 \begin{equation}
 \label{eqn:sdeapplication}
 \mathrm{d}X_{1,t} =  -\frac{X_{2,t}}{L}\mathrm{d}t + \frac{s_1^2}{L} \mathrm{d}W_{1,t}, \qquad
@@ -223,6 +231,34 @@ To visualize the results, we present the following plot of the posterior densiti
 \end{center}
 \vspace{-0.1in}
 Overall, the findings above support our view that using the DTQ method to compute the likelihood yields more accurate posteriors than using a purely Gaussian likelihood.
+
+
+\subsection{Pursuit Problem}
+\label{subsec:3-2}
+We implement 
+
+\begin{comment}
+  \begin{minipage}{\textwidth}
+  \begin{minipage}[b]{0.49\textwidth}
+    \centering
+    \includegraphics[width=3in, angle = 270]{densities.eps}
+   \captionof{figure}{Plot}
+  \end{minipage}
+  \hfill
+  \begin{minipage}[b]{0.49\textwidth}
+    \centering
+\begin{tabular}[b]{llll}
+$\Delta t$ & $h$ & $e_1$ & $e_2$  \\ \hline
+$0.04$ & $0.04$ & $6.1\%$ & $7.6\%$ \\
+$0.04$ & $0.02$ & $0.54\%$ & $6.8\%$ \\
+$0.04$ & $0.01$ & $5.1\%$ & $1.1\%$ \\
+$0.02$ & $0.02$ & $12\%$ & $14\%$ \\
+$0.02$ & $0.01$ & $4.9\%$ & $2.3\%$
+\end{tabular}
+\captionof{table}{Results}
+\end{minipage}
+\end{minipage}
+\end{comment}
 
 \begin{acknowledgement}
 We gratefully acknowledge support from UC Merced's Committee on Research.
