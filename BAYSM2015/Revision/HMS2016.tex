@@ -235,7 +235,28 @@ Overall, the findings above support our view that using the DTQ method to comput
 
 \subsection{Pursuit Problem}
 \label{subsec:3-2}
-We implement 
+To simulate the pursuit model, we consider the SDE
+
+\begin{align*}
+\mathrm{d} x^{c} & = \frac{s(t) (x^{r} - x^{c})}{\sqrt{(x^{r} - x^{c})^2 + (y^{r} - y^{c})^2}} \mathrm{d}t + \nu_1 \mathrm{d}W^1_t \\
+\mathrm{d} y^{c} & = \frac{s(t) (y^{r} - y^{c})}{\sqrt{(x^{r} - x^{c})^2 + (y^{r} - y^{c})^2}} \mathrm{d}t + \nu_2 \mathrm{d}W^2_t
+\end{align*}
+
+The variable $\mathbf{X}^r = (x^r, y^r)$ represents the runner's trajectory and the variable $\mathbf{X}^c = (x^c, y^c)$ represents the chaser's trajectory at time $t$. Our goal is to test the performance of the algorithm, first using simulated data and then using real-life data. To generate the data, we start with known values of the parameters $\nu_1, \nu_2$ and $s(t), 0 \leq t \leq T$. The runner's trajectory is simulated as a sinusoidal curve from $T = 0$ to $T = 8$. The chaser's trajectory is simulated using the Euler-Maruyama method to step the SDE forward in time from a fixed initial condition $\mathbf{X}_0 = (x^c_0, y^c_0)$.  During the generation of the data, we use a step size of $10^{-4}$ and then retain those samples at times $t_m = m \Delta t$ from $m = 0$ to $m = M$, where $M \Delta t = T$. \\
+
+TODO: Plot of runner and chaser \\
+
+For the tests presented here, the known parameters $s(t) =
+\left\{
+	\begin{array}{ll}
+		0.4  & \mbox{if } 0 \leq t < 4 \\
+		1.0 & \mbox{if } 4 \leq t \leq 8
+	\end{array}
+\right.$, $\nu_1 = 0.15, \nu_2 = 0.1$. Sample paths are saved from the same trajectory at increasing finer time intervals ($M = 4000,2000,1000,500,400,200,100$) to study the convergence of the algorithm. 
+
+
+
+
 
 \begin{comment}
   \begin{minipage}{\textwidth}
