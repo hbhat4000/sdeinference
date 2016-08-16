@@ -1,0 +1,20 @@
+\begin{subequations}
+\label{eqn:pursuitSDE}
+\begin{align}
+\implies \mathrm{d} x^{c} & = \frac{\gamma(t) (x^{r} - x^{c})}{\sqrt{(x^{r} - x^{c})^2 + (y^{r} - y^{c})^2}} \mathrm{d}t + \nu_1 \mathrm{d}W^1_t \\
+\mathrm{d} y^{c} & = \frac{\gamma(t) (y^{r} - y^{c})}{\sqrt{(x^{r} - x^{c})^2 + (y^{r} - y^{c})^2}} \mathrm{d}t + \nu_2 \mathrm{d} W^2_t
+\end{align}
+\end{subequations}
+
+The Euler-Maruyama approximation of the above system of ODEs is
+
+\begin{align*}
+x^{c}_{i+1} & = x^{c}_{i} + \frac{\gamma(t) (x^{r}_{i} - x^{c}_{i})}{\sqrt{(x^{r}_{i} - x^{c}_{i})^2 + (y^{r}_{i} - y^{c}_{i})^2}} h + \nu_1 \sqrt{h} Z_1 \\
+y^{c}_{i+1} & = y^{c}_{i} + \frac{\gamma(t) (y^{r}_{i} - y^{c}_{i})}{\sqrt{(x^{r}_{i} - x^{c}_{i})^2 + (y^{r}_{i} - y^{c}_{i})^2}}h + \nu_2 \sqrt{h} Z_2
+\end{align*}
+
+
+%%% Local Variables:
+%%% mode: latex
+%%% TeX-master: t
+%%% End:
