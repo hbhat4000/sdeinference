@@ -12,7 +12,7 @@ chaserlist = list(NULL)
 runnerlist = list(NULL)
 
 # which deltat file do we use?
-deltat = 0.1
+deltat = 0.4
 
 xymax = 0
 for (iii in c(1:1))
@@ -29,8 +29,8 @@ for (iii in c(1:1))
 timeinc = (runnerlist[[1]])[2,1] - (runnerlist[[1]])[1,1]
 
 # DTQ algorithm parameters
-myh = timeinc/4
-myk = timeinc/4 # 0.05*(myh)^(1.2)
+myh = timeinc/1
+myk = timeinc/1 # 0.05*(myh)^(1.2)
 xylimit = 1.5*xymax
 gammalen = 8/myh
 
@@ -38,7 +38,7 @@ gammalen = 8/myh
 myns = floor(timeinc/myh)
 
 # MCMC parameters
-nsamples = 1000
+nsamples = 10000
 burnin = 100
 mcmcsteps  = nsamples + burnin
 thetadim = 4
@@ -89,7 +89,7 @@ logposts[1] = likelihoods[1] + logprior(thetamat[1,])
 # main MCMC loop
 for (i in c(1:mcmcsteps))
 {
-  thetastar = thetamat[i,] + proposalZ(scaling=0.5)
+  thetastar = thetamat[i,] + proposalZ(scaling=0.15)
   likelihood = mylik(thetastar)
   logpost = likelihood + logprior(thetastar)
 
@@ -118,7 +118,7 @@ for (i in c(1:mcmcsteps))
 
 thetasamp = thetamat[-c(1:burnin),]
 
-fname = paste("mcmcout_",deltat,".RData",sep='')
+fname = paste("mcmcout_",deltat,"_1.RData",sep='')
 save.image(file=fname)
 
 
