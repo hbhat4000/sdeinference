@@ -55,7 +55,7 @@
 \usepackage[utf8]{inputenc}
 \usepackage[T1]{fontenc}
 \usepackage[pdftex]{graphicx}
-\pdfcompresslevel=9 
+
 \DeclareGraphicsExtensions{.png, .pdf, .jpg}
 \usepackage[pdftex, colorlinks, linkcolor=blue, urlcolor=blue, citecolor=blue, pagecolor=blue, breaklinks=true]{hyperref}
 \IfFileExists{upquote.sty}{\usepackage{upquote}}{}
@@ -147,7 +147,14 @@ The distribution at time $t$ of the process $X_t$ is $\mathcal{N}(X_t, X_s + \mu
 ##  Dens.  Order    : 4                                             
 ## =================================================================
 \end{verbatim}
+\begin{alltt}
+\hlcom{# Plot the transitional density:}
+\hlkwd{plot}\hlstd{(}\hlkwd{dnorm}\hlstd{(Xt, Xs}\hlopt{+}\hlstd{mu}\hlopt{*}\hlstd{(t}\hlopt{-}\hlstd{s), sigma}\hlopt{*}\hlkwd{sqrt}\hlstd{(t}\hlopt{-}\hlstd{s))}\hlopt{~}\hlstd{Xt,} \hlkwc{main} \hlstd{=} \hlstr{'Transition density'}\hlstd{,} \hlkwc{type} \hlstd{=} \hlstr{'l'}\hlstd{)}
+\hlkwd{lines}\hlstd{(BM}\hlopt{$}\hlstd{density[,}\hlnum{100}\hlstd{]}\hlopt{~}\hlstd{BM}\hlopt{$}\hlstd{Xt,} \hlkwc{col} \hlstd{=} \hlstr{'blue'}\hlstd{,} \hlkwc{lty} \hlstd{=} \hlstr{'dashed'}\hlstd{,} \hlkwc{lwd} \hlstd{=} \hlnum{2}\hlstd{)}
+\end{alltt}
 \end{kframe}
+\includegraphics[width=\maxwidth]{figure/Test2-1} 
+
 \end{knitrout}
 
 \end{document}

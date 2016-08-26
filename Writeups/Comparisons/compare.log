@@ -1,9 +1,9 @@
-This is pdfTeX, Version 3.14159265-2.6-1.40.17 (TeX Live 2016) (preloaded format=pdflatex 2016.5.22)  26 AUG 2016 15:00
+This is pdfTeX, Version 3.14159265-2.6-1.40.17 (TeX Live 2016) (preloaded format=pdflatex 2016.5.22)  26 AUG 2016 15:38
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
-**knitrtry.tex
-(./knitrtry.tex
+**compare.tex
+(./compare.tex
 LaTeX2e <2016/03/31>
 Babel <3.9r> and hyphenation patterns for 83 language(s) loaded.
 (/usr/local/texlive/2016/texmf-dist/tex/latex/base/article.cls
@@ -597,8 +597,8 @@ See the LaTeX manual or LaTeX Companion for explanation.
 Type  H <return>  for immediate help.
  ...                                              
                                                   
-l.58 \pdfcompresslevel
-                      =9
+l.58 
+     
 ? 
 (/usr/local/texlive/2016/texmf-dist/tex/latex/hyperref/hyperref.sty
 Package: hyperref 2016/05/05 v6.83n Hypertext links for LaTeX
@@ -873,8 +873,8 @@ Package textcomp Info: Setting pplj sub-encoding to TS1/3 on input line 407.
 Package textcomp Info: Setting ptmx sub-encoding to TS1/4 on input line 408.
 Package textcomp Info: Setting ptmj sub-encoding to TS1/4 on input line 409.
 ))
-(./knitrtry.aux)
-\openout1 = `knitrtry.aux'.
+No file compare.aux.
+\openout1 = `compare.aux'.
 
 LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 62.
 LaTeX Font Info:    ... okay on input line 62.
@@ -892,7 +892,7 @@ LaTeX Font Info:    Checking defaults for PD1/pdf/m/n on input line 62.
 LaTeX Font Info:    ... okay on input line 62.
 LaTeX Font Info:    Checking defaults for TS1/cmr/m/n on input line 62.
 LaTeX Font Info:    Try loading font information for TS1+cmr on input line 62.
- (/usr/local/texlive/2016/texmf-dist/tex/latex/base/ts1cmr.fd
+(/usr/local/texlive/2016/texmf-dist/tex/latex/base/ts1cmr.fd
 File: ts1cmr.fd 2014/09/29 v2.5h Standard LaTeX font definitions
 )
 LaTeX Font Info:    ... okay on input line 62.
@@ -976,7 +976,7 @@ LaTeX Info: Redefining \ref on input line 62.
 LaTeX Info: Redefining \pageref on input line 62.
 LaTeX Info: Redefining \nameref on input line 62.
 \@outlinefile=\write3
-\openout3 = `knitrtry.out'.
+\openout3 = `compare.out'.
 
 LaTeX Font Info:    Try loading font information for U+msa on input line 76.
 
@@ -997,49 +997,74 @@ File: t1cmtt.fd 2014/09/29 v2.5h Standard LaTeX font definitions
 LaTeX Font Info:    Font shape `T1/cmtt/bx/n' in size <10.95> not available
 (Font)              Font shape `T1/cmtt/m/n' tried instead on input line 91.
 Package color Info: Redefining color shadecolor on input line 105.
- [1
+LaTeX Font Info:    Try loading font information for TS1+cmtt on input line 152
+.
+
+(/usr/local/texlive/2016/texmf-dist/tex/latex/base/ts1cmtt.fd
+File: ts1cmtt.fd 2014/09/29 v2.5h Standard LaTeX font definitions
+)
+Overfull \hbox (48.3509pt too wide) in paragraph at lines 152--152
+[][]\T1/cmtt/m/n/10.95 plot[][]([][]dnorm[][](Xt, Xs[][]+[][]mu[][]*[][](t[][]-
+[][]s), sigma[][]*[][]sqrt[][](t[][]-[][]s))[][]~[][]Xt,[] []main[] []=[] []\TS
+1/cmtt/m/n/10.95 '\T1/cmtt/m/n/10.95 Transition density\TS1/cmtt/m/n/10.95 '[][
+]\T1/cmtt/m/n/10.95 ,[] []type[] []=[] []\TS1/cmtt/m/n/10.95 '\T1/cmtt/m/n/10.9
+5 l\TS1/cmtt/m/n/10.95 '[][]\T1/cmtt/m/n/10.95 )[][] 
+ []
+
+[1
 
 {/usr/local/texlive/2016/texmf-var/fonts/map/pdftex/updmap/pdftex.map}]
-Package atveryend Info: Empty hook `BeforeClearDocument' on input line 153.
- [2]
-Package atveryend Info: Empty hook `AfterLastShipout' on input line 153.
- (./knitrtry.aux)
-Package atveryend Info: Executing hook `AtVeryEndDocument' on input line 153.
-Package atveryend Info: Executing hook `AtEndAfterFileList' on input line 153.
+<figure/Test2-1.pdf, id=22, 505.89pt x 505.89pt>
+File: figure/Test2-1.pdf Graphic file (type pdf)
+ <use figure/Test2-1.pdf>
+Package pdftex.def Info: figure/Test2-1.pdf used on input line 156.
+(pdftex.def)             Requested size: 455.24411pt x 455.25046pt.
+
+Overfull \hbox (17.0pt too wide) in paragraph at lines 156--157
+[][] 
+ []
+
+Package atveryend Info: Empty hook `BeforeClearDocument' on input line 160.
+[2] [3 <./figure/Test2-1.pdf>]
+Package atveryend Info: Empty hook `AfterLastShipout' on input line 160.
+ (./compare.aux)
+Package atveryend Info: Executing hook `AtVeryEndDocument' on input line 160.
+Package atveryend Info: Executing hook `AtEndAfterFileList' on input line 160.
 
 
-Package rerunfilecheck Warning: File `knitrtry.out' has changed.
+Package rerunfilecheck Warning: File `compare.out' has changed.
 (rerunfilecheck)                Rerun to get outlines right
 (rerunfilecheck)                or use package `bookmark'.
 
-Package rerunfilecheck Info: Checksums for `knitrtry.out':
+Package rerunfilecheck Info: Checksums for `compare.out':
 (rerunfilecheck)             Before: <no file>
 (rerunfilecheck)             After:  BBC5BE4B2DF700899203F429FAF1EC66;48.
-Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 153.
+Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 160.
  ) 
 Here is how much of TeX's memory you used:
- 10791 strings out of 493014
- 157963 string characters out of 6133351
- 256202 words of memory out of 5000000
- 14182 multiletter control sequences out of 15000+600000
- 12760 words of font info for 39 fonts, out of 8000000 for 9000
+ 10811 strings out of 493014
+ 158544 string characters out of 6133351
+ 257202 words of memory out of 5000000
+ 14196 multiletter control sequences out of 15000+600000
+ 13058 words of font info for 40 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
- 42i,10n,40p,300b,372s stack positions out of 5000i,500n,10000p,200000b,80000s
-{/usr/local/texlive/2016/texmf-dist/fonts/enc/dvips/cm-super/cm-super-t1.enc}
-</usr/local/texlive/2016/texmf-dist/fonts/type1/public/amsfonts/cm/cmex10.pfb><
-/usr/local/texlive/2016/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi10.pfb></
-usr/local/texlive/2016/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi8.pfb></us
-r/local/texlive/2016/texmf-dist/fonts/type1/public/amsfonts/cm/cmr10.pfb></usr/
-local/texlive/2016/texmf-dist/fonts/type1/public/amsfonts/cm/cmr8.pfb></usr/loc
-al/texlive/2016/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy10.pfb></usr/loca
-l/texlive/2016/texmf-dist/fonts/type1/public/cm-super/sfbx1440.pfb></usr/local/
-texlive/2016/texmf-dist/fonts/type1/public/cm-super/sfit1095.pfb></usr/local/te
-xlive/2016/texmf-dist/fonts/type1/public/cm-super/sfrm1095.pfb></usr/local/texl
-ive/2016/texmf-dist/fonts/type1/public/cm-super/sftt1095.pfb>
-Output written on knitrtry.pdf (2 pages, 143700 bytes).
+ 42i,10n,40p,429b,372s stack positions out of 5000i,500n,10000p,200000b,80000s
+{/usr/local/texlive/2016/texmf-dist/fonts/enc/dvips/cm-super/cm-super-ts1.enc
+}{/usr/local/texlive/2016/texmf-dist/fonts/enc/dvips/cm-super/cm-super-t1.enc}<
+/usr/local/texlive/2016/texmf-dist/fonts/type1/public/amsfonts/cm/cmex10.pfb></
+usr/local/texlive/2016/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi10.pfb></u
+sr/local/texlive/2016/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi8.pfb></usr
+/local/texlive/2016/texmf-dist/fonts/type1/public/amsfonts/cm/cmr10.pfb></usr/l
+ocal/texlive/2016/texmf-dist/fonts/type1/public/amsfonts/cm/cmr8.pfb></usr/loca
+l/texlive/2016/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy10.pfb></usr/local
+/texlive/2016/texmf-dist/fonts/type1/public/cm-super/sfbx1440.pfb></usr/local/t
+exlive/2016/texmf-dist/fonts/type1/public/cm-super/sfit1095.pfb></usr/local/tex
+live/2016/texmf-dist/fonts/type1/public/cm-super/sfrm1095.pfb></usr/local/texli
+ve/2016/texmf-dist/fonts/type1/public/cm-super/sftt1095.pfb>
+Output written on compare.pdf (3 pages, 150143 bytes).
 PDF statistics:
- 61 PDF objects out of 1000 (max. 8388607)
- 46 compressed objects within 1 object stream
- 6 named destinations out of 1000 (max. 500000)
- 1 words of extra memory for PDF output out of 10000 (max. 10000000)
+ 77 PDF objects out of 1000 (max. 8388607)
+ 59 compressed objects within 1 object stream
+ 7 named destinations out of 1000 (max. 500000)
+ 6 words of extra memory for PDF output out of 10000 (max. 10000000)
 

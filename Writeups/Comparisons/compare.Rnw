@@ -5,7 +5,7 @@
 \usepackage[utf8]{inputenc}
 \usepackage[T1]{fontenc}
 \usepackage[pdftex]{graphicx}
-\pdfcompresslevel=9 
+
 \DeclareGraphicsExtensions{.png, .pdf, .jpg}
 \usepackage[pdftex, colorlinks, linkcolor=blue, urlcolor=blue, citecolor=blue, pagecolor=blue, breaklinks=true]{hyperref}
 
@@ -67,7 +67,7 @@ Q0 <- function(t){sigma^2}
 BM <- GQD.density(Xs,Xt,s,t)
 
 # Plot the transitional density:
-plot(dnorm(Xt, Xs + mu*(t-s), sigma*sqrt(t-s))~Xt, main = 'Transition density', type = 'l')
+plot(dnorm(Xt, Xs+mu*(t-s), sigma*sqrt(t-s))~Xt, main = 'Transition density', type = 'l')
 lines(BM$density[,100]~BM$Xt, col = 'blue', lty = 'dashed', lwd = 2)
 @
 
