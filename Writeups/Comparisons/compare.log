@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.14159265-2.6-1.40.17 (TeX Live 2016) (preloaded format=pdflatex 2016.5.22)  26 AUG 2016 15:38
+This is pdfTeX, Version 3.14159265-2.6-1.40.17 (TeX Live 2016) (preloaded format=pdflatex 2016.5.22)  26 AUG 2016 17:51
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -873,7 +873,7 @@ Package textcomp Info: Setting pplj sub-encoding to TS1/3 on input line 407.
 Package textcomp Info: Setting ptmx sub-encoding to TS1/4 on input line 408.
 Package textcomp Info: Setting ptmj sub-encoding to TS1/4 on input line 409.
 ))
-No file compare.aux.
+(./compare.aux)
 \openout1 = `compare.aux'.
 
 LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 62.
@@ -892,7 +892,7 @@ LaTeX Font Info:    Checking defaults for PD1/pdf/m/n on input line 62.
 LaTeX Font Info:    ... okay on input line 62.
 LaTeX Font Info:    Checking defaults for TS1/cmr/m/n on input line 62.
 LaTeX Font Info:    Try loading font information for TS1+cmr on input line 62.
-(/usr/local/texlive/2016/texmf-dist/tex/latex/base/ts1cmr.fd
+ (/usr/local/texlive/2016/texmf-dist/tex/latex/base/ts1cmr.fd
 File: ts1cmr.fd 2014/09/29 v2.5h Standard LaTeX font definitions
 )
 LaTeX Font Info:    ... okay on input line 62.
@@ -975,6 +975,8 @@ Package: gettitlestring 2016/05/16 v1.5 Cleanup title references (HO)
 LaTeX Info: Redefining \ref on input line 62.
 LaTeX Info: Redefining \pageref on input line 62.
 LaTeX Info: Redefining \nameref on input line 62.
+
+(./compare.out) (./compare.out)
 \@outlinefile=\write3
 \openout3 = `compare.out'.
 
@@ -996,14 +998,14 @@ File: t1cmtt.fd 2014/09/29 v2.5h Standard LaTeX font definitions
 )
 LaTeX Font Info:    Font shape `T1/cmtt/bx/n' in size <10.95> not available
 (Font)              Font shape `T1/cmtt/m/n' tried instead on input line 91.
-Package color Info: Redefining color shadecolor on input line 105.
-LaTeX Font Info:    Try loading font information for TS1+cmtt on input line 152
+Package color Info: Redefining color shadecolor on input line 106.
+LaTeX Font Info:    Try loading font information for TS1+cmtt on input line 108
 .
 
 (/usr/local/texlive/2016/texmf-dist/tex/latex/base/ts1cmtt.fd
 File: ts1cmtt.fd 2014/09/29 v2.5h Standard LaTeX font definitions
 )
-Overfull \hbox (48.3509pt too wide) in paragraph at lines 152--152
+Overfull \hbox (48.3509pt too wide) in paragraph at lines 128--128
 [][]\T1/cmtt/m/n/10.95 plot[][]([][]dnorm[][](Xt, Xs[][]+[][]mu[][]*[][](t[][]-
 [][]s), sigma[][]*[][]sqrt[][](t[][]-[][]s))[][]~[][]Xt,[] []main[] []=[] []\TS
 1/cmtt/m/n/10.95 '\T1/cmtt/m/n/10.95 Transition density\TS1/cmtt/m/n/10.95 '[][
@@ -1014,57 +1016,171 @@ Overfull \hbox (48.3509pt too wide) in paragraph at lines 152--152
 [1
 
 {/usr/local/texlive/2016/texmf-var/fonts/map/pdftex/updmap/pdftex.map}]
-<figure/Test2-1.pdf, id=22, 505.89pt x 505.89pt>
-File: figure/Test2-1.pdf Graphic file (type pdf)
- <use figure/Test2-1.pdf>
-Package pdftex.def Info: figure/Test2-1.pdf used on input line 156.
-(pdftex.def)             Requested size: 455.24411pt x 455.25046pt.
+<figure/GQD-brownian-1.pdf, id=67, 505.89pt x 505.89pt>
+File: figure/GQD-brownian-1.pdf Graphic file (type pdf)
 
-Overfull \hbox (17.0pt too wide) in paragraph at lines 156--157
+<use figure/GQD-brownian-1.pdf>
+Package pdftex.def Info: figure/GQD-brownian-1.pdf used on input line 132.
+(pdftex.def)             Requested size: 289.08589pt x 289.08589pt.
+Package color Info: Redefining color shadecolor on input line 143.
+
+Overfull \hbox (14.40068pt too wide) in paragraph at lines 159--159
+[][]\T1/cmtt/m/n/10.95 M[] []<-[] []GQD.density[][]([][]Xs[] []= initial,[] []X
+t[] []= states,[] []s[] []= Tstart,[] []t[] []= Tmax,[] []delt[] []= increment)
 [][] 
  []
 
-Package atveryend Info: Empty hook `BeforeClearDocument' on input line 160.
-[2] [3 <./figure/Test2-1.pdf>]
-Package atveryend Info: Empty hook `AfterLastShipout' on input line 160.
- (./compare.aux)
-Package atveryend Info: Executing hook `AtVeryEndDocument' on input line 160.
-Package atveryend Info: Executing hook `AtEndAfterFileList' on input line 160.
+
+Overfull \hbox (14.40068pt too wide) in paragraph at lines 161--161
+[][]\T1/cmtt/m/n/10.95 persp[][]([][]x[] []= M[][]$[][]Xt,[] []y[] []= M[][]$[]
+[]time,[] []z[] []= M[][]$[][]density,[] []col[] []=[] []\TS1/cmtt/m/n/10.95 '\
+T1/cmtt/m/n/10.95 white\TS1/cmtt/m/n/10.95 '[][]\T1/cmtt/m/n/10.95 ,[] []xlab[]
+ []=[] []\TS1/cmtt/m/n/10.95 '\T1/cmtt/m/n/10.95 State (X_t)\TS1/cmtt/m/n/10.95
+ '[][]\T1/cmtt/m/n/10.95 ,[][]ylab[][] 
+ []
 
 
-Package rerunfilecheck Warning: File `compare.out' has changed.
-(rerunfilecheck)                Rerun to get outlines right
-(rerunfilecheck)                or use package `bookmark'.
+Overfull \hbox (8.74231pt too wide) in paragraph at lines 162--162
+[] []\T1/cmtt/m/n/10.95 =[] []\TS1/cmtt/m/n/10.95 '\T1/cmtt/m/n/10.95 Time (t)\
+TS1/cmtt/m/n/10.95 '[][]\T1/cmtt/m/n/10.95 ,[] []zlab[] []=[] []\TS1/cmtt/m/n/1
+0.95 '\T1/cmtt/m/n/10.95 Density f(X_t|X_s)\TS1/cmtt/m/n/10.95 '[][]\T1/cmtt/m/
+n/10.95 ,[] []border[] []=[] []NA[][],[] []shade[] []=[] []0.5[][],[] []theta[]
+ []=[] []145[][])[][] 
+ []
 
-Package rerunfilecheck Info: Checksums for `compare.out':
-(rerunfilecheck)             Before: <no file>
-(rerunfilecheck)             After:  BBC5BE4B2DF700899203F429FAF1EC66;48.
-Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 160.
+[2 <./figure/GQD-brownian-1.pdf>]
+<figure/GQD-CIR-1.pdf, id=79, 505.89pt x 505.89pt>
+File: figure/GQD-CIR-1.pdf Graphic file (type pdf)
+ <use figure/GQD-CIR-1.pdf>
+Package pdftex.def Info: figure/GQD-CIR-1.pdf used on input line 165.
+(pdftex.def)             Requested size: 289.08589pt x 289.08589pt.
+Package color Info: Redefining color shadecolor on input line 185.
+
+Overfull \hbox (14.40068pt too wide) in paragraph at lines 199--199
+[][]\T1/cmtt/m/n/10.95 M[] []<-[] []GQD.density[][]([][]Xs[] []= initial,[] []X
+t[] []= states,[] []s[] []= Tstart,[] []t[] []= Tmax,[] []delt[] []= increment)
+[][] 
+ []
+
+
+Overfull \hbox (484.04547pt too wide) in paragraph at lines 200--200
+[][]\T1/cmtt/m/n/10.95 persp[][]([][]x[] []= M[][]$[][]Xt,[] []y[] []= M[][]$[]
+[]time,[] []z[] []= M[][]$[][]density,[] []col[] []=[] []\TS1/cmtt/m/n/10.95 '\
+T1/cmtt/m/n/10.95 white\TS1/cmtt/m/n/10.95 '[][]\T1/cmtt/m/n/10.95 ,[] []xlab[]
+ []=[] []\TS1/cmtt/m/n/10.95 '\T1/cmtt/m/n/10.95 State (X_t)\TS1/cmtt/m/n/10.95
+ '[][]\T1/cmtt/m/n/10.95 ,[] []ylab[] []=[] []\TS1/cmtt/m/n/10.95 '\T1/cmtt/m/n
+/10.95 Time (t)\TS1/cmtt/m/n/10.95 '[][]\T1/cmtt/m/n/10.95 ,[] []zlab[] []=[] [
+]\TS1/cmtt/m/n/10.95 '\T1/cmtt/m/n/10.95 Density f(X_t|X_s)\TS1/cmtt/m/n/10.95 
+'[][]\T1/cmtt/m/n/10.95 ,[] []border[] []=[] []NA[][],[] []shade[] []=[] []0.5[
+][],[] []theta[] []=[] []145[][])[][] 
+ []
+
+<figure/GQD-tCIR-1.pdf, id=80, 505.89pt x 505.89pt>
+File: figure/GQD-tCIR-1.pdf Graphic file (type pdf)
+
+<use figure/GQD-tCIR-1.pdf>
+Package pdftex.def Info: figure/GQD-tCIR-1.pdf used on input line 203.
+(pdftex.def)             Requested size: 289.08589pt x 289.08589pt.
+ [3 <./figure/GQD-CIR-1.pdf>]
+Package color Info: Redefining color shadecolor on input line 216.
+
+Overfull \hbox (240.73552pt too wide) in paragraph at lines 236--236
+[][]\T1/cmtt/m/n/10.95 res[] []<-[] []BiGQD.density[][]([][]Xs[] []=[] []5[][],
+[] []Ys[] []=[] []5[][],[] []Xt[] []=[] []seq[][]([][]3[][],[] []8[][],[] []len
+gth[] []=[] []50[][]),[] []Yt[] []=[] []seq[][]([][]2[][],[] []6[][],[] []lengt
+h[] []=[] []50[][]),[] []s[] []=[] []0[][],[] []t[] []=[] []10[][],[] []delt[] 
+[]=[] []1[][]/[][]100[][])[][] 
+ []
+
+[4 <./figure/GQD-tCIR-1.pdf>]
+Package color Info: Redefining color shadecolor on input line 262.
+
+<figure/GQD-coupledPlot-1.pdf, id=100, 505.89pt x 505.89pt>
+File: figure/GQD-coupledPlot-1.pdf Graphic file (type pdf)
+
+<use figure/GQD-coupledPlot-1.pdf>
+Package pdftex.def Info: figure/GQD-coupledPlot-1.pdf used on input line 266.
+(pdftex.def)             Requested size: 289.08589pt x 289.08589pt.
+
+<figure/GQD-coupledPlot-2.pdf, id=101, 505.89pt x 505.89pt> [5]
+File: figure/GQD-coupledPlot-2.pdf Graphic file (type pdf)
+
+<use figure/GQD-coupledPlot-2.pdf>
+Package pdftex.def Info: figure/GQD-coupledPlot-2.pdf used on input line 268.
+(pdftex.def)             Requested size: 289.08589pt x 289.08589pt.
+
+<figure/GQD-coupledPlot-3.pdf, id=106, 505.89pt x 505.89pt>
+File: figure/GQD-coupledPlot-3.pdf Graphic file (type pdf)
+
+<use figure/GQD-coupledPlot-3.pdf>
+Package pdftex.def Info: figure/GQD-coupledPlot-3.pdf used on input line 270.
+(pdftex.def)             Requested size: 289.08589pt x 289.08589pt.
+
+<figure/GQD-coupledPlot-4.pdf, id=107, 505.89pt x 505.89pt> [6 <./figure/GQD-co
+upledPlot-1.pdf> <./figure/GQD-coupledPlot-2.pdf>]
+File: figure/GQD-coupledPlot-4.pdf Graphic file (type pdf)
+
+<use figure/GQD-coupledPlot-4.pdf>
+Package pdftex.def Info: figure/GQD-coupledPlot-4.pdf used on input line 272.
+(pdftex.def)             Requested size: 289.08589pt x 289.08589pt.
+Package color Info: Redefining color shadecolor on input line 278.
+
+Overfull \hbox (201.12692pt too wide) in paragraph at lines 291--291
+[][]\T1/cmtt/m/n/10.95 plot[][](SDEsim1[][]$[][]Xt[][]~[][]SDEsim1[][]$[][]time
+,[] []type[] []=[] []\TS1/cmtt/m/n/10.95 '\T1/cmtt/m/n/10.95 l\TS1/cmtt/m/n/10.
+95 '[][]\T1/cmtt/m/n/10.95 ,[] []col[] []=[] []\TS1/cmtt/m/n/10.95 '\T1/cmtt/m/
+n/10.95 #222299\TS1/cmtt/m/n/10.95 '[][]\T1/cmtt/m/n/10.95 ,[] []xlab[] []=[] [
+]\TS1/cmtt/m/n/10.95 '\T1/cmtt/m/n/10.95 Time (t)\TS1/cmtt/m/n/10.95 '[][]\T1/c
+mtt/m/n/10.95 ,[] []ylab[] []=[] []expression[][](X[t]),[] []main[] []= expr1)[
+][] 
+ []
+
+[7 <./figure/GQD-coupledPlot-3.pdf> <./figure/GQD-coupledPlot-4.pdf>]
+<figure/GQD-inference-1.pdf, id=145, 505.89pt x 505.89pt>
+File: figure/GQD-inference-1.pdf Graphic file (type pdf)
+
+<use figure/GQD-inference-1.pdf>
+Package pdftex.def Info: figure/GQD-inference-1.pdf used on input line 294.
+(pdftex.def)             Requested size: 289.07999pt x 289.08589pt.
+Package color Info: Redefining color shadecolor on input line 299.
+Package color Info: Redefining color shadecolor on input line 340.
+ [8 <./figure/GQD-inference-1.pdf>]
+Package atveryend Info: Empty hook `BeforeClearDocument' on input line 371.
+ [9]
+Package atveryend Info: Empty hook `AfterLastShipout' on input line 371.
+
+(./compare.aux)
+Package atveryend Info: Executing hook `AtVeryEndDocument' on input line 371.
+Package atveryend Info: Executing hook `AtEndAfterFileList' on input line 371.
+Package rerunfilecheck Info: File `compare.out' has not changed.
+(rerunfilecheck)             Checksum: ECD2B8CEDD8577FF7E81ACA924191D6E;723.
+Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 371.
  ) 
 Here is how much of TeX's memory you used:
- 10811 strings out of 493014
- 158544 string characters out of 6133351
- 257202 words of memory out of 5000000
- 14196 multiletter control sequences out of 15000+600000
- 13058 words of font info for 40 fonts, out of 8000000 for 9000
+ 10886 strings out of 493014
+ 159996 string characters out of 6133351
+ 255306 words of memory out of 5000000
+ 14238 multiletter control sequences out of 15000+600000
+ 14598 words of font info for 42 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
- 42i,10n,40p,429b,372s stack positions out of 5000i,500n,10000p,200000b,80000s
-{/usr/local/texlive/2016/texmf-dist/fonts/enc/dvips/cm-super/cm-super-ts1.enc
-}{/usr/local/texlive/2016/texmf-dist/fonts/enc/dvips/cm-super/cm-super-t1.enc}<
+ 42i,10n,40p,1055b,442s stack positions out of 5000i,500n,10000p,200000b,80000s
+{/usr/local/texlive/2016/texmf-dist/fonts/enc/dvips/cm-super/cm-super-t1.enc}
+{/usr/local/texlive/2016/texmf-dist/fonts/enc/dvips/cm-super/cm-super-ts1.enc}<
 /usr/local/texlive/2016/texmf-dist/fonts/type1/public/amsfonts/cm/cmex10.pfb></
 usr/local/texlive/2016/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi10.pfb></u
 sr/local/texlive/2016/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi8.pfb></usr
 /local/texlive/2016/texmf-dist/fonts/type1/public/amsfonts/cm/cmr10.pfb></usr/l
 ocal/texlive/2016/texmf-dist/fonts/type1/public/amsfonts/cm/cmr8.pfb></usr/loca
 l/texlive/2016/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy10.pfb></usr/local
-/texlive/2016/texmf-dist/fonts/type1/public/cm-super/sfbx1440.pfb></usr/local/t
-exlive/2016/texmf-dist/fonts/type1/public/cm-super/sfit1095.pfb></usr/local/tex
-live/2016/texmf-dist/fonts/type1/public/cm-super/sfrm1095.pfb></usr/local/texli
-ve/2016/texmf-dist/fonts/type1/public/cm-super/sftt1095.pfb>
-Output written on compare.pdf (3 pages, 150143 bytes).
+/texlive/2016/texmf-dist/fonts/type1/public/cm-super/sfbx1200.pfb></usr/local/t
+exlive/2016/texmf-dist/fonts/type1/public/cm-super/sfbx1440.pfb></usr/local/tex
+live/2016/texmf-dist/fonts/type1/public/cm-super/sfit1095.pfb></usr/local/texli
+ve/2016/texmf-dist/fonts/type1/public/cm-super/sfrm1095.pfb></usr/local/texlive
+/2016/texmf-dist/fonts/type1/public/cm-super/sftt1095.pfb>
+Output written on compare.pdf (9 pages, 1568276 bytes).
 PDF statistics:
- 77 PDF objects out of 1000 (max. 8388607)
- 59 compressed objects within 1 object stream
- 7 named destinations out of 1000 (max. 500000)
- 6 words of extra memory for PDF output out of 10000 (max. 10000000)
+ 208 PDF objects out of 1000 (max. 8388607)
+ 168 compressed objects within 2 object streams
+ 25 named destinations out of 1000 (max. 500000)
+ 129 words of extra memory for PDF output out of 10000 (max. 10000000)
 

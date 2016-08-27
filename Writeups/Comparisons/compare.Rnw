@@ -35,19 +35,25 @@ For purposes of inference the drift and diffusion terms - and consequently the t
 d X_t = \theta_1 (\theta_2 - X_t) + \sqrt{\theta_3^2} dW_t
 \end{equation}
 
-<<Test>>= 
+<<GQD>>= 
 G0=function(t){theta[1]*theta[2]}
 G1=function(t){-theta[1]}
 Q0=function(t){theta[3]*theta[3]}
 @ 
 
+\subsection{Constant drift, diffusion SDE}
 For a constant drift, diffusion SDE, with given initial condition $X_s$:
 \begin{equation}
 dX_t = \mu dt + \sigma dW_t
 \end{equation}
 The distribution at time $t$ of the process $X_t$ is $\mathcal{N}(X_t, X_s + \mu(t-s), \sigma^2(t-s))$
 
-<<Test2>>=
+<<GQD-brownian, results='hide', out.height='4in', out.width='4in'>>=
+library('DiffusionRgqd') 
+
+# Remove any existing coefficients
+GQD.remove()
+
 Xs <- 0                 # Initial state
 Xt <- seq(-3/2,3/2,1/50)# Possible future states
 s  <- 0                 # Starting time
@@ -55,20 +61,201 @@ t  <- 1                 # Final time
 mu    <- 0.5            # Drift parameter
 sigma <- 0.25           # Diffusion coefficient
 
-library(DiffusionRgqd) 
-# Remove any existing coefficients:
-GQD.remove()
-
-# Define the model coefficients:
+# Define the model coefficients
 G0 <- function(t){mu}
 Q0 <- function(t){sigma^2}
 
-# Calculate the transitional density:
+# Calculate the transitional density
 BM <- GQD.density(Xs,Xt,s,t)
 
-# Plot the transitional density:
+# Plot the transitional density
 plot(dnorm(Xt, Xs+mu*(t-s), sigma*sqrt(t-s))~Xt, main = 'Transition density', type = 'l')
 lines(BM$density[,100]~BM$Xt, col = 'blue', lty = 'dashed', lwd = 2)
 @
+
+\subsection{CIR process}
+Another example using the CIR process SDE:
+\begin{equation}
+dX_t = \theta_1 (\theta_2 - X_t)dt + \theta_3 \sqrt{X_t} dW_t
+\end{equation}
+
+<<GQD-CIR, results='hide', out.width='4in', out.height='4in'>>=
+GQD.remove()  
+a = 0.5; b = 5; sigma = 0.35; # Parameter values
+
+G0 <- function(t){a*b}    
+G1 <- function(t){-a}
+Q1 <- function(t){sigma^2}
+
+states     <-  seq(1, 9, 1/10)# State values
+initial    <-  6              # Starting value of the process
+Tmax       <-  5              # Time horizon
+Tstart     <-  1              # Time starts at 1
+increment  <-  1/100          # Incremental time steps
+
+# Generate the transitional density
+M <- GQD.density(Xs = initial, Xt = states, s = Tstart, t = Tmax, delt = increment)
+
+persp(x = M$Xt, y = M$time, z = M$density, col = 'white', xlab = 'State (X_t)',ylab
+ = 'Time (t)', zlab = 'Density f(X_t|X_s)', border = NA, shade = 0.5, theta = 145)
+@
+
+The GQD.density() returns (\Sexpr{names(M)}). 
+
+%The progression of mean and variance follows:
+%<<GQD-meanvar, out.width='4in', out.height='4in'>>=
+%plot(M$cumulants[1,]~M$time, main = 'Mean trajectory', type = 'l')
+%plot(M$cumulants[2,]~M$time, main = 'Variance trajectory', type  = 'l')
+%@
+
+\subsection{Time dependent CIR process}
+Consider the time-inhomogeneous CIR process for a more complicated example
+
+\begin{equation}
+dX_t = 2(10 + \sin(2 \pi (t - 0.5)) - X_t) dt + sqrt{0.25 (1 + 0.75 \sin(4 \pi t))X_t} dW_t
+\end{equation}
+
+<<GQD-tCIR, results='hide', out.width='4in', out.height='4in'>>=
+library(DiffusionRgqd)
+GQD.remove()
+G0 <- function(t){2*(10+sin(2*pi*(t-0.5)))}
+G1 <- function(t){-2}
+Q1 <- function(t){0.25*(1+0.75*(sin(4*pi*t)))}
+
+states    <- seq(5, 15, 1/10)
+initial   <- 8
+Tmax      <- 5
+Tstart    <- 1
+increment <- 1/100
+
+M <- GQD.density(Xs = initial, Xt = states, s = Tstart, t = Tmax, delt = increment)
+persp(x = M$Xt, y = M$time, z = M$density, col = 'white', xlab = 'State (X_t)', ylab = 'Time (t)', zlab = 'Density f(X_t|X_s)', border = NA, shade = 0.5, theta = 145)
+@
+
+\subsection{Coupled SDEs - Prey predator model}
+A model that is often used to illustrate non-linear dynamics in the analysis of ODEs is that of the Lotka-Volterra model. The equations are often used to describe the dynamics of two interacting populations wherein the population growth rate of the populations are mutually influenced by the current level of the opposing population. As such the model has been used to explain oscillatory behaviour in predator-prey relationships {Hoppensteadt2006} where xtxt denotes the prey population and ytyt the predator population at time $t$. Continuing with the predator-prey metaphor, perhaps one deficiency of the model, one might argue, is the absence of random input and subsequent effects on population levels. Indeed, under the ODE formulation the predicted population behaviour (given fixed parameters) are completely deterministic. Another deficiency might be the absence of growth inhibiting factors such as disease or over-grazing. For these purposes we may define an example of a stochastic counterpart to the Lotka-Volterra equations as:
+
+\begin{align*}
+dX_t & = (aX_t - bX_t Y_t) dt + f \sqrt{X_t} dW^1_t \\
+dY_t & = (-cY_t + dX_t Y_t - eY^2_t)dt + g \sqrt{Y_t} dW^2_t
+\end{align*}
+
+<<GQD-coupled>>=
+library(DiffusionRgqd)
+# Remove any existing coefficients:
+GQD.remove()
+
+# Define the X dimesnion coefficients:
+a10 <- function(t){1.5}
+a11 <- function(t){-0.4}
+c10 <- function(t){0.05}
+# Define the Y dimension coefficients:
+b01 <- function(t){-1.5}
+b11 <- function(t){0.4}
+b02 <- function(t){-0.2}
+f01 <- function(t){0.1}
+# Approximate the transition density
+res <- BiGQD.density(Xs = 5, Ys = 5, Xt = seq(3, 8, length = 50), Yt = seq(2, 6, length = 50), s = 0, t = 10, delt = 1/100)
+@
+
+<<GQD-coupledPlot, out.height='4in', out.width='4in', echo=FALSE>>=
+# Load simulated trajectory of the joint expectation
+data(SDEsim3)
+attach(SDEsim3)
+# Record graphs at time points along the trajectory
+time.index <- c(10, 200, 750, 1000) + 1
+# Make some colour palettes
+library("colorspace")
+colpal=function(n){rev(sequential_hcl(n, power = 1, l = c(40, 100)))}
+for(i in time.index)
+{
+	# Now illustrate the density using a contour plot:
+	filled.contour(res$Xt, res$Yt, res$density[,,i], main=paste0('Transition Density \n (t = ',res$time[i],')'), color.palette = colpal, xlab = 'Prey', ylab = 'Predator', plot.axes=
+		{
+			lines(my~mx, col = 'black', lty = 'dashed', lwd = 2)
+
+			# Show the predicted expectation from BiGQD.density()
+			points(res$cumulants[5,i]~res$cumulants[1,i],bg = 'white',pch = 21,cex = 1.5)
+			axis(1);axis(2);
+			legend('topright',lty = c('dashed', NA),pch = c(NA, 21), lwd = c(2, NA),
+			legend = c('Simulated Expectation', 'Predicted Expectation'))
+		})
+}
+@
+
+\subsection{Inference on Diffusion Processes}
+<<GQD-inference, out.width='4in', out.heigth='4in'>>=
+library("DiffusionRgqd")
+data(SDEsim1)
+attach(SDEsim1)
+par(mfrow=c(1,1))
+expr1=expression(dX[t]==2*(5+3*sin(0.5*pi*t)-X[t])*dt+0.5*sqrt(X[t])*dW[t])
+plot(SDEsim1$Xt~SDEsim1$time, type = 'l', col = '#222299', xlab = 'Time (t)', ylab = expression(X[t]), main = expr1)
+@
+
+<<GQD-infplot, eval=FALSE>>=
+GQD.remove()
+
+G0 <- function(t){theta[1]*(theta[2]+theta[3]*sin(0.25*pi*t))}
+G1 <- function(t){-theta[1]}
+Q1 <- function(t){theta[4]*theta[4]}
+
+theta   <- c(1, 10, 1, 1)               # Starting values for the chain
+sds     <- c(0.25, 0.25, 0.2, 0.05)/1.5 # Std devs for proposal distributions
+mesh    <- 10                           # Number of mesh points
+updates <- 110000                       # Perform 110000 updates
+burns   <- 10000                        # Burn 10000 updates
+
+# Run the MCMC procedure for the model defined above:
+model_1 <- GQD.mcmc(SDEsim1$Xt, SDEsim1$time, mesh, theta, sds, updates, burns)
+@
+
+% TODO: Fix input
+
+% <<GQD-RanOnRSeparately>>=
+% _____________________ Drift Coefficients _______________________
+% G0 : theta[1]*(theta[2]+theta[3]*sin(0.25*pi*t))                
+% G1 : -theta[1]                                                  
+% G2                                                              
+% ___________________ Diffusion Coefficients _____________________
+% Q0                                                              
+% Q1 : theta[4]*theta[4]                                          
+% Q2                                                              
+% _____________________ Prior Distributions ______________________
+                                                             
+% d(theta):None.                                                  
+% @
+
+% TODO: Add the inference plot
+
+The estimates are given by
+
+<<GQD-estimates, eval=FALSE>>=
+GQD.estimates(model_1, thin = 100, burns = 10000, corrmat = TRUE)
+@
+
+% TODO: Fix the results
+% <<GQD-estimatesResult>>=
+%          Estimate lower_CI upper_CI
+% theta[1]    2.026    1.820    2.256
+% theta[2]    5.016    4.922    5.106
+% theta[3]    2.915    2.787    3.050
+% theta[4]    0.501    0.472    0.534
+
+% $corrmat
+%          theta[1] theta[2] theta[3] theta[4]
+% theta[1]     1.00    -0.19    -0.36     0.38
+% theta[2]    -0.19     1.00     0.35    -0.03
+% theta[3]    -0.36     0.35     1.00    -0.13
+% theta[4]     0.38    -0.03    -0.13     1.00
+% @
+
+% TODO: Add the trace plot
+
+\section{pomp: statistical inference for partially-observed Markov processes}
+\section{Robfilter}
+\section{Sim.DiffProc Package - FitSDE}
+\section{HPloglik}
+\section{abctools}
 
 \end{document}
