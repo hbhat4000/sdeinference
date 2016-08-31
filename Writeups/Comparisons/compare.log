@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.14159265-2.6-1.40.17 (TeX Live 2016) (preloaded format=pdflatex 2016.5.22)  26 AUG 2016 17:51
+This is pdfTeX, Version 3.14159265-2.6-1.40.17 (TeX Live 2016) (preloaded format=pdflatex 2016.5.22)  31 AUG 2016 12:58
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -1016,7 +1016,7 @@ Overfull \hbox (48.3509pt too wide) in paragraph at lines 128--128
 [1
 
 {/usr/local/texlive/2016/texmf-var/fonts/map/pdftex/updmap/pdftex.map}]
-<figure/GQD-brownian-1.pdf, id=67, 505.89pt x 505.89pt>
+<figure/GQD-brownian-1.pdf, id=79, 505.89pt x 505.89pt>
 File: figure/GQD-brownian-1.pdf Graphic file (type pdf)
 
 <use figure/GQD-brownian-1.pdf>
@@ -1049,7 +1049,7 @@ n/10.95 ,[] []border[] []=[] []NA[][],[] []shade[] []=[] []0.5[][],[] []theta[]
  []
 
 [2 <./figure/GQD-brownian-1.pdf>]
-<figure/GQD-CIR-1.pdf, id=79, 505.89pt x 505.89pt>
+<figure/GQD-CIR-1.pdf, id=91, 505.89pt x 505.89pt>
 File: figure/GQD-CIR-1.pdf Graphic file (type pdf)
  <use figure/GQD-CIR-1.pdf>
 Package pdftex.def Info: figure/GQD-CIR-1.pdf used on input line 165.
@@ -1075,7 +1075,7 @@ T1/cmtt/m/n/10.95 white\TS1/cmtt/m/n/10.95 '[][]\T1/cmtt/m/n/10.95 ,[] []xlab[]
 ][],[] []theta[] []=[] []145[][])[][] 
  []
 
-<figure/GQD-tCIR-1.pdf, id=80, 505.89pt x 505.89pt>
+<figure/GQD-tCIR-1.pdf, id=92, 505.89pt x 505.89pt>
 File: figure/GQD-tCIR-1.pdf Graphic file (type pdf)
 
 <use figure/GQD-tCIR-1.pdf>
@@ -1095,28 +1095,28 @@ h[] []=[] []50[][]),[] []s[] []=[] []0[][],[] []t[] []=[] []10[][],[] []delt[]
 [4 <./figure/GQD-tCIR-1.pdf>]
 Package color Info: Redefining color shadecolor on input line 262.
 
-<figure/GQD-coupledPlot-1.pdf, id=100, 505.89pt x 505.89pt>
+<figure/GQD-coupledPlot-1.pdf, id=112, 505.89pt x 505.89pt>
 File: figure/GQD-coupledPlot-1.pdf Graphic file (type pdf)
 
 <use figure/GQD-coupledPlot-1.pdf>
 Package pdftex.def Info: figure/GQD-coupledPlot-1.pdf used on input line 266.
 (pdftex.def)             Requested size: 289.08589pt x 289.08589pt.
 
-<figure/GQD-coupledPlot-2.pdf, id=101, 505.89pt x 505.89pt> [5]
+<figure/GQD-coupledPlot-2.pdf, id=113, 505.89pt x 505.89pt> [5]
 File: figure/GQD-coupledPlot-2.pdf Graphic file (type pdf)
 
 <use figure/GQD-coupledPlot-2.pdf>
 Package pdftex.def Info: figure/GQD-coupledPlot-2.pdf used on input line 268.
 (pdftex.def)             Requested size: 289.08589pt x 289.08589pt.
 
-<figure/GQD-coupledPlot-3.pdf, id=106, 505.89pt x 505.89pt>
+<figure/GQD-coupledPlot-3.pdf, id=118, 505.89pt x 505.89pt>
 File: figure/GQD-coupledPlot-3.pdf Graphic file (type pdf)
 
 <use figure/GQD-coupledPlot-3.pdf>
 Package pdftex.def Info: figure/GQD-coupledPlot-3.pdf used on input line 270.
 (pdftex.def)             Requested size: 289.08589pt x 289.08589pt.
 
-<figure/GQD-coupledPlot-4.pdf, id=107, 505.89pt x 505.89pt> [6 <./figure/GQD-co
+<figure/GQD-coupledPlot-4.pdf, id=119, 505.89pt x 505.89pt> [6 <./figure/GQD-co
 upledPlot-1.pdf> <./figure/GQD-coupledPlot-2.pdf>]
 File: figure/GQD-coupledPlot-4.pdf Graphic file (type pdf)
 
@@ -1136,7 +1136,7 @@ mtt/m/n/10.95 ,[] []ylab[] []=[] []expression[][](X[t]),[] []main[] []= expr1)[
  []
 
 [7 <./figure/GQD-coupledPlot-3.pdf> <./figure/GQD-coupledPlot-4.pdf>]
-<figure/GQD-inference-1.pdf, id=145, 505.89pt x 505.89pt>
+<figure/GQD-inference-1.pdf, id=157, 505.89pt x 505.89pt>
 File: figure/GQD-inference-1.pdf Graphic file (type pdf)
 
 <use figure/GQD-inference-1.pdf>
@@ -1145,42 +1145,52 @@ Package pdftex.def Info: figure/GQD-inference-1.pdf used on input line 294.
 Package color Info: Redefining color shadecolor on input line 299.
 Package color Info: Redefining color shadecolor on input line 340.
  [8 <./figure/GQD-inference-1.pdf>]
-Package atveryend Info: Empty hook `BeforeClearDocument' on input line 371.
- [9]
-Package atveryend Info: Empty hook `AfterLastShipout' on input line 371.
+Underfull \hbox (badness 10000) in paragraph at lines 372--373
 
-(./compare.aux)
-Package atveryend Info: Executing hook `AtVeryEndDocument' on input line 371.
-Package atveryend Info: Executing hook `AtEndAfterFileList' on input line 371.
+ []
+
+[9]
+Package atveryend Info: Empty hook `BeforeClearDocument' on input line 401.
+ [10]
+Package atveryend Info: Empty hook `AfterLastShipout' on input line 401.
+ (./compare.aux)
+Package atveryend Info: Executing hook `AtVeryEndDocument' on input line 401.
+Package atveryend Info: Executing hook `AtEndAfterFileList' on input line 401.
 Package rerunfilecheck Info: File `compare.out' has not changed.
-(rerunfilecheck)             Checksum: ECD2B8CEDD8577FF7E81ACA924191D6E;723.
-Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 371.
+(rerunfilecheck)             Checksum: C1F90025061EEF4CDF9F83BDE7A9E4FA;906.
+Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 401.
  ) 
 Here is how much of TeX's memory you used:
- 10886 strings out of 493014
- 159996 string characters out of 6133351
+ 10907 strings out of 493014
+ 160221 string characters out of 6133351
  255306 words of memory out of 5000000
- 14238 multiletter control sequences out of 15000+600000
- 14598 words of font info for 42 fonts, out of 8000000 for 9000
+ 14247 multiletter control sequences out of 15000+600000
+ 19000 words of font info for 48 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
  42i,10n,40p,1055b,442s stack positions out of 5000i,500n,10000p,200000b,80000s
 {/usr/local/texlive/2016/texmf-dist/fonts/enc/dvips/cm-super/cm-super-t1.enc}
 {/usr/local/texlive/2016/texmf-dist/fonts/enc/dvips/cm-super/cm-super-ts1.enc}<
 /usr/local/texlive/2016/texmf-dist/fonts/type1/public/amsfonts/cm/cmex10.pfb></
 usr/local/texlive/2016/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi10.pfb></u
-sr/local/texlive/2016/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi8.pfb></usr
-/local/texlive/2016/texmf-dist/fonts/type1/public/amsfonts/cm/cmr10.pfb></usr/l
-ocal/texlive/2016/texmf-dist/fonts/type1/public/amsfonts/cm/cmr8.pfb></usr/loca
-l/texlive/2016/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy10.pfb></usr/local
-/texlive/2016/texmf-dist/fonts/type1/public/cm-super/sfbx1200.pfb></usr/local/t
-exlive/2016/texmf-dist/fonts/type1/public/cm-super/sfbx1440.pfb></usr/local/tex
-live/2016/texmf-dist/fonts/type1/public/cm-super/sfit1095.pfb></usr/local/texli
-ve/2016/texmf-dist/fonts/type1/public/cm-super/sfrm1095.pfb></usr/local/texlive
-/2016/texmf-dist/fonts/type1/public/cm-super/sftt1095.pfb>
-Output written on compare.pdf (9 pages, 1568276 bytes).
+sr/local/texlive/2016/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi6.pfb></usr
+/local/texlive/2016/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi8.pfb></usr/l
+ocal/texlive/2016/texmf-dist/fonts/type1/public/amsfonts/cm/cmr10.pfb></usr/loc
+al/texlive/2016/texmf-dist/fonts/type1/public/amsfonts/cm/cmr6.pfb></usr/local/
+texlive/2016/texmf-dist/fonts/type1/public/amsfonts/cm/cmr8.pfb></usr/local/tex
+live/2016/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy10.pfb></usr/local/texl
+ive/2016/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy6.pfb></usr/local/texliv
+e/2016/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy8.pfb></usr/local/texlive/
+2016/texmf-dist/fonts/type1/public/cm-super/sfbx1095.pfb></usr/local/texlive/20
+16/texmf-dist/fonts/type1/public/cm-super/sfbx1200.pfb></usr/local/texlive/2016
+/texmf-dist/fonts/type1/public/cm-super/sfbx1440.pfb></usr/local/texlive/2016/t
+exmf-dist/fonts/type1/public/cm-super/sfit1095.pfb></usr/local/texlive/2016/tex
+mf-dist/fonts/type1/public/cm-super/sfrm1095.pfb></usr/local/texlive/2016/texmf
+-dist/fonts/type1/public/cm-super/sfti1095.pfb></usr/local/texlive/2016/texmf-d
+ist/fonts/type1/public/cm-super/sftt1095.pfb>
+Output written on compare.pdf (10 pages, 1646320 bytes).
 PDF statistics:
- 208 PDF objects out of 1000 (max. 8388607)
- 168 compressed objects within 2 object streams
- 25 named destinations out of 1000 (max. 500000)
- 129 words of extra memory for PDF output out of 10000 (max. 10000000)
+ 252 PDF objects out of 1000 (max. 8388607)
+ 204 compressed objects within 3 object streams
+ 31 named destinations out of 1000 (max. 500000)
+ 153 words of extra memory for PDF output out of 10000 (max. 10000000)
 

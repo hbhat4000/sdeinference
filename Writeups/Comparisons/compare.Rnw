@@ -253,9 +253,40 @@ GQD.estimates(model_1, thin = 100, burns = 10000, corrmat = TRUE)
 % TODO: Add the trace plot
 
 \section{pomp: statistical inference for partially-observed Markov processes}
+POMP focuses on partially observed Markov process models or hidden Markov models. They consist of an observed process $Y_n$ from the system and an unobserved process $X_n$ controlled by a stochastic process. The stochastic process model is determined by the density $f_{X_n | X_{n-1}}$. Following the R convention, in the pomp package the simulation of $f_{X_n|X_{n-1}}$ (the process model) is referred to as the $\textit{rprocess}$ whereas the evaluation of $f_{X_n|X_{n-1}}$ is referred as the $\textit{dprocess}$. Similarly, for the measurement process, $f_{Y_n|X_n}$, the simulation component is $\textit{rmeasure}$, while the evaluation component is called $\textit{dmeasure}$.
+
+
 \section{Robfilter}
-\section{Sim.DiffProc Package - FitSDE}
+
+\section{Sim.DiffProc Package - PMLE}
+Pseudo-maximum likelihood estimators for one-dimensional SDEs. The four schemes implemented are: $\textbf{Euler}$, $\textbf{Ozaki}$, $\textbf{Shoji-Ozaki}$, $\textbf{Kessler}$ method. These methods don't approximate the transition density directly but the path of the process $X_t$ in such a way that the discretized version of the process has a usable likelihood. \\
+
+Consider the general form of the SDE:
+\begin{equation}
+dX_t = f(X_t, t, \theta)dt + g(X_t, t, \theta)dWt
+\end{equation}
+An assumption is made that the infinitesimal coefficients don't depend on $t$, so the equation can be approximated as
+\begin{equation}
+dX_t = f(X_t, \theta) dt + g(X_t, \theta)dW_t
+\end{equation}
+where $X_t$ is considered a time-homogeneous process. Using the above assumption, the transition density can be approximated as $p(\Delta t, x, y) = p(t_{i-1}, x, y, t_i)$. Given initial conditions $X_0$ and $\theta_0$, the log likelihood function is 
+\begin{align*}
+l_n (\theta) = \sum_{i=1}^{n} log p_{\theta} (\Delta t, X_{i-1}, X_i) + log p_{\theta} (X_0)
+\end{align*}
+The PMLE (pseudo maximum likelihood estimator) $\tilde{\theta}_n = \arg \max h_n(\theta | X_1, \cdots, X_n)$ is estimated from a density $h$ that doesn't belong to the family of the true conditional density but is compatible with the moments with $p$ (??). This method applied to high frequency data, i.e. $\Delta t \to 0, n\Delta t \to \infty$.
+
+
 \section{HPloglik}
+
 \section{abctools}
 
+\section{sde (Stefano 2015)} 
+
+\section{yuima (Stefano 2014)}
+Simulation and inference for multidimensional SDEs
+
+\section{PSM package (Stig and Soren 2013)}
+Estimation of linear and non-linear mixed-effects models using SDEs
+
 \end{document}
+

@@ -6,6 +6,9 @@
 \BOOKMARK [2][-]{subsection.1.5}{Inference on Diffusion Processes}{section.1}% 6
 \BOOKMARK [1][-]{section.2}{pomp: statistical inference for partially-observed Markov processes}{}% 7
 \BOOKMARK [1][-]{section.3}{Robfilter}{}% 8
-\BOOKMARK [1][-]{section.4}{Sim.DiffProc Package - FitSDE}{}% 9
+\BOOKMARK [1][-]{section.4}{Sim.DiffProc Package - PMLE}{}% 9
 \BOOKMARK [1][-]{section.5}{HPloglik}{}% 10
 \BOOKMARK [1][-]{section.6}{abctools}{}% 11
+\BOOKMARK [1][-]{section.7}{sde \(Stefano 2015\)}{}% 12
+\BOOKMARK [1][-]{section.8}{yuima \(Stefano 2014\)}{}% 13
+\BOOKMARK [1][-]{section.9}{PSM package \(Stig and Soren 2013\)}{}% 14
