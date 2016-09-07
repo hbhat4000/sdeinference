@@ -286,7 +286,153 @@ The PMLE (pseudo maximum likelihood estimator) $\tilde{\theta}_n = \arg \max h_n
 Simulation and inference for multidimensional SDEs
 
 \section{PSM package (Stig and Soren 2013)}
-Estimation of linear and non-linear mixed-effects models using SDEs
+Estimation of linear and non-linear mixed-effects models using SDEs. Also uses filtering to find smoothed estimates for the model states. It allow any multivariate non-linear time-variant model and had the ability to handle missing observations. Kalman filtering is used for linear models. \\
+
+A mixed-effects model is used wherein the variation is split into intra-individual variation and inter-individual variation using a 2 stage model. The first stage model is a state space model consisting of a continuous state equation and defined by the dynamics of the system and a set of discrete measurement equations which defines the relation between the obtained observations and the system observations.
+
+\begin{align*}
+dx_t & = (A(\phi_i) x_t + B(\phi_i) u_t)dt + \sigma_{\omega}(\phi_i) d \omega_t \\
+y_{ij} & = C(\phi_i) x_{ij} + D(\phi_i) u_{ij} + e_{ij}
+\end{align*}
+
+For a general non-linear model, the system is specified as
+\begin{align*}
+dx_t & = f(\phi_i, x_t, u_t, t)dt + \sigma(\phi_i, u_t, t) d \omega_t \\
+y_{ij} & = g(\phi_i, u_{ij}, x_{ij}, t_{ij}) + e_{ij}
+\end{align*}
+where $t$ is a continuous variable and in multivariable case, the state and measurement variables can be denoted as a vector at time $t_{ij}$. The noise is assumed to follow Gaussian noise $e_{ij} \in \mathcal{N}(0, S(\phi_i, u_t, t))$, where $S$ denotes the covariance matrix. The model parameters are denoted by $\phi_i$. \\
+
+For the model evaluation, it requires computations of the Jacobian matrix with first order partial derivatives, $\frac{\partial f}{\partial x_t}$ and $\frac{\partial g}{\partial x_t}$. \\
+
+The second stage model describes the variation of the model parameters $\phi_i$ between individuals,
+
+\begin{align*}
+\phi_i = h(\theta, \eta_i, Z_i)
+\end{align*}
+where $\eta_i$ is the multivariate random effect parameter for the $i^{th}$ parameter and is assumed Gaussian, i.e., $\eta_i \in \mathcal{N}(0, \Omega)$
+
+\subsection{Parameter Estimation}
+Maximum likelihood estimator is used for parameter estimation. The full set of model parameters to be estimated are the matrices $\Sigma, \sigma_{\omega}, \Omega, \theta$. The likelihood function is approximated by a second-order Taylor expansion around the value of $\hat{\eta_i}$ that maximizes it.
+\begin{align*}
+- \log L(\Theta) \approx \sum_{i=1}^N \frac{1}{2} \log \Bigg|\frac{-\Delta l_i}{2 \pi}\Bigg| - l_i
+\end{align*}
+
+This likelihood function is evaluated using the Kalman filter which gives an exact solution for linear models. For non-linear models, the Extended Kalman filter is used which is only an approximation. There are 4 types of state and state covariance estimates available using the EKF, each of which differs in the way data is used:
+
+\begin{enumerate}
+\item Simulation estimate: $\hat{x}_{i(j|0)}, \hat{P}_{i(j|0)}$ \\
+estimate of the state evolution for repeated experiments without updating based on measurements, yields a confidence band for the state evolution
+\item Prediction estimate: $\hat{x}_{i(j|j-1)}, \hat{P}_{i(j|j-1)}$ \\
+prediction required to give the conditional density for the next observation at time $t_{ij}$ given the observations upto $t_{i(j|j-1)}$
+\item Filtering estimate : $\hat{x}_{i(j|j)}, \hat{P}_{i(j|j)}$ \\
+best estimate at time $t_{ij}$ given the observations upto time $t_{ij}$ 
+\item Smoothing estimate: $\hat{x}_{i(j|N)}, \hat{P}_{i(j|N)}$ \\
+optimal estimate at time $t_{ij}$ utilizing all observations both prior and after the time $t_{ij}$
+\end{enumerate}
+
+There are 2 key objects in the packages, data object and model object. The data object contains sample times, observations and inputs while the model object contains everything else related to the model.
+
+<<PSM_model, message=F, warning=F>>=
+library('PSM')
+PSM.template(Linear=TRUE,dimX=3,dimY=1,dimU=0,dimEta=3)
+@
+
+The data object is a list with the following components:
+\begin{enumerate}
+\item $Y$ - the matrix with observations, columns hold multivariate observations at a time point, missing observations entered as NA
+\item $Time$ - sample times, same number of columns in $Y$
+\end{enumerate}
+
+<<PSM_datalist>>=
+MyData <- list()
+MyData[[1]] <- list(Time=1:4,Y=matrix(c(2.1,3.2,3.4,3.7),nrow=1),covar=c(BMI=20.1))
+MyData[[2]] <- list(Time=3:7,Y=matrix(c(1.9,2.1,2.0,2.9,3.5),nrow=1),covar=c(BMI=23.4))
+@
+
+Main functions for parameter estimation include:
+\begin{enumerate}
+\item PSM.estimate(Model, Data, THETA, deltaTime)
+\item PSM.estimate(Model, Data, Par, CI)
+\item PSM.smooth(Model, Data, THETA, subsample)
+\item PSM.plot(Data, Smooth, indiv, type)
+\item PSM.template(Linear,dimX,dimY,dimU,dimEta,file)
+\end{enumerate}
+
+\subsection{Linear Coupled SDE (Dosing in two-compartment model)}
+\begin{align*}
+dA_1 & = \Bigg( - \frac{CL}{V_1^i}A_1 - \frac{CL_d}{V_1^i}A_1 + \frac{CL_d}{V_2}A_2\Bigg) dt + \sigma_1 d\omega \\
+dA_2 & = \Bigg( \frac{CL_d}{V_1^i}A_1 - \frac{CL_d}{V_2}A_2\Bigg)dt - \sigma_1 d \omega \\
+Y & = \frac{A_1}{V_1^i} + e
+\end{align*}
+
+<<PSM_settingup>>=
+Model.SimDose = list()
+
+Model.SimDose$Matrices = function(phi) 
+{
+	V1i <- phi$V1i; V2=phi$V2; CL = phi$CL; CLd = phi$CLd;
+	matA <- matrix(c(-(CL+CLd)/V1i , CLd/V2 , CLd/V1i , -CLd/V2 ) ,nrow=2,byrow=T)
+	matC <- matrix(c(1/V1i,0),nrow=1)
+	list(matA=matA,matC=matC)
+}
+
+Model.SimDose$X0 = function(Time=Na,phi,U=Na) { matrix(0,nrow=2) }
+
+Model.SimDose$SIG = function(phi) 
+{
+	sig1 <- phi[["sig1"]]
+	matrix(c( sig1,0,-sig1,0), nrow=2, byrow=T)
+}
+
+Model.SimDose$S = function(phi) { matrix(phi[["S"]]) }
+
+Model.SimDose$h = function(eta,theta,covar) 
+{
+	phi <- theta
+	phi$V1i <- theta$V1*exp(eta[1])
+	phi
+}
+
+Model.SimDose$ModelPar = function(THETA)
+{
+	V2 <- 10
+	CLd <- 0.1
+	list(theta=list(V1 = THETA['V1'],V2=V2,CLd=CLd,CL=THETA['CL'], sig1=THETA['sig1'], S=THETA['S']),
+	OMEGA=matrix(THETA['OMEGA1']) )
+}
+
+SimDose.THETA <- c(CL=0.05,V1 = 5, sig1 = 10 , S = 20 , OMEGA1 = .2)
+
+N = 5
+SimDose.Data <- vector(mode="list",length=N)
+for (i in 1:N) 
+{
+	SimDose.Data[[i]]$Time <- seq(from=10,by=10,to=400)
+	SimDose.Data[[i]]$Dose <-list(Time = c(30,180), State = c(1, 1), Amount = c(1500,1500))
+}
+@
+
+The previous code is for setting up the parameters. Now the simulation and plotting can be done as follows:
+
+<<PSM_simulate>>=
+SimDose.Data <- PSM.simulate(Model.SimDose, SimDose.Data, SimDose.THETA, deltaTime=.1)
+PSM.plot(SimDose.Data,indiv=1:2,type=c('Y','longX','eta'))
+@
+
+<<PSM_estimates>>=
+parA <- list(LB=SimDose.THETA*.5, Init=SimDose.THETA , UB=SimDose.THETA*1.5 )
+fitA <- PSM.estimate(Model.SimDose,SimDose.Data,parA,CI=T)
+fitA[1:5]
+SimDose.THETA
+@
+
+Based on the estimated parameters, it is possible to obtain a smoothes estimate of the model states
+
+<<PSM_smoothestimates>>=
+out <- PSM.smooth(Model.SimDose, SimDose.Data, fitA$THETA, subsample = 20)
+names(out[[1]])
+@
+
 
 \end{document}
 
