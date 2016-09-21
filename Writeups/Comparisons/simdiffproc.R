@@ -1,5 +1,5 @@
 ###### Euler with CKLS model
-# Data Simulation
+# Data Simulation with theta1 = 1, theta2 = 2, theta3 = 0.5, theta4 = 0.3
 f = expression(1+2*x)
 g = expression(0.5*x^0.3)
 sim = snssde1d(drift = f, diffusion = g, x0 = 2, M = 1, N = 1000, Dt = 0.001)
@@ -18,7 +18,7 @@ AIC(fitmod)
 confint(fitmod, level = 0.95)
 
 ###### Ozaki with Vasicek model
-# Data Simulation
+# Data Simulation with theta1 = 3, theta = 2, theta3 = 0.5
 f = expression(3*(2-x))
 g = expression(0.5)
 sim = snssde1d(drift = f, diffusion = g, x0 = 5, Dt = 0.01)
