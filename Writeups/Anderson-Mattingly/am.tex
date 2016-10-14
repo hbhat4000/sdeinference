@@ -1,0 +1,50 @@
+\documentclass[10pt]{article}
+ 
+\usepackage[margin=1in]{geometry} 
+\usepackage{amsmath,amsthm,amssymb, graphicx, multicol, array, float}
+
+\begin{document}
+\vspace*{-15mm}
+\title{Anderson-Mattingly}
+\begin{center}
+\Large\textbf{DTQ with a weak trapezoidal scheme} \\
+\normalsize
+\end{center}
+
+The family of stochastic differential equations considered by Anderson-Mattingly follow:
+\begin{align*}
+dX(t) & = b(X(t)) dt + \sum_{k=1}^{M} \sigma_k(X(t)) \nu_k dW_k(t)
+\end{align*}
+where $b: \mathbb{R}^d \to \mathbb{R}^d$, $\sigma_k: \mathbb{R}^d \to \mathbb{R}^{+}$, $\nu_k \in \mathbb{R}^{d}$. 
+For our 1D case, we can simplify this SDE 
+\begin{align*}
+dX_t & = b(X_t)dt + \sigma (X_t) dW_t
+\end{align*}
+
+The Weak $\theta$-midpoint trapezoidal algorithm is given as
+\begin{align*}
+y^* & = Y_{i-1} + b(Y_{i-1}) \theta h + \sigma(Y_{i-1})Z_i^1 \sqrt{\theta h} \\
+Y_{i} & = y^* + (\alpha_1 b(y^*) - \alpha_2 b(Y_{i-1}))(1 - \theta) h + \sqrt{[\alpha_1 \sigma^2(y^*) - \alpha_2\sigma^2(Y_{i-1})]^{+}} Z_2^i \sqrt{(1-\theta)h}
+\end{align*}
+
+where $[x]^{+}$ is defined to be $\max \{ x, 0\}$ and $\theta \in (0,1)$ is fixed and used to define the parameters $\alpha_1, \alpha_2$
+\begin{align*}
+\alpha_1 = \frac{1}{2} \frac{1}{\theta (1-\theta)}, \: \: \:
+\alpha_2 = \frac{1}{2} \frac{(1-\theta)^2 + \theta^2}{\theta (1-\theta)}
+\end{align*}
+
+On the basis of probability we can write:
+\begin{align*}
+p(Y_i) & = \int_{y_{i-1}} p(Y_i, Y_{i-1}) dy_{i-1} \\
+& = \int_{y_{i-1}} p(Y_i | Y_{i-1}) p(Y_{i-1}) dy_{i-1}
+\end{align*}
+
+If we discretize using the Euler-Maruyama method, the transition density $p(Y_i | Y_{i-1})$ is a Gaussian with mean $Y_{i-1} + b(Y_{i-1})h$ and variance $\sigma^2(Y_{i-1})h$. The introduction of the 2 step process changes that computation, so the transition density is computed as,
+\begin{align*}
+p(Y_i | Y_{i-1}) & = \int_{y^*} p(y_i, y^* | y_{i-1}) dy^* \\
+& = \int_{y^*} \underbrace{p(y_i | y^*, y_{i-1})}_{\text{matrix A}} \underbrace{p(y^* | y_{i-1})}_{\text{matrix B}}dy^*
+\end{align*}
+
+The matrix $B$ is formed with variable $y^*$ and $y_{i-1}$. The second part is a Gaussian with mean $\mu = Y_{i-1} + b(Y_{i-1})\theta h$ and variance $\sigma^2 = \sigma^2(Y_{i-1})\theta h$. The matrix $A$ is formed by varying 
+
+\end{document}

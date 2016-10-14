@@ -396,7 +396,249 @@ The PMLE (pseudo maximum likelihood estimator) $\tilde{\theta}_n = \arg \max h_n
 Simulation and inference for multidimensional SDEs
 
 \section{PSM package (Stig and Soren 2013)}
-Estimation of linear and non-linear mixed-effects models using SDEs
+Estimation of linear and non-linear mixed-effects models using SDEs. Also uses filtering to find smoothed estimates for the model states. It allow any multivariate non-linear time-variant model and had the ability to handle missing observations. Kalman filtering is used for linear models. \\
+
+A mixed-effects model is used wherein the variation is split into intra-individual variation and inter-individual variation using a 2 stage model. The first stage model is a state space model consisting of a continuous state equation and defined by the dynamics of the system and a set of discrete measurement equations which defines the relation between the obtained observations and the system observations.
+
+\begin{align*}
+dx_t & = (A(\phi_i) x_t + B(\phi_i) u_t)dt + \sigma_{\omega}(\phi_i) d \omega_t \\
+y_{ij} & = C(\phi_i) x_{ij} + D(\phi_i) u_{ij} + e_{ij}
+\end{align*}
+
+For a general non-linear model, the system is specified as
+\begin{align*}
+dx_t & = f(\phi_i, x_t, u_t, t)dt + \sigma(\phi_i, u_t, t) d \omega_t \\
+y_{ij} & = g(\phi_i, u_{ij}, x_{ij}, t_{ij}) + e_{ij}
+\end{align*}
+where $t$ is a continuous variable and in multivariable case, the state and measurement variables can be denoted as a vector at time $t_{ij}$. The noise is assumed to follow Gaussian noise $e_{ij} \in \mathcal{N}(0, S(\phi_i, u_t, t))$, where $S$ denotes the covariance matrix. The model parameters are denoted by $\phi_i$. \\
+
+For the model evaluation, it requires computations of the Jacobian matrix with first order partial derivatives, $\frac{\partial f}{\partial x_t}$ and $\frac{\partial g}{\partial x_t}$. \\
+
+The second stage model describes the variation of the model parameters $\phi_i$ between individuals,
+
+\begin{align*}
+\phi_i = h(\theta, \eta_i, Z_i)
+\end{align*}
+where $\eta_i$ is the multivariate random effect parameter for the $i^{th}$ parameter and is assumed Gaussian, i.e., $\eta_i \in \mathcal{N}(0, \Omega)$
+
+\subsection{Parameter Estimation}
+Maximum likelihood estimator is used for parameter estimation. The full set of model parameters to be estimated are the matrices $\Sigma, \sigma_{\omega}, \Omega, \theta$. The likelihood function is approximated by a second-order Taylor expansion around the value of $\hat{\eta_i}$ that maximizes it.
+\begin{align*}
+- \log L(\Theta) \approx \sum_{i=1}^N \frac{1}{2} \log \Bigg|\frac{-\Delta l_i}{2 \pi}\Bigg| - l_i
+\end{align*}
+
+This likelihood function is evaluated using the Kalman filter which gives an exact solution for linear models. For non-linear models, the Extended Kalman filter is used which is only an approximation. There are 4 types of state and state covariance estimates available using the EKF, each of which differs in the way data is used:
+
+\begin{enumerate}
+\item Simulation estimate: $\hat{x}_{i(j|0)}, \hat{P}_{i(j|0)}$ \\
+estimate of the state evolution for repeated experiments without updating based on measurements, yields a confidence band for the state evolution
+\item Prediction estimate: $\hat{x}_{i(j|j-1)}, \hat{P}_{i(j|j-1)}$ \\
+prediction required to give the conditional density for the next observation at time $t_{ij}$ given the observations upto $t_{i(j|j-1)}$
+\item Filtering estimate : $\hat{x}_{i(j|j)}, \hat{P}_{i(j|j)}$ \\
+best estimate at time $t_{ij}$ given the observations upto time $t_{ij}$ 
+\item Smoothing estimate: $\hat{x}_{i(j|N)}, \hat{P}_{i(j|N)}$ \\
+optimal estimate at time $t_{ij}$ utilizing all observations both prior and after the time $t_{ij}$
+\end{enumerate}
+
+There are 2 key objects in the packages, data object and model object. The data object contains sample times, observations and inputs while the model object contains everything else related to the model.
+
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlkwd{library}\hlstd{(}\hlstr{'PSM'}\hlstd{)}
+\hlkwd{PSM.template}\hlstd{(}\hlkwc{Linear}\hlstd{=}\hlnum{TRUE}\hlstd{,}\hlkwc{dimX}\hlstd{=}\hlnum{3}\hlstd{,}\hlkwc{dimY}\hlstd{=}\hlnum{1}\hlstd{,}\hlkwc{dimU}\hlstd{=}\hlnum{0}\hlstd{,}\hlkwc{dimEta}\hlstd{=}\hlnum{3}\hlstd{)}
+\end{alltt}
+\begin{verbatim}
+## 
+## 
+## MyModel <- vector(mode="list")
+## MyModel$Matrices=function(phi) {
+##   list(
+##        matA=matrix(c(  ), nrow=3, ncol=3),
+##        matC=matrix(c(  ), nrow=1, ncol=3)
+##        )
+## }
+## MyModel$h = function(eta,theta,covar) {
+##   phi <- theta
+##   phi
+## }
+## MyModel$S = function(phi) {
+##   matrix(c(  ), nrow=1, ncol=1)
+## }
+## MyModel$SIG = function(phi) {
+##   matrix(c(  ), nrow=3, ncol=3)
+## }
+## MyModel$X0 = function(Time,phi,U) {
+##   matrix(c(  ), nrow=3, ncol=1)
+## }
+## MyModel$ModelPar = function(THETA) {
+##   list(theta=list(  ),
+##        OMEGA=matrix(c(  ), nrow=3, ncol=3)
+##        )
+## }
+\end{verbatim}
+\end{kframe}
+\end{knitrout}
+
+The data object is a list with the following components:
+\begin{enumerate}
+\item $Y$ - the matrix with observations, columns hold multivariate observations at a time point, missing observations entered as NA
+\item $Time$ - sample times, same number of columns in $Y$
+\end{enumerate}
+
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlstd{MyData} \hlkwb{<-} \hlkwd{list}\hlstd{()}
+\hlstd{MyData[[}\hlnum{1}\hlstd{]]} \hlkwb{<-} \hlkwd{list}\hlstd{(}\hlkwc{Time}\hlstd{=}\hlnum{1}\hlopt{:}\hlnum{4}\hlstd{,}\hlkwc{Y}\hlstd{=}\hlkwd{matrix}\hlstd{(}\hlkwd{c}\hlstd{(}\hlnum{2.1}\hlstd{,}\hlnum{3.2}\hlstd{,}\hlnum{3.4}\hlstd{,}\hlnum{3.7}\hlstd{),}\hlkwc{nrow}\hlstd{=}\hlnum{1}\hlstd{),}\hlkwc{covar}\hlstd{=}\hlkwd{c}\hlstd{(}\hlkwc{BMI}\hlstd{=}\hlnum{20.1}\hlstd{))}
+\hlstd{MyData[[}\hlnum{2}\hlstd{]]} \hlkwb{<-} \hlkwd{list}\hlstd{(}\hlkwc{Time}\hlstd{=}\hlnum{3}\hlopt{:}\hlnum{7}\hlstd{,}\hlkwc{Y}\hlstd{=}\hlkwd{matrix}\hlstd{(}\hlkwd{c}\hlstd{(}\hlnum{1.9}\hlstd{,}\hlnum{2.1}\hlstd{,}\hlnum{2.0}\hlstd{,}\hlnum{2.9}\hlstd{,}\hlnum{3.5}\hlstd{),}\hlkwc{nrow}\hlstd{=}\hlnum{1}\hlstd{),}\hlkwc{covar}\hlstd{=}\hlkwd{c}\hlstd{(}\hlkwc{BMI}\hlstd{=}\hlnum{23.4}\hlstd{))}
+\end{alltt}
+\end{kframe}
+\end{knitrout}
+
+Main functions for parameter estimation include:
+\begin{enumerate}
+\item PSM.estimate(Model, Data, THETA, deltaTime)
+\item PSM.estimate(Model, Data, Par, CI)
+\item PSM.smooth(Model, Data, THETA, subsample)
+\item PSM.plot(Data, Smooth, indiv, type)
+\item PSM.template(Linear,dimX,dimY,dimU,dimEta,file)
+\end{enumerate}
+
+\subsection{Linear Coupled SDE (Dosing in two-compartment model)}
+\begin{align*}
+dA_1 & = \Bigg( - \frac{CL}{V_1^i}A_1 - \frac{CL_d}{V_1^i}A_1 + \frac{CL_d}{V_2}A_2\Bigg) dt + \sigma_1 d\omega \\
+dA_2 & = \Bigg( \frac{CL_d}{V_1^i}A_1 - \frac{CL_d}{V_2}A_2\Bigg)dt - \sigma_1 d \omega \\
+Y & = \frac{A_1}{V_1^i} + e
+\end{align*}
+
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlstd{Model.SimDose} \hlkwb{=} \hlkwd{list}\hlstd{()}
+
+\hlstd{Model.SimDose}\hlopt{$}\hlstd{Matrices} \hlkwb{=} \hlkwa{function}\hlstd{(}\hlkwc{phi}\hlstd{)}
+\hlstd{\{}
+        \hlstd{V1i} \hlkwb{<-} \hlstd{phi}\hlopt{$}\hlstd{V1i; V2}\hlkwb{=}\hlstd{phi}\hlopt{$}\hlstd{V2; CL} \hlkwb{=} \hlstd{phi}\hlopt{$}\hlstd{CL; CLd} \hlkwb{=} \hlstd{phi}\hlopt{$}\hlstd{CLd;}
+        \hlstd{matA} \hlkwb{<-} \hlkwd{matrix}\hlstd{(}\hlkwd{c}\hlstd{(}\hlopt{-}\hlstd{(CL}\hlopt{+}\hlstd{CLd)}\hlopt{/}\hlstd{V1i , CLd}\hlopt{/}\hlstd{V2 , CLd}\hlopt{/}\hlstd{V1i ,} \hlopt{-}\hlstd{CLd}\hlopt{/}\hlstd{V2 ) ,}\hlkwc{nrow}\hlstd{=}\hlnum{2}\hlstd{,}\hlkwc{byrow}\hlstd{=T)}
+        \hlstd{matC} \hlkwb{<-} \hlkwd{matrix}\hlstd{(}\hlkwd{c}\hlstd{(}\hlnum{1}\hlopt{/}\hlstd{V1i,}\hlnum{0}\hlstd{),}\hlkwc{nrow}\hlstd{=}\hlnum{1}\hlstd{)}
+        \hlkwd{list}\hlstd{(}\hlkwc{matA}\hlstd{=matA,}\hlkwc{matC}\hlstd{=matC)}
+\hlstd{\}}
+
+\hlstd{Model.SimDose}\hlopt{$}\hlstd{X0} \hlkwb{=} \hlkwa{function}\hlstd{(}\hlkwc{Time}\hlstd{=Na,}\hlkwc{phi}\hlstd{,}\hlkwc{U}\hlstd{=Na) \{} \hlkwd{matrix}\hlstd{(}\hlnum{0}\hlstd{,}\hlkwc{nrow}\hlstd{=}\hlnum{2}\hlstd{) \}}
+
+\hlstd{Model.SimDose}\hlopt{$}\hlstd{SIG} \hlkwb{=} \hlkwa{function}\hlstd{(}\hlkwc{phi}\hlstd{)}
+\hlstd{\{}
+        \hlstd{sig1} \hlkwb{<-} \hlstd{phi[[}\hlstr{"sig1"}\hlstd{]]}
+        \hlkwd{matrix}\hlstd{(}\hlkwd{c}\hlstd{( sig1,}\hlnum{0}\hlstd{,}\hlopt{-}\hlstd{sig1,}\hlnum{0}\hlstd{),} \hlkwc{nrow}\hlstd{=}\hlnum{2}\hlstd{,} \hlkwc{byrow}\hlstd{=T)}
+\hlstd{\}}
+
+\hlstd{Model.SimDose}\hlopt{$}\hlstd{S} \hlkwb{=} \hlkwa{function}\hlstd{(}\hlkwc{phi}\hlstd{) \{} \hlkwd{matrix}\hlstd{(phi[[}\hlstr{"S"}\hlstd{]]) \}}
+
+\hlstd{Model.SimDose}\hlopt{$}\hlstd{h} \hlkwb{=} \hlkwa{function}\hlstd{(}\hlkwc{eta}\hlstd{,}\hlkwc{theta}\hlstd{,}\hlkwc{covar}\hlstd{)}
+\hlstd{\{}
+        \hlstd{phi} \hlkwb{<-} \hlstd{theta}
+        \hlstd{phi}\hlopt{$}\hlstd{V1i} \hlkwb{<-} \hlstd{theta}\hlopt{$}\hlstd{V1}\hlopt{*}\hlkwd{exp}\hlstd{(eta[}\hlnum{1}\hlstd{])}
+        \hlstd{phi}
+\hlstd{\}}
+
+\hlstd{Model.SimDose}\hlopt{$}\hlstd{ModelPar} \hlkwb{=} \hlkwa{function}\hlstd{(}\hlkwc{THETA}\hlstd{)}
+\hlstd{\{}
+        \hlstd{V2} \hlkwb{<-} \hlnum{10}
+        \hlstd{CLd} \hlkwb{<-} \hlnum{0.1}
+        \hlkwd{list}\hlstd{(}\hlkwc{theta}\hlstd{=}\hlkwd{list}\hlstd{(}\hlkwc{V1} \hlstd{= THETA[}\hlstr{'V1'}\hlstd{],}\hlkwc{V2}\hlstd{=V2,}\hlkwc{CLd}\hlstd{=CLd,}\hlkwc{CL}\hlstd{=THETA[}\hlstr{'CL'}\hlstd{],} \hlkwc{sig1}\hlstd{=THETA[}\hlstr{'sig1'}\hlstd{],} \hlkwc{S}\hlstd{=THETA[}\hlstr{'S'}\hlstd{]),}
+        \hlkwc{OMEGA}\hlstd{=}\hlkwd{matrix}\hlstd{(THETA[}\hlstr{'OMEGA1'}\hlstd{]) )}
+\hlstd{\}}
+
+\hlstd{SimDose.THETA} \hlkwb{<-} \hlkwd{c}\hlstd{(}\hlkwc{CL}\hlstd{=}\hlnum{0.05}\hlstd{,}\hlkwc{V1} \hlstd{=} \hlnum{5}\hlstd{,} \hlkwc{sig1} \hlstd{=} \hlnum{10} \hlstd{,} \hlkwc{S} \hlstd{=} \hlnum{20} \hlstd{,} \hlkwc{OMEGA1} \hlstd{=} \hlnum{.2}\hlstd{)}
+
+\hlstd{N} \hlkwb{=} \hlnum{5}
+\hlstd{SimDose.Data} \hlkwb{<-} \hlkwd{vector}\hlstd{(}\hlkwc{mode}\hlstd{=}\hlstr{"list"}\hlstd{,}\hlkwc{length}\hlstd{=N)}
+\hlkwa{for} \hlstd{(i} \hlkwa{in} \hlnum{1}\hlopt{:}\hlstd{N)}
+\hlstd{\{}
+        \hlstd{SimDose.Data[[i]]}\hlopt{$}\hlstd{Time} \hlkwb{<-} \hlkwd{seq}\hlstd{(}\hlkwc{from}\hlstd{=}\hlnum{10}\hlstd{,}\hlkwc{by}\hlstd{=}\hlnum{10}\hlstd{,}\hlkwc{to}\hlstd{=}\hlnum{400}\hlstd{)}
+        \hlstd{SimDose.Data[[i]]}\hlopt{$}\hlstd{Dose} \hlkwb{<-}\hlkwd{list}\hlstd{(}\hlkwc{Time} \hlstd{=} \hlkwd{c}\hlstd{(}\hlnum{30}\hlstd{,}\hlnum{180}\hlstd{),} \hlkwc{State} \hlstd{=} \hlkwd{c}\hlstd{(}\hlnum{1}\hlstd{,} \hlnum{1}\hlstd{),} \hlkwc{Amount} \hlstd{=} \hlkwd{c}\hlstd{(}\hlnum{1500}\hlstd{,}\hlnum{1500}\hlstd{))}
+\hlstd{\}}
+\end{alltt}
+\end{kframe}
+\end{knitrout}
+
+The previous code is for setting up the parameters. Now the simulation and plotting can be done as follows:
+
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlstd{SimDose.Data} \hlkwb{<-} \hlkwd{PSM.simulate}\hlstd{(Model.SimDose, SimDose.Data, SimDose.THETA,} \hlkwc{deltaTime}\hlstd{=}\hlnum{.1}\hlstd{)}
+\end{alltt}
+\begin{verbatim}
+## Simulating individual: 1, 2, 3, 4, 5, Done
+\end{verbatim}
+\begin{alltt}
+\hlkwd{PSM.plot}\hlstd{(SimDose.Data,}\hlkwc{indiv}\hlstd{=}\hlnum{1}\hlopt{:}\hlnum{2}\hlstd{,}\hlkwc{type}\hlstd{=}\hlkwd{c}\hlstd{(}\hlstr{'Y'}\hlstd{,}\hlstr{'longX'}\hlstd{,}\hlstr{'eta'}\hlstd{))}
+\end{alltt}
+\end{kframe}
+\includegraphics[width=\maxwidth]{figure/PSM_simulate-1} 
+
+\end{knitrout}
+
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlstd{parA} \hlkwb{<-} \hlkwd{list}\hlstd{(}\hlkwc{LB}\hlstd{=SimDose.THETA}\hlopt{*}\hlnum{.5}\hlstd{,} \hlkwc{Init}\hlstd{=SimDose.THETA ,} \hlkwc{UB}\hlstd{=SimDose.THETA}\hlopt{*}\hlnum{1.5} \hlstd{)}
+\hlstd{fitA} \hlkwb{<-} \hlkwd{PSM.estimate}\hlstd{(Model.SimDose,SimDose.Data,parA,}\hlkwc{CI}\hlstd{=T)}
+\hlstd{fitA[}\hlnum{1}\hlopt{:}\hlnum{5}\hlstd{]}
+\end{alltt}
+\begin{verbatim}
+## $NegLogL
+## [1] 701.3212
+## 
+## $THETA
+##          CL          V1        sig1           S      OMEGA1 
+##  0.05024533  3.61376844  8.44487780 19.44636937  0.10104120 
+## 
+## $CI
+##                    CL       V1      sig1         S     OMEGA1
+## Lower CI95 0.04899241 2.601711  6.623071  7.340308 -0.1462456
+## MLE        0.05024533 3.613768  8.444878 19.446369  0.1010412
+## Upper CI95 0.05149825 4.625826 10.266685 31.552431  0.3483280
+## 
+## $SD
+##               CL        V1      sig1        S    OMEGA1
+## [1,] 0.000639244 0.5163558 0.9294934 6.176562 0.1261668
+## 
+## $COR
+##                  CL           V1         sig1           S       OMEGA1
+## CL      1.000000000 -0.008943151  0.052756970 -0.05303231 -0.015988479
+## V1     -0.008943151  1.000000000  0.007180018  0.00391188 -0.005626545
+## sig1    0.052756970  0.007180018  1.000000000 -0.68857347 -0.044245905
+## S      -0.053032310  0.003911880 -0.688573474  1.00000000  0.038325727
+## OMEGA1 -0.015988479 -0.005626545 -0.044245905  0.03832573  1.000000000
+\end{verbatim}
+\begin{alltt}
+\hlstd{SimDose.THETA}
+\end{alltt}
+\begin{verbatim}
+##     CL     V1   sig1      S OMEGA1 
+##   0.05   5.00  10.00  20.00   0.20
+\end{verbatim}
+\end{kframe}
+\end{knitrout}
+
+Based on the estimated parameters, it is possible to obtain a smoothes estimate of the model states
+
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlstd{out} \hlkwb{<-} \hlkwd{PSM.smooth}\hlstd{(Model.SimDose, SimDose.Data, fitA}\hlopt{$}\hlstd{THETA,} \hlkwc{subsample} \hlstd{=} \hlnum{20}\hlstd{)}
+\hlkwd{names}\hlstd{(out[[}\hlnum{1}\hlstd{]])}
+\end{alltt}
+\begin{verbatim}
+##  [1] "Time"    "Xs"      "Ps"      "Ys"      "Xf"      "Pf"      "Xp"     
+##  [8] "Pp"      "Yp"      "R"       "eta"     "negLogL"
+\end{verbatim}
+\end{kframe}
+\end{knitrout}
+
 
 \end{document}
 
