@@ -1,0 +1,33 @@
+To reproduce Figure 2 in the DTQ paper, follow these steps.
+
+For each subdirectory in the set {"polydomain","logdomain"}:
+- enter the subdirectory
+- edit the file "runner.R"
+- for each R file in the set {"integrandmat.R",
+                              "integrandmatcpp.R",
+                              "integrandmatsparse.R"}:
+  - change line 5 of the "runner.R" file to source the corresponding integrandmat R file
+    (to spell it out, the choices are:
+     source('integrandmat.R')
+     source('integrandmatcpp.R')
+     source('integrandmatsparse.R')
+  - change line 43 of the "runner.R" file to save the data in a corresponding RData file
+    (to spell it out, the choices are:
+     save.image(file='timingresults.RData')
+     save.image(file='timingresultscpp.RData')
+     save.image(file='timingresultssparse.RData')
+  - once these changes have been made, run this at the command line:
+
+Rscript runner.R > runner.out
+
+There should be a total of 6 Rscript runs: 2 subdirectories * 3 integrandmats
+
+Once all of these runs have been completed, get back to this directory.
+
+At the command line, run:
+
+Rscript processdata.R
+
+This should create "timings.eps" and "timings.pdf"
+
+
