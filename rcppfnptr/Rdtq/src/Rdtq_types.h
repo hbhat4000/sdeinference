@@ -1,4 +1,4 @@
 #include <RcppArmadillo.h>
 
-typedef arma::vec (*funcPtr)(const arma::vec& x);
+typedef double (*funcPtr)(const double& x);
 

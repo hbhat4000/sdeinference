@@ -1,5 +1,0 @@
-chain2 = run_metropolis_MCMC(startvalue, 10000)
-combinedchains = mcmc.list(chain, chain2)
-plot(combinedchains)
-gelman.diag(combinedchains)
-gelman.plot(combinedchains)
