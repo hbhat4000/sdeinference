@@ -1,11 +1,11 @@
 Package: Rdtq
 Type: Package
-Title: What the package does (short line)
+Title: Density tracking by quadrature
 Version: 1.0
-Date: 2016-08-22
-Author: Your Name
-Maintainer: Your Name <your@email.com>
-Description: More about what it does (maybe more than one line)
+Date: 2016-10-31
+Author: Harish S. Bhat, R.W.M.A. Madushani, Shagun Rawat
+Maintainer: Harish S. Bhat <hbhat@ucmerced.edu>
+Description: This package computes the time-dependent probability density function for a stochastic differential equation with given drift and diffusion functions.
 License: GPL (>= 2)
-Imports: Rcpp (>= 0.12.4), RcppArmadillo (>= 0.6.4)
-LinkingTo: Rcpp, RcppArmadillo
+Imports: Rcpp (>= 0.12.4)
+LinkingTo: Rcpp

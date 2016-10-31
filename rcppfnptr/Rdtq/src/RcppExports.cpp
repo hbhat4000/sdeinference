@@ -2,7 +2,6 @@
 // Generator token: 10BE3573-1514-4C36-9D1C-5A225CD40393
 
 #include "Rdtq_types.h"
-#include <RcppArmadillo.h>
 #include <Rcpp.h>
 
 using namespace Rcpp;
@@ -20,7 +19,7 @@ BEGIN_RCPP
 END_RCPP
 }
 // rdtq
-arma::vec rdtq(double h, double k, int bigm, double init, double T, SEXP driftsexp, SEXP diffsexp);
+NumericVector rdtq(double h, double k, int bigm, double init, double T, SEXP driftsexp, SEXP diffsexp);
 RcppExport SEXP Rdtq_rdtq(SEXP hSEXP, SEXP kSEXP, SEXP bigmSEXP, SEXP initSEXP, SEXP TSEXP, SEXP driftsexpSEXP, SEXP diffsexpSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
