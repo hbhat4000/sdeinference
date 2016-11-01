@@ -3,7 +3,10 @@ library('pomp')
 library('magrittr')
 library('dplyr')
 
-load('~/Desktop/newfakedata_fullres.RData')
+# for reproducibility
+set.seed(1)
+
+load('newfakedata_fullres.RData')
 mydata = X[seq(from=1,to=2001,by=40),]
 mymod.dat = data.frame(t=mydata[,3],Y1=as.numeric(mydata[,1]),Y2=as.numeric(mydata[,2]))
 
@@ -11,12 +14,12 @@ step.fun <- Csnippet("
  double dW1 = rnorm(0,sqrt(dt));
  double dW2 = rnorm(0,sqrt(dt));
  X1 += -theta1*theta1*X2*dt + (0.16/(2*M_PI))*theta1*theta1*dW1;
- X2 += 2*M_PI*X1*dt + (0.16)*dW2;
+ X2 += theta2*theta2*X1*dt + (0.16/(2*M_PI))*theta2*theta2*dW2;
 ")
 
 mymod <- pomp(data=mymod.dat,time="t",t0=0,
-              rprocess=euler.sim(step.fun=step.fun,delta.t=0.01),
-              statenames=c("X1","X2"),paramnames=c("theta1"))
+              rprocess=euler.sim(step.fun=step.fun,delta.t=0.005),
+              statenames=c("X1","X2"),paramnames=c("theta1","theta2"))
 
 rmeas <- Csnippet("
  Y1 = X1 + rnorm(0,1e-2);
@@ -26,20 +29,33 @@ rmeas <- Csnippet("
 mymod <- pomp(mymod,rmeasure=rmeas,statenames=c("X1","X2"))
 
 dmeas <- Csnippet("
- lik = dnorm(Y1,X1,1e-2,give_log) + dnorm(Y2,X2,1e-2,give_log);
+  lik = dnorm(Y1,X1,1e-2,1) + dnorm(Y2,X2,1e-2,1);
 ")
 
 mymod <- pomp(mymod,dmeasure=dmeas,statenames=c("X1","X2"))
 
 mymod  %<>%
-  pomp(dprior=Csnippet("lik = dnorm(theta1,0,100,1);"),paramnames=c("theta1"))
+  pomp(dprior=Csnippet("
+    lik = dnorm(theta1,0,100,1) + dnorm(theta2,0,100,1);
+  "),paramnames=c("theta1","theta2"))
 
-startvec = c(1,mymod.dat[1,]$Y1,mymod.dat[1,]$Y2)
-sdvec = c(1)
-names(startvec) = c("theta1","X1.0","X2.0")
-names(sdvec) = c("theta1")
+startvec = c(1,1,mymod.dat[1,]$Y1,mymod.dat[1,]$Y2)
+sdvec = c(1,1)
+names(startvec) = c("theta1","theta2","X1.0","X2.0")
+names(sdvec) = c("theta1","theta2")
 
-mymod %>% pmcmc(Nmcmc=200,Np=200,start=startvec,proposal=mvn.rw.adaptive(rw.sd=sdvec,scale.start=100,shape.start=100)) -> chain
-# chain %<>% pmcmc(Nmcmc=10000,proposal=mvn.rw(covmat(chain)))
+numsamp=2000
+burnin=100
+nparticles=200
+
+mymod %>% pmcmc(Nmcmc=200,Np=nparticles,start=startvec,proposal=mvn.rw.adaptive(rw.sd=sdvec,scale.start=100,shape.start=100)) -> chain
+chain %<>% pmcmc(Nmcmc=(numsamp+burnin),proposal=mvn.rw(covmat(chain)))
+
+# we will get exactly numsamp samples
+mysamp = as.matrix(conv.rec(chain,"theta1"))[(burnin+2):(numsamp+burnin+1),1]
+
+# this is because theta1^2 = 1/L, which should be 2*pi
+print(summary(mysamp^2))
+
 
 
