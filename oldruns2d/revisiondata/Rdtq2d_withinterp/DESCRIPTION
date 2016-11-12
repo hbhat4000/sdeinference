@@ -6,4 +6,3 @@ Description: Continuous density tracking
 License: GPL 3.0
 Depends: Rcpp (>= 0.10.6) , RcppArmadillo (>= 0.4.000.2)
 LinkingTo: Rcpp
-Built: R 3.3.1; x86_64-redhat-linux-gnu; 2016-11-12 01:13:21 UTC; unix

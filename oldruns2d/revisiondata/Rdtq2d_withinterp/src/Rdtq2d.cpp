@@ -44,7 +44,7 @@ static inline double g2(double x1, double x2, const vec& thetavec)
   return(thetavec(3)*thetavec(3));
 }
 
-vec dtq(const vec &thetavec, const vec &C1, const vec &C2, double h, int numsteps, double k, double yM)
+mat dtq(const vec &thetavec, const vec &C1, const vec &C2, double h, int numsteps, double k, double yM)
 {
   double h12 = sqrt(h);
   int M = ceil(yM/k);
@@ -53,13 +53,9 @@ vec dtq(const vec &thetavec, const vec &C1, const vec &C2, double h, int numstep
   int datapoints = C1.n_elem;
   vec xvec = k*linspace<vec>(-M,M,veclen);
   mat approxpdfvec(nr,datapoints);
-  vec outpdf = zeros<vec>(datapoints);
 
-// #ifdef _OPENMP
   omp_set_num_threads(24);
-// #endif
 
-if(numsteps > 1) { 
 #pragma omp parallel for
   for (int i=0; i<datapoints; i++)
   {
@@ -68,26 +64,15 @@ if(numsteps > 1) {
     approxpdfvec.col(i) = vectorise(kron(v1, v2.t()));
   }
 #pragma omp barrier
-}
-else {
-  #pragma omp parallel for
-  for (int i=0; i<datapoints; i++)
-  {
-    vec v1 = gaussian_pdf_vec(xvec, C1(i) + f1(C1(i),C2(i),thetavec)*h, h12*g1(C1(i),C2(i),thetavec));
-    vec v2 = gaussian_pdf_vec(xvec, C2(i) + f2(C1(i),C2(i),thetavec)*h, h12*g2(C1(i),C2(i),thetavec));
-    outpdf(i) = v1*v2;
-  }
-  #pragma omp barrier
-}
 
   double supg = 0.5;
   int gamma = ceil(5*h12*supg/k);
 
   // loop over the timesteps
-  for (int step=1; step<(numsteps-1); step++)
+  for (int step=1; step<numsteps; step++)
   {
     mat approxpdfvecnew = zeros<mat>(nr,datapoints);
-// #pragma omp parallel for
+#pragma omp parallel for
     for (int newspace=0; newspace<nr; newspace++)
     {
       int j = floor(newspace/veclen); // subtract M to get math i, j \in [-M,M]
@@ -117,41 +102,10 @@ else {
         }
       }
     }
-// #pragma omp barrier
+#pragma omp barrier
     approxpdfvec = approxpdfvecnew;
   }
-
-  if(numsteps > 1) 
-  {
-    int gamma1 = gamma + 1;
-#pragma omp parallel for 
-    for (int ip=(i-gamma1); ip<=(i+gamma1); ip++)
-    {
-      for (int jp=(j-gamma1); jp<=(j+gamma1); jp++)
-      {
-        int test = jp*veclen + ip;
-        if ((test >= 0) && (test < nr))
-        {
-          int ipeff = ip - i + gamma1;
-          int jpeff = jp - j + gamma1;
-          if ((ipeff >= 0) && (ipeff <= 2*gamma1) && (jpeff >= 0) && (jpeff <= 2*gamma1))
-          {
-            double y1 = (ip-M)*k;
-            double y2 = (jp-M)*k;
-            double mu1 = y1 + f1(y1,y2,thetavec)*h;
-            double mu2 = y2 + f2(y1,y2,thetavec)*h;
-            double sigma1 = h12*g1(y1,y2,thetavec);
-            double sigma2 = h12*g2(y1,y2,thetavec);
-            double locbigg1 = gaussian_pdf(xvec(i), mu1, sigma1);
-            double locbigg2 = gaussian_pdf(xvec(j), mu2, sigma2);
-            outpdf(tp-1) += k*k*locbigg1*locbigg2*approxpdfvec(test, tp-1);
-          }
-        }
-      }
-    }
-#pragma omp barrier
-  }
-  return outpdf;
+  return approxpdfvec;
 }
 
 mat PDFcheck(const vec &thetavec, double h, double k, double yM)
@@ -196,7 +150,7 @@ mat PDFcheck(const vec &thetavec, double h, double k, double yM)
     }
   }
 #pragma omp barrier
-  return(min(Gnorm));
+  return Gnorm;
 }
 
 SEXP dtq2dCPP(SEXP s_thetavec, SEXP s_c1, SEXP s_c2, SEXP s_h, SEXP s_numsteps, SEXP s_k, SEXP s_yM)
@@ -210,8 +164,8 @@ SEXP dtq2dCPP(SEXP s_thetavec, SEXP s_c1, SEXP s_c2, SEXP s_h, SEXP s_numsteps, 
     double k = Rcpp::as<double>(s_k);
     double yM = Rcpp::as<double>(s_yM);
 
-    vec output = dtq(thetavec, C1, C2, h, numsteps, k, yM);
-    return Rcpp::wrap( output );
+    mat mymat = dtq(thetavec, C1, C2, h, numsteps, k, yM);
+    return Rcpp::wrap( mymat );
 }
 
 
@@ -222,7 +176,7 @@ SEXP GCPP(SEXP s_thetavec, SEXP s_h, SEXP s_k, SEXP s_yM)
     double k = Rcpp::as<double>(s_k);
     double yM = Rcpp::as<double>(s_yM);
 
-    vec vals = PDFcheck(thetavec, h, k, yM);
-    return Rcpp::wrap( vals );
+    mat Gnorm = PDFcheck(thetavec, h, k, yM);
+    return Rcpp::wrap( Gnorm );
 }
 

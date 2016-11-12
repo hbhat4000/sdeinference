@@ -51,7 +51,7 @@ burnin=1000
 nparticles=5
 # rw.var = matrix(c(1,1,1,1), nrow=2, ncol = 2)
 
-mymod %>% pmcmc(Nmcmc=200,Np=nparticles,start=startvec,proposal=mvn.rw.adaptive(rw.sd=sdvec,scale.start=1,shape.start=1, target=0.234)) -> chain
+mymod %>% pmcmc(Nmcmc=200,Np=nparticles,start=startvec,proposal=mvn.rw.adaptive(rw.sd=sdvec,scale.start=10,shape.start=1, target=0.234)) -> chain
 chain %<>% pmcmc(Nmcmc=(numsamp+burnin),proposal=mvn.rw(covmat(chain)))
 # chain %<>% pmcmc(Nmcmc=(numsamp+burnin),proposal=mvn.rw(rw.var))
 

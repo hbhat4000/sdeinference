@@ -8,13 +8,20 @@ library('Rdtq2d')
 library('fields')
 
 # load fake data in X which has x1, x2, t
-load('fakedata_nonlinear.RData')
+# load('fakedata_nonlinear.RData')
+
+load('newfakedata_fullres.RData')
+X = X[seq(from=1,to=2001,by=100),]
 
 # keep every 100th row
-X = X[seq(from=1,to=nrow(X),by=100),]
+# X = X[seq(from=1,to=nrow(X),by=100),]
 
 # load true thetavec
 source('truethetavec.R')
+
+set.seed(1)
+
+ptm = proc.time()
 
 # algorithm parameters
 # time increment from data and time step
@@ -77,7 +84,7 @@ for (i in c(1:(totsteps-1)))
     # generate proposal
     z = rnorm(n = 2, sd = 0.1)
     prop = x[i,] + z
-	
+    
     # calculate likelihood and posterior density
     thetavec = truethetavec
     thetavec[1] = prop[1]
@@ -110,14 +117,16 @@ for (i in c(1:(totsteps-1)))
 # throw away the burnin steps
 x = x[(burnin+1):totsteps,]
 
-# save everything
-save.image(file = 'ps_both.RData')
-
 # percentage difference between empirical and true means
-print((mean(x[,1]^2) - 2*pi)/(2*pi))
+meandiff = (mean(x[,1]^2) - 2*pi)/(2*pi)
+print(meandiff)
 
 # percentage difference between empirical and true modes
 myden = density(x[,1]^2)
-print((myden$x[which.max(myden$y)] - 2*pi)/(2*pi))
+modediff = (myden$x[which.max(myden$y)] - 2*pi)/(2*pi)
+print(modediff)
 
+print(proc.time() - ptm)
 
+# save everything
+save.image(file = 'samples_by100.RData')

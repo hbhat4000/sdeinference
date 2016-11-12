@@ -4,17 +4,21 @@ rm(list=ls(all=TRUE))
 # load 2d dtq package
 library('Rdtq2d')
 
-# load package for interpolation
-library('fields')
-
 # load fake data in X which has x1, x2, t
-load('fakedata_nonlinear.RData')
+# load('fakedata_nonlinear.RData')
+
+load('newfakedata_fullres.RData')
+X = X[seq(from=1,to=2001,by=100),]
 
 # keep every 100th row
-X = X[seq(from=1,to=nrow(X),by=100),]
+# X = X[seq(from=1,to=nrow(X),by=100),]
 
 # load true thetavec
 source('truethetavec.R')
+
+set.seed(1)
+
+ptm = proc.time()
 
 # algorithm parameters
 # time increment from data and time step
@@ -35,6 +39,10 @@ totsteps = numsteps + burnin
 x = matrix(0, nrow = totsteps, ncol = 2)
 x[1,] = c(0.1,0.1)
 
+M = ceiling(xylimit/myk)
+xvec = myk*c(-M:M)
+mm = length(xvec)
+
 # define log prior
 myprior <- function(z)
 {
@@ -42,25 +50,10 @@ myprior <- function(z)
 }
 
 # function that computes log posterior
-
-M = ceiling(xylimit/myk)
-xvec = myk*c(-M:M)
-mm = length(xvec)
-
-myposterior <- function(likden, dat, prior)
+myposterior <- function(den, prior)
 {
-    steps = ncol(likden)
-    # for scenario 2, likden has 'datapoints' pdfs  
-    logpost = 0
-    for(i in c(1:steps))
-    { 
-      myloc = matrix(dat[(i+1),c(1:2)],ncol=2)
-      likdat = interp.surface(obj=list(x=xvec,y=xvec,z=matrix(likden[,i],nrow=mm)),loc=myloc)
-      likdat[likdat <= 2.2e-16] = 2.2e-16
-      logpost = logpost + sum(log(likdat))
-    }
-    logpost = logpost + sum(prior)
-    return(logpost)
+    loglik = sum(log(den[den >= 2.2e-16]))
+    return(loglik + sum(log(prior)))
 }
 
 thetavec = truethetavec
@@ -68,8 +61,9 @@ thetavec[1] = x[1,1]
 thetavec[2] = x[1,2]
 oldden = Rdtq2d(thetavec,C1,C2,h=myh,numsteps=myns,k=myk,yM=xylimit)
 checkk = PDFcheck(thetavec,h=myh,k=myk,yM=xylimit)
-print(c(min(checkk),mean(checkk),max(checkk)))
-oldpost = myposterior(likden=oldden, dat=X, prior=myprior(x[1,]))
+print(checkk)
+
+oldpost = myposterior(den=oldden, prior=myprior(x[1,]))
 artrack = numeric(length=(totsteps-1))
 
 for (i in c(1:(totsteps-1)))
@@ -83,7 +77,7 @@ for (i in c(1:(totsteps-1)))
     thetavec[1] = prop[1]
     thetavec[2] = prop[2]
     propden = Rdtq2d(thetavec,C1,C2,h=myh,numsteps=myns,k=myk,yM=xylimit)
-    proppost = myposterior(likden=propden, dat=X, prior=myprior(prop)) 
+    proppost = myposterior(den=propden, prior=myprior(prop)) 
     rho = exp(proppost-oldpost)
     maxcolsumerr = max(abs(colSums(propden)*myk^2 - 1))
 
@@ -110,14 +104,17 @@ for (i in c(1:(totsteps-1)))
 # throw away the burnin steps
 x = x[(burnin+1):totsteps,]
 
-# save everything
-save.image(file = 'ps_both.RData')
+print(proc.time() - ptm)
+
 
 # percentage difference between empirical and true means
-print((mean(x[,1]^2) - 2*pi)/(2*pi))
+diffmeans = (mean(x[,1]^2) - 2*pi)/(2*pi)
+print(diff)
 
 # percentage difference between empirical and true modes
 myden = density(x[,1]^2)
-print((myden$x[which.max(myden$y)] - 2*pi)/(2*pi))
+diffmodes = (myden$x[which.max(myden$y)] - 2*pi)/(2*pi)
+print(diffmodes)
 
-
+# save everything
+save.image(file = 'samples1_by20_h_005.RData')
