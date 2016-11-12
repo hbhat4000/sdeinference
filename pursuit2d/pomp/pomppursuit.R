@@ -10,6 +10,8 @@ load('newfakedata_fullres.RData')
 mydata = X[seq(from=1,to=2001,by=40),]
 mymod.dat = data.frame(t=mydata[,3],Y1=as.numeric(mydata[,1]),Y2=as.numeric(mydata[,2]))
 
+ptm = proc.time()
+
 step.fun <- Csnippet("
  double dW1 = rnorm(0,sqrt(dt));
  double dW2 = rnorm(0,sqrt(dt));
@@ -18,12 +20,12 @@ step.fun <- Csnippet("
 ")
 
 mymod <- pomp(data=mymod.dat,time="t",t0=0,
-              rprocess=euler.sim(step.fun=step.fun,delta.t=0.005),
+              rprocess=euler.sim(step.fun=step.fun,delta.t=0.05),
               statenames=c("X1","X2"),paramnames=c("theta1","theta2"))
 
 rmeas <- Csnippet("
- Y1 = X1 + rnorm(0,1e-2);
- Y2 = X2 + rnorm(0,1e-2);
+ Y1 = X1 + rnorm(0,1e-8);
+ Y2 = X2 + rnorm(0,1e-8);
 ")
 
 mymod <- pomp(mymod,rmeasure=rmeas,statenames=c("X1","X2"))
@@ -44,12 +46,14 @@ sdvec = c(1,1)
 names(startvec) = c("theta1","theta2","X1.0","X2.0")
 names(sdvec) = c("theta1","theta2")
 
-numsamp=2000
-burnin=100
-nparticles=200
+numsamp=10000
+burnin=1000
+nparticles=5
+# rw.var = matrix(c(1,1,1,1), nrow=2, ncol = 2)
 
-mymod %>% pmcmc(Nmcmc=200,Np=nparticles,start=startvec,proposal=mvn.rw.adaptive(rw.sd=sdvec,scale.start=100,shape.start=100)) -> chain
+mymod %>% pmcmc(Nmcmc=200,Np=nparticles,start=startvec,proposal=mvn.rw.adaptive(rw.sd=sdvec,scale.start=1,shape.start=1, target=0.234)) -> chain
 chain %<>% pmcmc(Nmcmc=(numsamp+burnin),proposal=mvn.rw(covmat(chain)))
+# chain %<>% pmcmc(Nmcmc=(numsamp+burnin),proposal=mvn.rw(rw.var))
 
 # we will get exactly numsamp samples
 mysamp = as.matrix(conv.rec(chain,"theta1"))[(burnin+2):(numsamp+burnin+1),1]
@@ -57,5 +61,5 @@ mysamp = as.matrix(conv.rec(chain,"theta1"))[(burnin+2):(numsamp+burnin+1),1]
 # this is because theta1^2 = 1/L, which should be 2*pi
 print(summary(mysamp^2))
 
-
+print(proc.time() - ptm)
 

@@ -277,8 +277,8 @@ SEXP dtq2dCPP(SEXP s_nuvec, SEXP s_gammavec, SEXP s_runner, SEXP s_chaser, SEXP 
     vec gammavec = Rcpp::as<arma::vec>(s_gammavec);
     mat runner = Rcpp::as<arma::mat>(s_runner);
     mat chaser = Rcpp::as<arma::mat>(s_chaser);
-    // cout << runner.n_cols << endl;
-    // cout << runner.n_rows << endl;
+    cout << runner.n_cols << endl;
+    cout << runner.n_rows << endl;
     // cout << chaser.n_cols << endl;
     // cout << chaser.n_rows << endl;
 

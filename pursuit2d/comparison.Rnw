@@ -1,0 +1,5 @@
+New file
+
+<<>>=
+R code
+@
