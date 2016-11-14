@@ -46,12 +46,12 @@ sdvec = c(1,1)
 names(startvec) = c("theta1","theta2","X1.0","X2.0")
 names(sdvec) = c("theta1","theta2")
 
-numsamp=10000
-burnin=1000
+numsamp=1000
+burnin=100
 nparticles=5
 # rw.var = matrix(c(1,1,1,1), nrow=2, ncol = 2)
 
-mymod %>% pmcmc(Nmcmc=200,Np=nparticles,start=startvec,proposal=mvn.rw.adaptive(rw.sd=sdvec,scale.start=10,shape.start=1, target=0.234)) -> chain
+mymod %>% pmcmc(Nmcmc=200,Np=nparticles,start=startvec,proposal=mvn.rw.adaptive(rw.sd=sdvec,scale.start=.5,shape.start=1, target=0.234)) -> chain
 chain %<>% pmcmc(Nmcmc=(numsamp+burnin),proposal=mvn.rw(covmat(chain)))
 # chain %<>% pmcmc(Nmcmc=(numsamp+burnin),proposal=mvn.rw(rw.var))
 

@@ -7,10 +7,8 @@ library('dplyr')
 set.seed(1)
 
 load('newfakedata_fullres.RData')
-mydata = X[seq(from=1,to=2001,by=40),]
-mymod.dat = data.frame(t=mydata[,3],Y1=as.numeric(mydata[,1]),Y2=as.numeric(mydata[,2]))
-
-ptm = proc.time()
+mydata = X[seq(from=1,to=2001,by=40),] # data in matrix form
+mymod.dat = data.frame(Y1=as.numeric(mydata[,1]),Y2=as.numeric(mydata[,2]), t=mydata[,3])
 
 step.fun <- Csnippet("
  double dW1 = rnorm(0,sqrt(dt));
@@ -36,7 +34,38 @@ dmeas <- Csnippet("
 
 mymod <- pomp(mymod,dmeasure=dmeas,statenames=c("X1","X2"))
 
-pf <- pfilter(mymod,Np=1000,params=c(theta1=2,theta2=2,X1.0=mymod.dat[1,]$Y1,X2.0=mymod.dat[1,]$Y2))
-print(logLik(pf))
+burnin = 100
+numsteps = 1000
+totsteps = numsteps + burnin
 
+artrack = numeric(length=(totsteps-1))
+x = matrix(0, nrow = totsteps, ncol = 2)
+x[1,1] = 2
+x[1,2] = 2
 
+oldpf <- pfilter(mymod, Np = 1000, params = c(theta1 = x[1,1], theta2 = x[1,2], X1.0 = mymod.dat[1,]$Y1, X2.0 = mymod.dat[1,]$Y2))
+oldden <- logLik(oldpf)
+print(oldden)
+
+for(i in c(1:(totsteps-1))) {
+	z = rnorm(n = 2, sd = 0.1)
+	prop = x[i,] + z
+
+	proppf <- pfilter(mymod, Np = 1000, params = c(theta1 = prop[1], theta2 = prop[2], X1.0 = mymod.dat[1,]$Y1, X2.0 = mymod.dat[1,]$Y2))
+	propden <- logLik(proppf)
+	print(propden)
+
+	rho = exp(propden - oldden)
+
+	u = runif(n = 1)
+	if(rho > u) {
+		x[i+1,] = prop
+		oldpf = proppf
+		oldden = propden
+		artrack[i] = 1
+	}
+	else {
+		x[i+1,] = x[i,]
+		artrack[i] = 0
+	}
+}
