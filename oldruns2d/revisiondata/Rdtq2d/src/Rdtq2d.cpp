@@ -6,28 +6,30 @@
 using namespace std;
 using namespace arma;
 
-// gaussian pdf, non-vectorized version of GSL function
+// gaussian pdf at the first step
+static inline vec gaussian_pdf_vec_first(const vec& x, const double mu, const double sigma)
+{
+  vec u = (x - mu) / fabs(sigma);
+  vec p = (1 / (sqrt (2 * M_PI) * fabs (sigma))) * exp (-(u % u) / 2);
+  return p;
+}
+
+// point-wise gaussian pdfs for the internal steps
 static inline double gaussian_pdf(const double x, const double mu, const double sigma)
 {
-    double u = (x - mu) / fabs(sigma);
-    double p = (1 / (sqrt (2 * M_PI) * fabs (sigma))) * exp (-(u * u) / 2);
-    return p;
+  double u = (x - mu) / fabs(sigma);
+  double p = (1 / (sqrt (2 * M_PI) * fabs (sigma))) * exp (-(u * u) / 2);
+  return p;
 }
 
-// gaussian pdf, vectorized version of GSL function
-static inline vec gaussian_pdf_vec(const vec& x, const double mu, const double sigma)
+// yet another gaussian pdf, to use instead of interpolation at the final step
+static inline vec gaussian_pdf_vec_last(const double x, const vec& mu, const vec& sigma)
 {
-    vec u = (x - mu) / fabs(sigma);
-    vec p = (1 / (sqrt (2 * M_PI) * fabs (sigma))) * exp (-(u % u) / 2);
-    return p;
-}
-
-// yet another gaussian pdf, to use instead of interpolation
-static inline vec gaussian_pdf_vec2(const double x, const vec& mu, const vec& sigma)
-{
-    vec u = (x - mu) / abs(sigma);
-    vec p = (1 / (sqrt (2 * M_PI) * abs (sigma))) * exp (-(u % u) / 2);
-    return p;
+  cout << "Gets in the gaussian function" << endl;
+  vec u = (x - mu) / abs(sigma);
+  vec p = (1 / (sqrt (2 * M_PI) * abs (sigma))) % exp (-(u % u) / 2);
+  cout << "Gets out of the gaussian function" << endl;
+  return p;
 }
 
 // f function for 2d
@@ -44,16 +46,17 @@ static inline double f2(double x1, double x2, const vec& thetavec)
 // g function for 2d
 static inline double g1(double x1, double x2, const vec& thetavec)
 {
-  return(thetavec(2)*thetavec(2));
+  return(thetavec(2)*thetavec(2)*thetavec(0)*thetavec(0));
 }
 
 static inline double g2(double x1, double x2, const vec& thetavec)
 {
-  return(thetavec(3)*thetavec(3));
+  return(thetavec(3)*thetavec(3)*thetavec(1)*thetavec(1));
 }
 
 vec dtq(const vec &thetavec, const vec &C1, const vec &C2, double h, int numsteps, double k, double yM)
 {
+  cout << "Got here 1" << endl;
   double h12 = sqrt(h);
   int M = ceil(yM/k);
   int veclen = 2*M+1;
@@ -71,8 +74,8 @@ if(numsteps > 1) {
 #pragma omp parallel for
   for (int i=0; i<(datapoints-1); i++)
   {
-    vec v1 = gaussian_pdf_vec(xvec, C1(i) + f1(C1(i),C2(i),thetavec)*h, h12*g1(C1(i),C2(i),thetavec));
-    vec v2 = gaussian_pdf_vec(xvec, C2(i) + f2(C1(i),C2(i),thetavec)*h, h12*g2(C1(i),C2(i),thetavec));
+    vec v1 = gaussian_pdf_vec_first(xvec, C1(i) + f1(C1(i),C2(i),thetavec)*h, h12*g1(C1(i),C2(i),thetavec));
+    vec v2 = gaussian_pdf_vec_first(xvec, C2(i) + f2(C1(i),C2(i),thetavec)*h, h12*g2(C1(i),C2(i),thetavec));
     approxpdfvec.col(i) = vectorise(kron(v1, v2.t()));
   }
 #pragma omp barrier
@@ -89,13 +92,14 @@ else {
   return outpdf;
 }
 
+  cout << "Finished first step" << endl;
   double supg = 0.5;
   int gamma = ceil(5*h12*supg/k);
 
   // loop over the timesteps
   for (int step=1; step<(numsteps-1); step++)
   {
-    mat approxpdfvecnew = zeros<mat>(nr,datapoints);
+    mat approxpdfvecnew = zeros<mat>(nr,datapoints-1);
 // #pragma omp parallel for
     for (int newspace=0; newspace<nr; newspace++)
     {
@@ -130,10 +134,16 @@ else {
     approxpdfvec = approxpdfvecnew;
   }
 
+  cout << "Finished internal steps" << endl;
+
   vec mu1 = zeros<vec>(nr);
   vec mu2 = zeros<vec>(nr);
   vec sig1 = zeros<vec>(nr);
   vec sig2 = zeros<vec>(nr);
+
+  cout << "Finished variable declarations" << endl;
+
+#pragma omp parallel for
   for (int r=0; r<nr; r++)
   {
     int j = floor(r/veclen); // subtract M to get math i, j \in [-M,M]
@@ -143,48 +153,28 @@ else {
     sig1(r) = h12*g1(xvec(i),xvec(j),thetavec);
     sig2(r) = h12*g2(xvec(i),xvec(j),thetavec);
   }
+#pragma omp barrier
 
+  cout << "Computed mu and sigmas" << endl;
+
+// #pragma omp parallel for
   for (int tp=1; tp < datapoints; tp++)
   {
     // set up a Gaussian pdf matrix as a row vector
-    vec bigg1 = gaussian_pdf_vec2(C1(tp), mu1, sig1);
-    vec bigg2 = gaussian_pdf_vec2(C2(tp), mu2, sig2);
+    vec bigg1 = gaussian_pdf_vec_last(C1(tp), mu1, sig1);
+    vec bigg2 = gaussian_pdf_vec_last(C2(tp), mu2, sig2);
+    cout << "Created G1, G2" << endl;
     vec biggmat = vectorise(kron(bigg1,bigg2.t()));
+    cout << "Vectorized" << endl;
+    cout << biggmat.n_rows << ", " << biggmat.n_cols << endl;
+    cout << approxpdfvec.n_rows << ", " << approxpdfvec.n_cols << endl;
     outpdf(tp-1) = dot(biggmat, approxpdfvec.col(tp-1));
+    cout << "Creating the outpdf vector" << endl;
   }
+// #pragma omp barrier 
 
-/*
-  if(numsteps > 1) 
-  {
-    int gamma1 = gamma + 1;
-#pragma omp parallel for 
-    for (int ip=(i-gamma1); ip<=(i+gamma1); ip++)
-    {
-      for (int jp=(j-gamma1); jp<=(j+gamma1); jp++)
-      {
-        int test = jp*veclen + ip;
-        if ((test >= 0) && (test < nr))
-        {
-          int ipeff = ip - i + gamma1;
-          int jpeff = jp - j + gamma1;
-          if ((ipeff >= 0) && (ipeff <= 2*gamma1) && (jpeff >= 0) && (jpeff <= 2*gamma1))
-          {
-            double y1 = (ip-M)*k;
-            double y2 = (jp-M)*k;
-            double mu1 = y1 + f1(y1,y2,thetavec)*h;
-            double mu2 = y2 + f2(y1,y2,thetavec)*h;
-            double sigma1 = h12*g1(y1,y2,thetavec);
-            double sigma2 = h12*g2(y1,y2,thetavec);
-            double locbigg1 = gaussian_pdf(xvec(i), mu1, sigma1);
-            double locbigg2 = gaussian_pdf(xvec(j), mu2, sigma2);
-            outpdf(tp-1) += k*k*locbigg1*locbigg2*approxpdfvec(test, tp-1);
-          }
-        }
-      }
-    }
-#pragma omp barrier
-  }
-*/
+  cout << "Finished last step!" << endl;
+
   return outpdf;
 }
 

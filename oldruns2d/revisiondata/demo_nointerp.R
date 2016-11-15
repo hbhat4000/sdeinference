@@ -8,7 +8,7 @@ library('Rdtq2d')
 # load('fakedata_nonlinear.RData')
 
 load('newfakedata_fullres.RData')
-X = X[seq(from=1,to=2001,by=100),]
+X = X[seq(from=1,to=2001,by=200),]
 
 # keep every 100th row
 # X = X[seq(from=1,to=nrow(X),by=100),]

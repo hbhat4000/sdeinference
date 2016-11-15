@@ -40,8 +40,8 @@ totsteps = numsteps + burnin
 
 artrack = numeric(length=(totsteps-1))
 x = matrix(0, nrow = totsteps, ncol = 2)
-x[1,1] = 2
-x[1,2] = 2
+x[1,1] = 1
+x[1,2] = 1
 
 oldpf <- pfilter(mymod, Np = 1000, params = c(theta1 = x[1,1], theta2 = x[1,2], X1.0 = mymod.dat[1,]$Y1, X2.0 = mymod.dat[1,]$Y2))
 oldden <- logLik(oldpf)
