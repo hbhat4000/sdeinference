@@ -36,12 +36,12 @@ static inline double f2(double x1, double x2, const vec& thetavec)
 // g function for 2d
 static inline double g1(double x1, double x2, const vec& thetavec)
 {
-  return(thetavec(2)*thetavec(2));
+  return(thetavec(2)*thetavec(2)*thetavec(0)*thetavec(0));
 }
 
 static inline double g2(double x1, double x2, const vec& thetavec)
 {
-  return(thetavec(3)*thetavec(3));
+  return(thetavec(3)*thetavec(3)*thetavec(1)*thetavec(1));
 }
 
 mat dtq(const vec &thetavec, const vec &C1, const vec &C2, double h, int numsteps, double k, double yM)

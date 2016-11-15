@@ -22,7 +22,6 @@ ptm = proc.time()
 
 # algorithm parameters
 # time increment from data and time step
-mydatapoints = nrow(X) - 1
 timeinc = X[2,3] - X[1,3]
 myh = timeinc/4
 myns = floor(timeinc/myh)
@@ -30,8 +29,8 @@ print(c(myh,myns))
 myk = 0.8*myh^0.75
 xylimit = 2*max(abs(X[,1:2]))
 
-C1 = X[1:mydatapoints,1]
-C2 = X[1:mydatapoints,2]
+C1 = X[,1]
+C2 = X[,2]
 burnin = 100
 numsteps = 1000
 totsteps = numsteps + burnin

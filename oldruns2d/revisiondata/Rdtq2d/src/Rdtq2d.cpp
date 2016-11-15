@@ -22,6 +22,14 @@ static inline vec gaussian_pdf_vec(const vec& x, const double mu, const double s
     return p;
 }
 
+// yet another gaussian pdf, to use instead of interpolation
+static inline vec gaussian_pdf_vec2(const double x, const vec& mu, const vec& sigma)
+{
+    vec u = (x - mu) / fabs(sigma);
+    vec p = (1 / (sqrt (2 * M_PI) * fabs (sigma))) * exp (-(u % u) / 2);
+    return p;
+}
+
 // f function for 2d
 static inline double f1(double x1, double x2, const vec& thetavec)
 {
@@ -52,8 +60,8 @@ vec dtq(const vec &thetavec, const vec &C1, const vec &C2, double h, int numstep
   int nr = veclen*veclen;
   int datapoints = C1.n_elem;
   vec xvec = k*linspace<vec>(-M,M,veclen);
-  mat approxpdfvec(nr,datapoints);
-  vec outpdf = zeros<vec>(datapoints);
+  mat approxpdfvec(nr,datapoints-1);
+  vec outpdf = zeros<vec>(datapoints-1);
 
 // #ifdef _OPENMP
   omp_set_num_threads(24);
@@ -61,7 +69,7 @@ vec dtq(const vec &thetavec, const vec &C1, const vec &C2, double h, int numstep
 
 if(numsteps > 1) { 
 #pragma omp parallel for
-  for (int i=0; i<datapoints; i++)
+  for (int i=0; i<(datapoints-1); i++)
   {
     vec v1 = gaussian_pdf_vec(xvec, C1(i) + f1(C1(i),C2(i),thetavec)*h, h12*g1(C1(i),C2(i),thetavec));
     vec v2 = gaussian_pdf_vec(xvec, C2(i) + f2(C1(i),C2(i),thetavec)*h, h12*g2(C1(i),C2(i),thetavec));
@@ -71,13 +79,14 @@ if(numsteps > 1) {
 }
 else {
   #pragma omp parallel for
-  for (int i=0; i<datapoints; i++)
+  for (int i=0; i<(datapoints-1); i++)
   {
-    vec v1 = gaussian_pdf_vec(xvec, C1(i) + f1(C1(i),C2(i),thetavec)*h, h12*g1(C1(i),C2(i),thetavec));
-    vec v2 = gaussian_pdf_vec(xvec, C2(i) + f2(C1(i),C2(i),thetavec)*h, h12*g2(C1(i),C2(i),thetavec));
+    double v1 = gaussian_pdf(C1(i+1), C1(i) + f1(C1(i),C2(i),thetavec)*h, h12*g1(C1(i),C2(i),thetavec));
+    double v2 = gaussian_pdf(C2(i+1), C2(i) + f2(C1(i),C2(i),thetavec)*h, h12*g2(C1(i),C2(i),thetavec));
     outpdf(i) = v1*v2;
   }
   #pragma omp barrier
+  return outpdf;
 }
 
   double supg = 0.5;
@@ -121,6 +130,30 @@ else {
     approxpdfvec = approxpdfvecnew;
   }
 
+  vec mu1 = zeros<vec>(nr);
+  vec mu2 = zeros<vec>(nr);
+  vec sig1 = zeros<vec>(nr);
+  vec sig2 = zeros<vec>(nr);
+  for (int r=0; r<nr; r++)
+  {
+    int j = floor(r/veclen); // subtract M to get math i, j \in [-M,M]
+    int i = r - veclen*floor(r/veclen);      
+    mu1(r) = xvec(i) + f1(xvec(i),xvec(j),thetavec)*h;
+    mu2(r) = xvec(j) + f2(xvec(i),xvec(j),thetavec)*h;
+    sig1(r) = h12*g1(xvec(i),xvec(j),thetavec);
+    sig2(r) = h12*g2(xvec(i),xvec(j),thetavec);
+  }
+
+  for (int tp=1; tp < datapoints; tp++)
+  {
+    // set up a Gaussian pdf matrix as a row vector
+    vec bigg1 = gaussian_pdf_vec2(C1(tp), mu1, sig1);
+    vec bigg2 = gaussian_pdf_vec2(C2(tp), mu2, sig2);
+    vec biggmat = vectorise(kron(bigg1,bigg2.t()));
+    outpdf(tp-1) = dot(biggmat, approxpdfvec.col(tp-1));
+  }
+
+/*
   if(numsteps > 1) 
   {
     int gamma1 = gamma + 1;
@@ -151,6 +184,7 @@ else {
     }
 #pragma omp barrier
   }
+*/
   return outpdf;
 }
 
