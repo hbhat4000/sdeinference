@@ -25,8 +25,8 @@ static inline vec gaussian_pdf_vec(const vec& x, const double mu, const double s
 // yet another gaussian pdf, to use instead of interpolation
 static inline vec gaussian_pdf_vec2(const double x, const vec& mu, const vec& sigma)
 {
-    vec u = (x - mu) / fabs(sigma);
-    vec p = (1 / (sqrt (2 * M_PI) * fabs (sigma))) * exp (-(u % u) / 2);
+    vec u = (x - mu) / abs(sigma);
+    vec p = (1 / (sqrt (2 * M_PI) * abs (sigma))) * exp (-(u % u) / 2);
     return p;
 }
 

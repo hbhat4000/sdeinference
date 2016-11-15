@@ -3,9 +3,9 @@ PKG_LIBS = `$(R_HOME)/bin/Rscript -e "Rcpp:::LdFlags()"`
 
 ## PKG_CPPFLAGS = -DNDEBUG -I/usr/local/include -I/usr/lib64/R/library/Rcpp/lib/ -I/usr/lib64/R/library/RcppArmadillo/include -L/usr/local/lib -L/usr/lib64/R/library/Rcpp/lib/ -L/usr/lib64/R/library/RcppArmadillo/libs/ -L/opt/intel/mkl/lib/intel64 -Wl,--no-as-needed -lmkl_intel_lp64 -lmkl_core -lmkl_gnu_thread -ldl -lpthread -lgomp -O3 -m64 -march=native -mtune=native -fopenmp
 
-MY_R_HOME = /home/shagun/R/x86_64-redhat-linux-gnu-library/3.3
+MY_R_HOME = /home/hbhat/R/x86_64-redhat-linux-gnu-library/3.3
 
-PKG_CPPFLAGS = -DNDEBUG -I/usr/local/include -I$(MY_R_HOME)/Rcpp/lib/ -I$(MY_R_HOME)/RcppArmadillo/include -L/usr/local/lib -L$(MY_R_HOME)/Rcpp/lib/ -L$(MY_R_HOME)/RcppArmadillo/libs/ -L/opt/intel/mkl/lib/intel64 -Wl,--no-as-needed -lmkl_intel_lp64 -lmkl_core -lmkl_gnu_thread -ldl -lpthread -lgomp -O3 -m64 -march=native -mtune=native -fopenmp
+PKG_CPPFLAGS = -DNDEBUG -I/usr/local/include -I /usr/lib64/R/library/RcppArmadillo/include/ -I$(MY_R_HOME)/Rcpp/lib/ -I$(MY_R_HOME)/RcppArmadillo/include -L/usr/local/lib -L$(MY_R_HOME)/Rcpp/lib/ -L$(MY_R_HOME)/RcppArmadillo/libs/ -L/opt/intel/mkl/lib/intel64 -Wl,--no-as-needed -lmkl_intel_lp64 -lmkl_core -lmkl_gnu_thread -ldl -lpthread -lgomp -O3 -m64 -march=native -mtune=native -fopenmp
 
 ## As an alternative, one can also add this code in a file 'configure'
 ##

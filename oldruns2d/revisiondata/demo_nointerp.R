@@ -41,6 +41,7 @@ x[1,] = c(0.1,0.1)
 M = ceiling(xylimit/myk)
 xvec = myk*c(-M:M)
 mm = length(xvec)
+print(mm)
 
 # define log prior
 myprior <- function(z)
