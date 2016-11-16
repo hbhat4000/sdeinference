@@ -101,13 +101,15 @@ for (i in c(1:(totsteps-1)))
         x[i+1,] = prop
         oldden = propden
         oldpost = proppost
-        print(paste("Accepted the proposal",prop))
+        # print(paste("Accepted the proposal",prop))
+        print(paste("Accepted step", i, ": ", paste("theta[", c(1:2), "]=", format(prop, digits = 3, scientific = TRUE), collapse = ', ', sep = '')))
         artrack[i] = 1
     }
     else
     {
         x[i+1,] = x[i,]
-        print(paste("Rejected the proposal",prop))
+        # print(paste("Rejected the proposal",prop))
+        print(paste("Rejected step", i, ": ", paste("theta[", c(1:2), "]=", format(prop, digits = 3, scientific = TRUE), collapse = ', ', sep = '')))
         artrack[i] = 0
     }
     print(c(i,rho,maxcolsumerr,x[i+1,]))
@@ -129,4 +131,4 @@ print(modediff)
 print(proc.time() - ptm)
 
 # save everything
-save.image(file = 'samples_by100.RData')
+save.image(file = 'samples_withinterp_by100.RData')

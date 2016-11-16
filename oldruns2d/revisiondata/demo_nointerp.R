@@ -8,7 +8,7 @@ library('Rdtq2d')
 # load('fakedata_nonlinear.RData')
 
 load('newfakedata_fullres.RData')
-X = X[seq(from=1,to=2001,by=200),]
+X = X[seq(from=1,to=2001,by=100),]
 
 # keep every 100th row
 # X = X[seq(from=1,to=nrow(X),by=100),]
@@ -25,8 +25,9 @@ ptm = proc.time()
 timeinc = X[2,3] - X[1,3]
 myh = timeinc/4
 myns = floor(timeinc/myh)
-print(c(myh,myns))
+# print(c(myh,myns))
 myk = 0.8*myh^0.75
+# myk = 0.05
 xylimit = 2*max(abs(X[,1:2]))
 
 C1 = X[,1]
@@ -41,7 +42,7 @@ x[1,] = c(0.1,0.1)
 M = ceiling(xylimit/myk)
 xvec = myk*c(-M:M)
 mm = length(xvec)
-print(mm)
+# print(mm)
 
 # define log prior
 myprior <- function(z)
@@ -52,16 +53,18 @@ myprior <- function(z)
 # function that computes log posterior
 myposterior <- function(den, prior)
 {
-    loglik = sum(log(den[den >= 2.2e-16]))
-    return(loglik + sum(log(prior)))
+	den[den <= 2.2e-16] = 2.2e-16
+    loglik = sum(log(den))
+    return(loglik + sum(prior))
 }
 
 thetavec = truethetavec
 thetavec[1] = x[1,1]
 thetavec[2] = x[1,2]
 oldden = Rdtq2d(thetavec,C1,C2,h=myh,numsteps=myns,k=myk,yM=xylimit)
-checkk = PDFcheck(thetavec,h=myh,k=myk,yM=xylimit)
-print(checkk)
+# checkk = PDFcheck(thetavec,h=myh,k=myk,yM=xylimit)
+# print("Did PDFcheck")
+# print(checkk)
 
 oldpost = myposterior(den=oldden, prior=myprior(x[1,]))
 artrack = numeric(length=(totsteps-1))
@@ -77,7 +80,9 @@ for (i in c(1:(totsteps-1)))
     thetavec[1] = prop[1]
     thetavec[2] = prop[2]
     propden = Rdtq2d(thetavec,C1,C2,h=myh,numsteps=myns,k=myk,yM=xylimit)
+    # print(propden)	
     proppost = myposterior(den=propden, prior=myprior(prop)) 
+    # print(proppost)
     rho = exp(proppost-oldpost)
     maxcolsumerr = max(abs(colSums(propden)*myk^2 - 1))
 
@@ -88,24 +93,25 @@ for (i in c(1:(totsteps-1)))
         x[i+1,] = prop
         oldden = propden
         oldpost = proppost
-        print(paste("Accepted the proposal",prop))
+        # print(paste("Accepted step", i, ": ", paste("theta[", c(1:2), "]=", format(prop, digits = 3, scientific = TRUE), collapse = ', ', sep = '')))
+        # print(paste("Accepted the proposal",prop))
         artrack[i] = 1
     }
     else
     {
         x[i+1,] = x[i,]
-        print(paste("Rejected the proposal",prop))
+        # print(paste("Rejected step", i, ": ", paste("theta[", c(1:2), "]=", format(prop, digits = 3, scientific = TRUE), collapse = ', ', sep = '')))
+        # print(paste("Rejected the proposal",prop))
         artrack[i] = 0
     }
-    print(c(i,rho,maxcolsumerr,x[i+1,]))
+    # print(c(i,rho,maxcolsumerr,x[i+1,]))
     flush.console()
 }
 
-# throw away the burnin steps
-x = x[(burnin+1):totsteps,]
-
 print(proc.time() - ptm)
 
+# throw away the burnin steps
+x = x[(burnin+1):totsteps,]
 
 # percentage difference between empirical and true means
 diffmeans = (mean(x[,1]^2) - 2*pi)/(2*pi)
@@ -117,4 +123,4 @@ diffmodes = (myden$x[which.max(myden$y)] - 2*pi)/(2*pi)
 print(diffmodes)
 
 # save everything
-save.image(file = 'samples1_by20_h_005.RData')
+# save.image(file = 'samples_nointerp_by100.RData')

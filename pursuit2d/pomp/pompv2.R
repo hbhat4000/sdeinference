@@ -6,8 +6,10 @@ library('dplyr')
 # for reproducibility
 set.seed(1)
 
+ptm <- proc.time()
+
 load('newfakedata_fullres.RData')
-mydata = X[seq(from=1,to=2001,by=40),] # data in matrix form
+mydata = X[seq(from=1,to=2001,by=100),] # data in matrix form
 mymod.dat = data.frame(Y1=as.numeric(mydata[,1]),Y2=as.numeric(mydata[,2]), t=mydata[,3])
 
 step.fun <- Csnippet("
@@ -34,6 +36,18 @@ dmeas <- Csnippet("
 
 mymod <- pomp(mymod,dmeasure=dmeas,statenames=c("X1","X2"))
 
+myprior <- function(z)
+{
+    return(dnorm(x = z, mean = 0, sd = 100, log = TRUE))
+}
+
+myposterior <- function(den, prior)
+{
+	den[den <= 2.2e-16] = 2.2e-16
+    loglik = sum(log(den))
+    return(loglik + sum(prior))
+}
+
 burnin = 100
 numsteps = 1000
 totsteps = numsteps + burnin
@@ -45,7 +59,8 @@ x[1,2] = 1
 
 oldpf <- pfilter(mymod, Np = 1000, params = c(theta1 = x[1,1], theta2 = x[1,2], X1.0 = mymod.dat[1,]$Y1, X2.0 = mymod.dat[1,]$Y2))
 oldden <- logLik(oldpf)
-print(oldden)
+oldpost <- myposterior(oldden, myprior(x[1,]))
+# print(oldden)
 
 for(i in c(1:(totsteps-1))) {
 	z = rnorm(n = 2, sd = 0.1)
@@ -53,7 +68,8 @@ for(i in c(1:(totsteps-1))) {
 
 	proppf <- pfilter(mymod, Np = 1000, params = c(theta1 = prop[1], theta2 = prop[2], X1.0 = mymod.dat[1,]$Y1, X2.0 = mymod.dat[1,]$Y2))
 	propden <- logLik(proppf)
-	print(propden)
+	proppost <- myposterior(propden, myprior(prop))
+	# print(propden)
 
 	rho = exp(propden - oldden)
 
@@ -62,6 +78,7 @@ for(i in c(1:(totsteps-1))) {
 		x[i+1,] = prop
 		oldpf = proppf
 		oldden = propden
+		oldpost = proppost
 		artrack[i] = 1
 	}
 	else {
@@ -69,3 +86,20 @@ for(i in c(1:(totsteps-1))) {
 		artrack[i] = 0
 	}
 }
+
+print(proc.time() - ptm)
+
+# throw away the burnin steps
+x = x[(burnin+1):totsteps,]
+
+# percentage difference between empirical and true means
+diffmeans = (mean(x[,1]^2) - 2*pi)/(2*pi)
+print(diff)
+
+# percentage difference between empirical and true modes
+myden = density(x[,1]^2)
+diffmodes = (myden$x[which.max(myden$y)] - 2*pi)/(2*pi)
+print(diffmodes)
+
+# save everything
+# save.image(file = 'pomp_by100.RData')
