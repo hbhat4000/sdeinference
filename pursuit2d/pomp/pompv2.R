@@ -9,7 +9,7 @@ set.seed(1)
 ptm <- proc.time()
 
 load('newfakedata_fullres.RData')
-mydata = X[seq(from=1,to=2001,by=100),] # data in matrix form
+mydata = X[seq(from=1,to=2001,by=20),] # data in matrix form
 mymod.dat = data.frame(Y1=as.numeric(mydata[,1]),Y2=as.numeric(mydata[,2]), t=mydata[,3])
 
 step.fun <- Csnippet("
@@ -80,10 +80,12 @@ for(i in c(1:(totsteps-1))) {
 		oldden = propden
 		oldpost = proppost
 		artrack[i] = 1
+		print(paste("Accepted step", i, ": ", paste("theta[", c(1:2), "]=", format(prop, digits = 3, scientific = TRUE), collapse = ', ', sep = '')))
 	}
 	else {
 		x[i+1,] = x[i,]
 		artrack[i] = 0
+		print(paste("Rejected step", i, ": ", paste("theta[", c(1:2), "]=", format(prop, digits = 3, scientific = TRUE), collapse = ', ', sep = '')))
 	}
 }
 
@@ -102,4 +104,4 @@ diffmodes = (myden$x[which.max(myden$y)] - 2*pi)/(2*pi)
 print(diffmodes)
 
 # save everything
-# save.image(file = 'pomp_by100.RData')
+save.image(file = 'pomp_by20.RData')

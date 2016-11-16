@@ -35,8 +35,8 @@ xylimit = 2*max(abs(X[,1:2]))
 
 C1 = X[1:mydatapoints,1]
 C2 = X[1:mydatapoints,2]
-burnin = 100
-numsteps = 1000
+burnin = 0
+numsteps = 300
 totsteps = numsteps + burnin
 
 x = matrix(0, nrow = totsteps, ncol = 2)
@@ -53,6 +53,7 @@ myprior <- function(z)
 M = ceiling(xylimit/myk)
 xvec = myk*c(-M:M)
 mm = length(xvec)
+print(mm)
 
 myposterior <- function(likden, dat, prior)
 {
@@ -74,9 +75,11 @@ thetavec = truethetavec
 thetavec[1] = x[1,1]
 thetavec[2] = x[1,2]
 oldden = Rdtq2d(thetavec,C1,C2,h=myh,numsteps=myns,k=myk,yM=xylimit)
-checkk = PDFcheck(thetavec,h=myh,k=myk,yM=xylimit)
-print(c(min(checkk),mean(checkk),max(checkk)))
+# print(oldden)
+# checkk = PDFcheck(thetavec,h=myh,k=myk,yM=xylimit)
+# print(c(min(checkk),mean(checkk),max(checkk)))
 oldpost = myposterior(likden=oldden, dat=X, prior=myprior(x[1,]))
+print(oldpost)
 artrack = numeric(length=(totsteps-1))
 
 for (i in c(1:(totsteps-1)))
@@ -90,7 +93,9 @@ for (i in c(1:(totsteps-1)))
     thetavec[1] = prop[1]
     thetavec[2] = prop[2]
     propden = Rdtq2d(thetavec,C1,C2,h=myh,numsteps=myns,k=myk,yM=xylimit)
+    print(max(propden))
     proppost = myposterior(likden=propden, dat=X, prior=myprior(prop)) 
+    print(proppost)
     rho = exp(proppost-oldpost)
     maxcolsumerr = max(abs(colSums(propden)*myk^2 - 1))
 
@@ -101,34 +106,32 @@ for (i in c(1:(totsteps-1)))
         x[i+1,] = prop
         oldden = propden
         oldpost = proppost
-        # print(paste("Accepted the proposal",prop))
-        print(paste("Accepted step", i, ": ", paste("theta[", c(1:2), "]=", format(prop, digits = 3, scientific = TRUE), collapse = ', ', sep = '')))
+        # print(paste("Accepted step", i, ": ", paste("theta[", c(1:2), "]=", format(prop, digits = 3, scientific = TRUE), collapse = ', ', sep = '')))
         artrack[i] = 1
     }
     else
     {
         x[i+1,] = x[i,]
-        # print(paste("Rejected the proposal",prop))
-        print(paste("Rejected step", i, ": ", paste("theta[", c(1:2), "]=", format(prop, digits = 3, scientific = TRUE), collapse = ', ', sep = '')))
+        # print(paste("Rejected step", i, ": ", paste("theta[", c(1:2), "]=", format(prop, digits = 3, scientific = TRUE), collapse = ', ', sep = '')))
         artrack[i] = 0
     }
     print(c(i,rho,maxcolsumerr,x[i+1,]))
     flush.console()
 }
 
-# throw away the burnin steps
-x = x[(burnin+1):totsteps,]
+# # throw away the burnin steps
+# x = x[(burnin+1):totsteps,]
 
-# percentage difference between empirical and true means
-meandiff = (mean(x[,1]^2) - 2*pi)/(2*pi)
-print(meandiff)
+# # percentage difference between empirical and true means
+# meandiff = (mean(x[,1]^2) - 2*pi)/(2*pi)
+# print(meandiff)
 
-# percentage difference between empirical and true modes
-myden = density(x[,1]^2)
-modediff = (myden$x[which.max(myden$y)] - 2*pi)/(2*pi)
-print(modediff)
+# # percentage difference between empirical and true modes
+# myden = density(x[,1]^2)
+# modediff = (myden$x[which.max(myden$y)] - 2*pi)/(2*pi)
+# print(modediff)
 
-print(proc.time() - ptm)
+# print(proc.time() - ptm)
 
-# save everything
-save.image(file = 'samples_withinterp_by100.RData')
+# # save everything
+# save.image(file = 'samples_withinterp_by100.RData')

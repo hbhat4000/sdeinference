@@ -25,15 +25,15 @@ ptm = proc.time()
 timeinc = X[2,3] - X[1,3]
 myh = timeinc/4
 myns = floor(timeinc/myh)
-# print(c(myh,myns))
+print(c(myh,myns))
 myk = 0.8*myh^0.75
 # myk = 0.05
 xylimit = 2*max(abs(X[,1:2]))
 
 C1 = X[,1]
 C2 = X[,2]
-burnin = 100
-numsteps = 1000
+burnin = 0
+numsteps = 300
 totsteps = numsteps + burnin
 
 x = matrix(0, nrow = totsteps, ncol = 2)
@@ -42,7 +42,7 @@ x[1,] = c(0.1,0.1)
 M = ceiling(xylimit/myk)
 xvec = myk*c(-M:M)
 mm = length(xvec)
-# print(mm)
+print(mm)
 
 # define log prior
 myprior <- function(z)
@@ -62,13 +62,14 @@ thetavec = truethetavec
 thetavec[1] = x[1,1]
 thetavec[2] = x[1,2]
 oldden = Rdtq2d(thetavec,C1,C2,h=myh,numsteps=myns,k=myk,yM=xylimit)
+# print(oldden)
 # checkk = PDFcheck(thetavec,h=myh,k=myk,yM=xylimit)
 # print("Did PDFcheck")
 # print(checkk)
 
 oldpost = myposterior(den=oldden, prior=myprior(x[1,]))
 artrack = numeric(length=(totsteps-1))
-
+print(oldpost)
 for (i in c(1:(totsteps-1)))
 {
     # generate proposal
@@ -80,9 +81,9 @@ for (i in c(1:(totsteps-1)))
     thetavec[1] = prop[1]
     thetavec[2] = prop[2]
     propden = Rdtq2d(thetavec,C1,C2,h=myh,numsteps=myns,k=myk,yM=xylimit)
-    # print(propden)	
+    print(max(propden))	
     proppost = myposterior(den=propden, prior=myprior(prop)) 
-    # print(proppost)
+    print(proppost)
     rho = exp(proppost-oldpost)
     maxcolsumerr = max(abs(colSums(propden)*myk^2 - 1))
 
@@ -94,33 +95,31 @@ for (i in c(1:(totsteps-1)))
         oldden = propden
         oldpost = proppost
         # print(paste("Accepted step", i, ": ", paste("theta[", c(1:2), "]=", format(prop, digits = 3, scientific = TRUE), collapse = ', ', sep = '')))
-        # print(paste("Accepted the proposal",prop))
         artrack[i] = 1
     }
     else
     {
         x[i+1,] = x[i,]
         # print(paste("Rejected step", i, ": ", paste("theta[", c(1:2), "]=", format(prop, digits = 3, scientific = TRUE), collapse = ', ', sep = '')))
-        # print(paste("Rejected the proposal",prop))
         artrack[i] = 0
     }
-    # print(c(i,rho,maxcolsumerr,x[i+1,]))
+    print(c(i,rho,maxcolsumerr,x[i+1,]))
     flush.console()
 }
 
-print(proc.time() - ptm)
+# print(proc.time() - ptm)
 
-# throw away the burnin steps
-x = x[(burnin+1):totsteps,]
+# # throw away the burnin steps
+# x = x[(burnin+1):totsteps,]
 
-# percentage difference between empirical and true means
-diffmeans = (mean(x[,1]^2) - 2*pi)/(2*pi)
-print(diff)
+# # percentage difference between empirical and true means
+# diffmeans = (mean(x[,1]^2) - 2*pi)/(2*pi)
+# print(diff)
 
-# percentage difference between empirical and true modes
-myden = density(x[,1]^2)
-diffmodes = (myden$x[which.max(myden$y)] - 2*pi)/(2*pi)
-print(diffmodes)
+# # percentage difference between empirical and true modes
+# myden = density(x[,1]^2)
+# diffmodes = (myden$x[which.max(myden$y)] - 2*pi)/(2*pi)
+# print(diffmodes)
 
-# save everything
-# save.image(file = 'samples_nointerp_by100.RData')
+# # save everything
+# # save.image(file = 'samples_nointerp_by100.RData')
