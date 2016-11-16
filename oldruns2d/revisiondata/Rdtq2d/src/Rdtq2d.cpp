@@ -178,7 +178,7 @@ else {
     // cout << approxpdfvec.n_rows << ", " << approxpdfvec.n_cols << endl;
     // FIXED: biggmat = (nr*nr,1), approxpdfvec = (nr, datapoints-1)
 
-    outpdf(tp-1) = dot(biggmat, approxpdfvec.col(tp-1));
+    outpdf(tp-1) = k*k*dot(biggmat, approxpdfvec.col(tp-1));
     // cout << "Creating the outpdf vector" << endl;
   }
 #pragma omp barrier 
