@@ -65,46 +65,76 @@ mat dtq(const vec &thetavec, const vec &C1, const vec &C2, double h, int numstep
   }
 #pragma omp barrier
 
-  double supg = 0.5;
-  int gamma = ceil(5*h12*supg/k);
+//   double supg = 0.5;
+//   int gamma = ceil(5*h12*supg/k);
 
-  // loop over the timesteps
-  for (int step=1; step<numsteps; step++)
-  {
-    mat approxpdfvecnew = zeros<mat>(nr,datapoints);
+//   // int gamma = veclen;
+
+//   // loop over the timesteps
+//   for (int step=1; step<numsteps; step++)
+//   {
+//     mat approxpdfvecnew = zeros<mat>(nr,datapoints);
+// #pragma omp parallel for
+//     for (int newspace=0; newspace<nr; newspace++)
+//     {
+//       int j = floor(newspace/veclen); // subtract M to get math i, j \in [-M,M]
+//       int i = newspace - veclen*floor(newspace/veclen);      
+//       for (int ip=(i-gamma); ip<=(i+gamma); ip++)
+//       {
+//         for (int jp=(j-gamma); jp<=(j+gamma); jp++)
+//         {
+//           int test = jp*veclen + ip;
+//           if ((test >= 0) && (test < nr))
+//           {
+//             int ipeff = ip - i + gamma;
+//             int jpeff = jp - j + gamma;
+//             if ((ipeff >= 0) && (ipeff <= 2*gamma) && (jpeff >= 0) && (jpeff <= 2*gamma))
+//             {
+//               double y1 = (ip-M)*k;
+//               double y2 = (jp-M)*k;
+//               double mu1 = y1 + f1(y1,y2,thetavec)*h;
+//               double mu2 = y2 + f2(y1,y2,thetavec)*h;
+//               double sigma1 = h12*g1(y1,y2,thetavec);
+//               double sigma2 = h12*g2(y1,y2,thetavec);
+//               double locbigg1 = gaussian_pdf(xvec(i), mu1, sigma1);
+//               double locbigg2 = gaussian_pdf(xvec(j), mu2, sigma2);
+//               approxpdfvecnew.row(newspace) += k*k*locbigg1*locbigg2*approxpdfvec.row(test);
+//             }
+//           }
+//         }
+//       }
+//     }
+// #pragma omp barrier
+//     approxpdfvec = approxpdfvecnew;
+//   }
+
+  for(int step = 1; step < numsteps; step++) {
+    mat approxpdfvecnew = zeros<mat>(nr, datapoints);
 #pragma omp parallel for
-    for (int newspace=0; newspace<nr; newspace++)
-    {
-      int j = floor(newspace/veclen); // subtract M to get math i, j \in [-M,M]
-      int i = newspace - veclen*floor(newspace/veclen);      
-      for (int ip=(i-gamma); ip<=(i+gamma); ip++)
-      {
-        for (int jp=(j-gamma); jp<=(j+gamma); jp++)
-        {
-          int test = jp*veclen + ip;
-          if ((test >= 0) && (test < nr))
-          {
-            int ipeff = ip - i + gamma;
-            int jpeff = jp - j + gamma;
-            if ((ipeff >= 0) && (ipeff <= 2*gamma) && (jpeff >= 0) && (jpeff <= 2*gamma))
-            {
-              double y1 = (ip-M)*k;
-              double y2 = (jp-M)*k;
-              double mu1 = y1 + f1(y1,y2,thetavec)*h;
-              double mu2 = y2 + f2(y1,y2,thetavec)*h;
-              double sigma1 = h12*g1(y1,y2,thetavec);
-              double sigma2 = h12*g2(y1,y2,thetavec);
-              double locbigg1 = gaussian_pdf(xvec(i), mu1, sigma1);
-              double locbigg2 = gaussian_pdf(xvec(j), mu2, sigma2);
-              approxpdfvecnew.row(newspace) += k*k*locbigg1*locbigg2*approxpdfvec.row(test);
-            }
-          }
+    for(int newspace = 0; newspace < nr; newspace++) {
+      int j = floor(newspace/veclen);
+      int i = newspace - veclen*floor(newspace/veclen);
+      for(int ip = 0; ip < veclen; ip++) {
+        for(int jp = 0; jp < veclen; jp++) {
+          double test = jp*veclen + ip;
+          // double y1 = xvec(ip);
+          // double y2 = xvec(jp);
+          double y1 = (ip-M)*k;
+          double y2 = (jp-M)*k;
+          double mu1 = y1 + f1(y1, y2, thetavec)*h;
+          double mu2 = y2 + f2(y1, y2, thetavec)*h;
+          double sigma1 = h12*g1(y1, y2, thetavec);
+          double sigma2 = h12*g2(y1, y2, thetavec);
+          double locbigg1 = gaussian_pdf(xvec(i), mu1, sigma1);
+          double locbigg2 = gaussian_pdf(xvec(j), mu2, sigma2);
+          approxpdfvecnew.row(newspace) += k*k*locbigg1*locbigg2*approxpdfvec.row(test);
         }
       }
     }
 #pragma omp barrier
     approxpdfvec = approxpdfvecnew;
   }
+
   return approxpdfvec;
 }
 
