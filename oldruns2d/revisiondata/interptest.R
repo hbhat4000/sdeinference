@@ -15,7 +15,10 @@ mm = length(xvec)
 source('truethetavec.R')
 thetavec = truethetavec
 
+interpolate = 1
+
 # for "with interpolation"
+if (interpolate==1) {
 library('fields')
 oldden = Rdtq2d(thetavec, as.matrix(X[1,1]), as.matrix(X[1,2]), myh, myns, myk, xylimit)
 myposterior <- function(likden, dat)
@@ -33,17 +36,18 @@ myposterior <- function(likden, dat)
     return(logpost)
 }
 finalden = myposterior(oldden, X)
-
-# # for "no interpolation"
-# oldden = Rdtq2d(thetavec, X[,1], X[,2], myh, myns, myk, xylimit)
-# myposterior <- function(den)
-# {
-# 	den[den <= 2.2e-16] = 2.2e-16
-#     loglik = sum(log(den))
-#     return(loglik)
-# }
-# finalden = myposterior(oldden)
-
+}
+if (interpolate==0) {
+# for "no interpolation"
+oldden = Rdtq2d(thetavec, X[,1], X[,2], myh, myns, myk, xylimit)
+myposterior <- function(den)
+{
+  den[den <= 2.2e-16] = 2.2e-16
+  loglik = sum(log(den))
+  return(loglik)
+}
+finalden = myposterior(oldden)
+}
 
 
 ##########
