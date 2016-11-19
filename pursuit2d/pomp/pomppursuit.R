@@ -7,10 +7,13 @@ library('dplyr')
 set.seed(1)
 
 load('newfakedata_fullres.RData')
-mydata = X[seq(from=1,to=2001,by=40),]
+mydata = X[seq(from=1,to=2001,by=20),]
 mymod.dat = data.frame(t=mydata[,3],Y1=as.numeric(mydata[,1]),Y2=as.numeric(mydata[,2]))
 
 ptm = proc.time()
+
+timeinc = mydata[2,3] - mydata[1,3]
+myh = timeinc/4
 
 step.fun <- Csnippet("
  double dW1 = rnorm(0,sqrt(dt));
@@ -20,12 +23,12 @@ step.fun <- Csnippet("
 ")
 
 mymod <- pomp(data=mymod.dat,time="t",t0=0,
-              rprocess=euler.sim(step.fun=step.fun,delta.t=0.05),
+              rprocess=euler.sim(step.fun=step.fun,delta.t=myh),
               statenames=c("X1","X2"),paramnames=c("theta1","theta2"))
 
 rmeas <- Csnippet("
- Y1 = X1 + rnorm(0,1e-8);
- Y2 = X2 + rnorm(0,1e-8);
+ Y1 = X1 + rnorm(0,1e-2);
+ Y2 = X2 + rnorm(0,1e-2);
 ")
 
 mymod <- pomp(mymod,rmeasure=rmeas,statenames=c("X1","X2"))

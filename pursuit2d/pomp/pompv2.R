@@ -12,6 +12,10 @@ load('newfakedata_fullres.RData')
 mydata = X[seq(from=1,to=2001,by=20),] # data in matrix form
 mymod.dat = data.frame(Y1=as.numeric(mydata[,1]),Y2=as.numeric(mydata[,2]), t=mydata[,3])
 
+timeinc = mydata[2,3] - mydata[1,3]
+myh = timeinc/2
+# print(myh)
+
 step.fun <- Csnippet("
  double dW1 = rnorm(0,sqrt(dt));
  double dW2 = rnorm(0,sqrt(dt));
@@ -20,7 +24,7 @@ step.fun <- Csnippet("
 ")
 
 mymod <- pomp(data=mymod.dat,time="t",t0=0,
-              rprocess=euler.sim(step.fun=step.fun,delta.t=0.05),
+              rprocess=euler.sim(step.fun=step.fun,delta.t=myh),
               statenames=c("X1","X2"),paramnames=c("theta1","theta2"))
 
 rmeas <- Csnippet("
@@ -54,8 +58,7 @@ totsteps = numsteps + burnin
 
 artrack = numeric(length=(totsteps-1))
 x = matrix(0, nrow = totsteps, ncol = 2)
-x[1,1] = 1
-x[1,2] = 1
+x[1,] = c(0.1,0.1)
 
 oldpf <- pfilter(mymod, Np = 1000, params = c(theta1 = x[1,1], theta2 = x[1,2], X1.0 = mymod.dat[1,]$Y1, X2.0 = mymod.dat[1,]$Y2))
 oldden <- logLik(oldpf)
@@ -79,29 +82,33 @@ for(i in c(1:(totsteps-1))) {
 		oldpf = proppf
 		oldden = propden
 		oldpost = proppost
-		artrack[i] = 1
-		print(paste("Accepted step", i, ": ", paste("theta[", c(1:2), "]=", format(prop, digits = 3, scientific = TRUE), collapse = ', ', sep = '')))
+		artrack[i+1] = 1
+		# print(paste("Accepted step", i, ": ", paste("theta[", c(1:2), "]=", format(prop, digits = 3, scientific = TRUE), collapse = ', ', sep = '')))
 	}
 	else {
 		x[i+1,] = x[i,]
-		artrack[i] = 0
-		print(paste("Rejected step", i, ": ", paste("theta[", c(1:2), "]=", format(prop, digits = 3, scientific = TRUE), collapse = ', ', sep = '')))
+		artrack[i+1] = 0
+		# print(paste("Rejected step", i, ": ", paste("theta[", c(1:2), "]=", format(prop, digits = 3, scientific = TRUE), collapse = ', ', sep = '')))
 	}
 }
 
-print(proc.time() - ptm)
+finaltime = proc.time() - ptm
+print(finaltime)
+
+artrack = artrack[(burnin+1):totsteps]
+arratio = sum(artrack)/length(artrack)
 
 # throw away the burnin steps
-x = x[(burnin+1):totsteps,]
+# x = x[(burnin+1):totsteps,]
 
 # percentage difference between empirical and true means
-diffmeans = (mean(x[,1]^2) - 2*pi)/(2*pi)
-print(diff)
+# diffmeans = (mean(x[,1]^2) - 2*pi)/(2*pi)
+# print(diffmeans)
 
 # percentage difference between empirical and true modes
-myden = density(x[,1]^2)
-diffmodes = (myden$x[which.max(myden$y)] - 2*pi)/(2*pi)
-print(diffmodes)
+# myden = density(x[,1]^2)
+# diffmodes = (myden$x[which.max(myden$y)] - 2*pi)/(2*pi)
+# print(diffmodes)
 
 # save everything
-save.image(file = 'pomp_by20.RData')
+# save.image(file = 'pomp_by200_hby10.RData')
