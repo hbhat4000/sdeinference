@@ -1,5 +1,7 @@
 rm(list=ls(all=TRUE))
 
+set.seed(1)
+
 f1 <- function(X,thetavec) 
 {
   return(-X[2]*thetavec[1])
@@ -20,7 +22,7 @@ g2 <- function(X,thetavec)
 # Compute samples of 2-D SDE
 # dX_t =  theta1 Y_t dt + theta3^2 dW_t
 # dY_t =  theta2 X_t dt + theta4^2 dW_t
-# at different time, with final time T = 4
+# at different time, with final time T = 2
 
 source('truethetavec.R')
 dt = 0.001
