@@ -1,0 +1,8 @@
+Package: Rdtq2d
+Type: Package
+Title: Rdtq2d
+Version: 1.0
+Description: Continuous density tracking
+License: GPL 3.0
+Depends: Rcpp (>= 0.10.6) , RcppArmadillo (>= 0.4.000.2)
+LinkingTo: Rcpp

@@ -1,0 +1,2 @@
+useDynLib(Rdtq2d)
+exportPattern("^[[:alpha:]]+")
