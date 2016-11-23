@@ -44,12 +44,12 @@ static inline double f2(double x1, double x2, const vec& thetavec)
 // g function for 2d
 static inline double g1(double x1, double x2, const vec& thetavec)
 {
-  return(exp(-x1*x1)*thetavec(3)*thetavec(3));
+  return(0.1 + exp(-x1*x1)*thetavec(3)*thetavec(3));
 }
 
 static inline double g2(double x1, double x2, const vec& thetavec)
 {
-  return(exp(-x2*x2)*thetavec(4)*thetavec(4));
+  return(0.1 + exp(-x2*x2)*thetavec(4)*thetavec(4));
 }
 
 vec dtq(const vec &thetavec, const vec &C1, const vec &C2, double h, int numsteps, double k, double yM)

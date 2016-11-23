@@ -6,7 +6,7 @@ library('Rdtq2d')
 
 # load fake data in X which has x1, x2, t
 load('./vanderpol/fakedata_vanderpol_fullres.RData')
-mydata = X[seq(from = 1, to = 20001, by = 100),]
+mydata = X[seq(from = 1, to = nrow(X), by = 100),]
 
 # load true thetavec
 source('./vanderpol/truethetavec_vanderpol.R')
@@ -33,7 +33,7 @@ numsteps = 20000
 totsteps = numsteps + burnin
 
 mcmcsamples = matrix(0, nrow = totsteps, ncol = 3)
-mcmcsamples[1,] = c(0.1,0.1, 0.1)
+mcmcsamples[1,] = c(0.1,0.1,0.1)
 thetavec = truethetavec
 thetavec[1:3] = mcmcsamples[1,]
 
