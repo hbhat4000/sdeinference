@@ -24,8 +24,8 @@ g2 <- function(X,thetavec)
 # dY_t =  (theta2 X_t + theta3 X^3_t) dt + theta5^2 dW_t
 # at different time, with final time T = 2
 
-source('truethetavec_anharmonic.R')
-dt = 0.01
+source('truethetavec_vanderpol.R')
+dt = 0.001
 T = 20
 nsteps = ceiling(T/dt) + 1
 
@@ -42,6 +42,6 @@ for (i in c(2:(nsteps)))
   X[i,3] = X[i-1,3] + dt
 }
 
-save(X, file='fakedata_anharmonic.RData')
+save(X, file='fakedata_vanderpol_fullres.RData')
 
 
