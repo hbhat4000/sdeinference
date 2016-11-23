@@ -12,11 +12,11 @@ f2 <- function(X,thetavec)
 }
 g1 <- function(X,thetavec)
 {
-  return(exp(-X[1]^2)*thetavec[4]^2)
+  return(0.1 + exp(-X[1]^2)*thetavec[4]^2)
 }
 g2 <- function(X,thetavec)
 {
-  return(exp(-X[2]^2)*thetavec[5]^2)
+  return(0.1 + exp(-X[2]^2)*thetavec[5]^2)
 }
 
 # Compute samples of 2-D SDE
@@ -42,6 +42,6 @@ for (i in c(2:(nsteps)))
   X[i,3] = X[i-1,3] + dt
 }
 
-save(X, file='fakedata_vanderpol_fullres.RData')
+save(X, file='fakedata_vanderpol_fullres_new.RData')
 
 
