@@ -5,7 +5,7 @@ rm(list=ls(all=TRUE))
 library('Rdtq2d')
 
 # load fake data in X which has x1, x2, t
-load('./vanderpol/fakedata_vanderpol_fullres.RData')
+load('./vanderpol/fakedata_vanderpol_fullres_new.RData')
 mydata = X[seq(from = 1, to = nrow(X), by = 100),]
 
 # load true thetavec
@@ -18,7 +18,7 @@ ptm = proc.time()
 # algorithm parameters
 # time increment from data and time step
 timeinc = mydata[2,3] - mydata[1,3]
-myh = timeinc/3
+myh = timeinc/8
 myns = floor(timeinc/myh)
 # print(myh)
 # myk = 0.8*myh^0.75
@@ -67,7 +67,7 @@ artrack = numeric(length=(totsteps-1))
 for (i in c(1:(totsteps-1)))
 {
     # generate proposal
-    z = rnorm(n = 3, sd = 0.1)
+    z = rnorm(n = 3, sd = 0.025)
     prop = mcmcsamples[i,] + z
 	
     # calculate likelihood and posterior density
@@ -85,16 +85,17 @@ for (i in c(1:(totsteps-1)))
         mcmcsamples[i+1,] = prop
         oldden = propden
         oldpost = proppost
-        print(paste("Accepted step", i, ": ", paste("theta[", c(1:2), "]=", format(prop, digits = 3, scientific = TRUE), collapse = ', ', sep = '')))
+        # print(paste("Accepted step", i, ": ", paste("theta[", c(1:2), "]=", format(prop, digits = 3, scientific = TRUE), collapse = ', ', sep = '')))
         artrack[i+1] = 1
     }
     else
     {
         mcmcsamples[i+1,] = mcmcsamples[i,]
-        print(paste("Rejected step", i, ": ", paste("theta[", c(1:2), "]=", format(prop, digits = 3, scientific = TRUE), collapse = ', ', sep = '')))
+        # print(paste("Rejected step", i, ": ", paste("theta[", c(1:2), "]=", format(prop, digits = 3, scientific = TRUE), collapse = ', ', sep = '')))
         artrack[i+1] = 0
     }
     # print(c(i,rho,maxcolsumerr,x[i+1,]))
+    if ((i %% 100) == 0) print(c(i,mean(artrack[1:i])))
     flush.console()
 }
 
@@ -116,4 +117,5 @@ diffmodes = (myden$x[which.max(myden$y)] - 2*pi)/(2*pi)
 print(diffmodes)
 
 # save everything
-save.image(file = 'samples_vanderpol3.RData')
+save.image(file = 'samples_vanderpol_by8.RData')
+
