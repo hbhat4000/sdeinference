@@ -1,0 +1,7 @@
+*.o
+*.so
+*.exe
+*.zip
+*.tar
+*.log
+Makevars

@@ -6,8 +6,8 @@ library('dplyr')
 # for reproducibility
 set.seed(1)
 
-load('newfakedata_fullres.RData')
-mydata = X[seq(from=1,to=2001,by=20),]
+load('./vanderpol/fakedata_vanderpol_fullres.RData')
+mydata = X[seq(from=1,to=dim(X),by=100),]
 mymod.dat = data.frame(t=mydata[,3],Y1=as.numeric(mydata[,1]),Y2=as.numeric(mydata[,2]))
 
 ptm = proc.time()
@@ -54,7 +54,7 @@ myposterior <- function(den, prior)
 burnin = 100
 numsteps = 20000
 totsteps = numsteps + burnin
-numparticles = 1000
+numparticles = 10
 
 artrack = numeric(length=(totsteps-1))
 x = matrix(0, nrow = totsteps, ncol = 3)
@@ -98,3 +98,5 @@ print(finaltime)
 
 artrack = artrack[(burnin+1):totsteps]
 arratio = sum(artrack)/length(artrack)
+
+save.image(file="pomp_vanderpol1.RData")
