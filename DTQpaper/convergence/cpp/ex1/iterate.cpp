@@ -17,7 +17,7 @@ double difffun(double y)
 }
 
 int main(void) {
-  double h = 0.005;
+  double h = 0.001;
   double s = 0.75;
   double k = pow(h,s);
   double yM = datum::pi/k;
