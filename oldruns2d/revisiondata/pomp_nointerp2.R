@@ -12,7 +12,7 @@ ptm = proc.time()
 # algorithm parameters
 # time increment from data and time step
 timeinc = mydata[2,3] - mydata[1,3]
-myh = timeinc/8
+myh = timeinc/4
 
 numparticles = 1000
 source('pompinit.R')
@@ -109,5 +109,5 @@ arratio = sum(artrack)/length(artrack)
 mcmcsamples = mcmcsamples[(burnin+1):totsteps,]
 
 # save everything
-save.image(file = 'samples_pomp_vanderpol_by8.RData')
+save.image(file = 'samples_pomp_vanderpol_by4.RData')
 

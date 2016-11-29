@@ -18,7 +18,7 @@ ptm = proc.time()
 # algorithm parameters
 # time increment from data and time step
 timeinc = mydata[2,3] - mydata[1,3]
-myh = timeinc/8
+myh = timeinc/16
 myns = floor(timeinc/myh)
 # print(myh)
 # myk = 0.8*myh^0.75
@@ -117,5 +117,5 @@ diffmodes = (myden$x[which.max(myden$y)] - 2*pi)/(2*pi)
 print(diffmodes)
 
 # save everything
-save.image(file = 'samples_vanderpol_by8.RData')
+save.image(file = 'samples_vanderpol_by16.RData')
 
