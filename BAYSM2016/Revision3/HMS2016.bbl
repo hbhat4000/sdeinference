@@ -1,4 +1,4 @@
-\begin{thebibliography}{1}
+\begin{thebibliography}{10}
 \providecommand{\url}[1]{{#1}}
 \providecommand{\urlprefix}{URL }
 \expandafter\ifx\csname urlstyle\endcsname\relax
@@ -20,8 +20,7 @@ Archambeau, C., Opper, M., Shen, Y., Cornford, D., Shawe-Taylor, J.:
 
 \bibitem{BhatMadu2016}
 Bhat, H.S., Madushani, R.W.M.A.: Density tracking by quadrature for stochastic
-  differential equations (2016).
-\newblock Preprint
+  differential equations (2016)
 
 \bibitem{fuchs2013inference}
 Fuchs, C.: Inference for Diffusion Processes: With Applications in Life
@@ -32,6 +31,11 @@ Fuchs, C.: Inference for Diffusion Processes: With Applications in Life
 Iacus, S.M.: Simulation and {I}nference for {S}tochastic {D}ifferential
   {E}quations: {W}ith {R} {E}xamples.
 \newblock Springer Series in Statistics. Springer, New York (2009)
+
+\bibitem{king2016statistical}
+King, A.A., Nguyen, D., Ionides, E.L., et~al.: Statistical inference for
+  partially observed {M}arkov processes via the {R} package pomp.
+\newblock Journal of Statistical Software \textbf{69}(i12) (2016)
 
 \bibitem{Picchini2014}
 Picchini, U.: Inference for {SDE} models via approximate {B}ayesian
