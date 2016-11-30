@@ -1,6 +1,6 @@
 rm(list=ls(all=TRUE))
 
-# library('Metrics')
+library('stargazer')
 
 options(digits = 3)
 truemean = c(1, 1, 4)

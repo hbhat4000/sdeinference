@@ -288,21 +288,43 @@ This system describes a noisy Van der Pol oscillator. The dependent variables $X
 
 Our goal here is to test the performance of the algorithm using simulated data and compare it against available methods, mainly POMP \cite{king2016statistical}. To generate this data, we start with known values of the parameters: $\theta_1 = 1, \theta_2 = 1, \theta_3 = 4$ and the noise parameters $\theta_4 =  \theta_5 = 0.25$. Using a fixed initial condition $(X_{1,0},X_{2,0})$, we then use the Euler-Maruyama method to step (\ref{eqn:sdeapplication}) forward in time until a final time $T > 0$. When we carry out this time-stepping, we use a step size of $0.001$ and then retain only those samples at times $t_m = m \Delta t$, from $m = 0$ to $m = M$, where $M \Delta t = T$. The simulated data is taken over two periods of the oscillator ($T = 20$) with a full resolution of $\Delta t = 0.01$. By, for example, taking every other row of this data set, we can obtain data with a resolution of $\Delta t = 0.02$.
 
-Using the samples $\{ \mathbf{x}_m \}_{m=0}^M$ thus constructed, we run the Metropolis algorithm. For the tests presented here, we infer only $\theta_1$ and $\theta_2$, keeping other parameters fixed at their known values. For these parameters, we use a diffuse Gaussian prior with mean $0$ and standard deviation $100$. For the proposal distribution $Z_{N+1}$ in the auxiliary Markov chain, we choose i.i.d. Gaussians with mean $0$ and standard deviation $0.05$.
+Using the samples $\{ \mathbf{x}_m \}_{m=0}^M$ thus constructed, we run the Metropolis algorithm. For the tests presented here, we infer only the parameters in the drift function, i.e., $\theta_1, \theta_2$ and $\theta_3$, keeping other parameters fixed at their known values. For these parameters, we use a diffuse Gaussian prior with mean $0$ and standard deviation $100$. For the proposal distribution $Z_{N+1}$ in the auxiliary Markov chain, we choose i.i.d. Gaussians with mean $0$ and standard deviation $0.05$.
 
-When we run the Metropolis algorithm, we discard the first $100$ samples and retain the next $250000$ samples. We compare these values against the true value of
-%  the parameter $1/L = 2 \pi$ and record the relative errors as,
-%  respectively, $e_1$ and $e_2$:
-% \begin{center}
-% \begin{tabular}{llll}
-% $\Delta t$ & $h$ & $e_1$ (relative error of mean) & $e_2$ (relative error of mode) \\ \hline
-% $0.04$ & $0.04$ & $6.1\%$ & $7.6\%$ \\
-% $0.04$ & $0.02$ & $0.54\%$ & $6.8\%$ \\
-% $0.04$ & $0.01$ & $5.1\%$ & $1.1\%$ \\
-% $0.02$ & $0.02$ & $12\%$ & $14\%$ \\
-% $0.02$ & $0.01$ & $4.9\%$ & $2.3\%$
-% \end{tabular}
-% \end{center}
+When we run the Metropolis algorithm, we discard the first $100$ samples and retain the next $250000$ samples. We compare these values against the true value of the parameter $\theta_2$ and $\theta_3$ and record the relative errors
+\begin{table}[] \centering 
+\caption{} 
+\label{} 
+\begin{tabular}{@{\extracolsep{5pt}} cccccccc} 
+\\[-1.8ex]\hline 
+\hline \\[-1.8ex] 
+ & theta1 & theta2 & theta3 & ar & err & h & type \\ 
+\hline \\[-1.8ex] 
+7 & $0.747$ & $0.906$ & $3.070$ & $0.296$ & $0.193$ & $0.100$ & Eulerian \\ 
+8 & $0.866$ & $1.300$ & $4.260$ & $0.285$ & $0.168$ & $0.050$ & DTQ \\ 
+9 & $0.892$ & $1.160$ & $4.430$ & $0.254$ & $0.124$ & $0.025$ & DTQ \\ 
+10 & $0.980$ & $1.170$ & $4.210$ & $0.239$ & $0.081$ & $0.013$ & DTQ \\ 
+1 & $1.250$ & $0.257$ & $4.340$ & $0.0003$ & $0.361$ & $0.050$ & pomp \\ 
+2 & $1.110$ & $0.647$ & $4.060$ & $0.001$ & $0.158$ & $0.025$ & pomp \\ 
+3 & $1.040$ & $0.752$ & $3.940$ & $0.0004$ & $0.102$ & $0.013$ & pomp \\ 
+\hline \\[-1.8ex] 
+\end{tabular} 
+\end{table} 
+
+\begin{table}[!htbp] \centering 
+  \caption{} 
+  \label{} 
+\begin{tabular}{@{\extracolsep{5pt}} cccccccc} 
+\\[-1.8ex]\hline 
+\hline \\[-1.8ex] 
+ & theta1 & theta2 & theta3 & ar & err & h & type \\ 
+\hline \\[-1.8ex] 
+4 & $0.960$ & $0.809$ & $4.010$ & $0.110$ & $0.078$ & $0.050$ & pomp-adaptive \\ 
+5 & $1.000$ & $0.954$ & $3.990$ & $0.164$ & $0.017$ & $0.025$ & pomp-adaptive \\ 
+6 & $1.010$ & $1.010$ & $4.020$ & $0.171$ & $0.009$ & $0.013$ & pomp-adaptive \\ 
+\hline \\[-1.8ex] 
+\end{tabular} 
+\end{table} 
+
 % When $h = \Delta t$, only one step of the method described in Section
 % \ref{subsec:2-1} is required to go from time $t_m$ to $t_{m+1}$.  This
 % step does not use any quadrature at all---one merely evaluates
