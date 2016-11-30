@@ -1,4 +1,4 @@
-This is pdfTeXk, Version 3.141592-1.40.3 (Web2C 7.5.6) (format=pdflatex 2015.10.19)  30 NOV 2016 00:14
+This is pdfTeXk, Version 3.141592-1.40.3 (Web2C 7.5.6) (format=pdflatex 2015.10.19)  30 NOV 2016 00:28
 entering extended mode
  %&-line parsing enabled.
 **HMS2016
@@ -423,7 +423,7 @@ LaTeX Font Info:    Font shape `OMS/ptm/m/n' in size <10> not available
  [5]
 
 LaTeX Warning: No positions in optional float specifier.
-               Default added (so using `htbp') on input line 292.
+               Default added (so using `htbp') on input line 294.
 
 [6] [7] [8] [9] <nbaspatial.pdf, id=44, 361.35pt x 361.35pt>
 File: nbaspatial.pdf Graphic file (type pdf)
@@ -434,10 +434,10 @@ File: inferredgamma.pdf Graphic file (type pdf)
 <use inferredgamma.pdf> (./HMS2016.bbl [10 <./nbaspatial.pdf>]) [11 <./inferred
 gamma.pdf>] (./HMS2016.aux) ) 
 Here is how much of TeX's memory you used:
- 2589 strings out of 256214
- 31084 string characters out of 1916999
- 94004 words of memory out of 1500000
- 5796 multiletter control sequences out of 10000+200000
+ 2588 strings out of 256214
+ 31078 string characters out of 1916999
+ 96004 words of memory out of 1500000
+ 5795 multiletter control sequences out of 10000+200000
  50633 words of font info for 114 fonts, out of 1200000 for 2000
  645 hyphenation exceptions out of 8191
  29i,10n,24p,1101b,303s stack positions out of 5000i,500n,6000p,200000b,15000s
@@ -450,7 +450,7 @@ r/share/texmf/fonts/type1/urw/symbol/usyr.pfb></usr/share/texmf/fonts/type1/urw
 /symbol/usyr.pfb></usr/share/texmf/fonts/type1/urw/times/utmb8a.pfb></usr/share
 /texmf/fonts/type1/urw/times/utmbi8a.pfb></usr/share/texmf/fonts/type1/urw/time
 s/utmr8a.pfb></usr/share/texmf/fonts/type1/urw/times/utmri8a.pfb>
-Output written on HMS2016.pdf (11 pages, 224771 bytes).
+Output written on HMS2016.pdf (11 pages, 224611 bytes).
 PDF statistics:
  103 PDF objects out of 1000 (max. 8388607)
  0 named destinations out of 1000 (max. 131072)
