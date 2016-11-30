@@ -4,45 +4,45 @@ The top-level auxiliary file: HMS2016.aux
 The style file: spmpsci.bst
 Database file #1: HMS2016.bib
 Warning--empty note in BhatMadu2016
-You've used 10 entries,
+You've used 11 entries,
             2946 wiz_defined-function locations,
-            664 strings with 6429 characters,
-and the built_in function-call counts, 6873 in all, are:
-= -- 789
-> -- 145
-< -- 2
-+ -- 89
-- -- 50
-* -- 302
-:= -- 706
-add.period$ -- 10
-call.type$ -- 10
-change.case$ -- 56
+            668 strings with 6578 characters,
+and the built_in function-call counts, 7330 in all, are:
+= -- 819
+> -- 167
+< -- 3
++ -- 98
+- -- 58
+* -- 329
+:= -- 768
+add.period$ -- 11
+call.type$ -- 11
+change.case$ -- 62
 chr.to.int$ -- 0
-cite$ -- 11
-duplicate$ -- 762
-empty$ -- 461
-format.name$ -- 56
-if$ -- 1433
+cite$ -- 12
+duplicate$ -- 803
+empty$ -- 502
+format.name$ -- 65
+if$ -- 1529
 int.to.chr$ -- 0
-int.to.str$ -- 10
-missing$ -- 94
-newline$ -- 47
-num.names$ -- 20
-pop$ -- 245
+int.to.str$ -- 11
+missing$ -- 106
+newline$ -- 51
+num.names$ -- 22
+pop$ -- 270
 preamble$ -- 1
-purify$ -- 44
+purify$ -- 50
 quote$ -- 0
-skip$ -- 428
+skip$ -- 438
 stack$ -- 0
-substring$ -- 303
-swap$ -- 608
-text.length$ -- 2
+substring$ -- 308
+swap$ -- 629
+text.length$ -- 3
 text.prefix$ -- 0
 top$ -- 0
-type$ -- 36
+type$ -- 38
 warning$ -- 1
-while$ -- 37
-width$ -- 12
-write$ -- 103
+while$ -- 39
+width$ -- 13
+write$ -- 113
 (There was 1 warning)

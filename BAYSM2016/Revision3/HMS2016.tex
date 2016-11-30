@@ -279,18 +279,18 @@ To test the method, we first consider the nonlinear SDE
 \begin{subequations}
 \label{eqn:sdeapplication}
 \begin{align}
-\mathrm{d}X_{1,t} & =  \theta_1 X_{2,t} \mathrm{d}t + (0.1 + \theta_4 e^{-X_{1,t}^2}) \mathrm{d}W_{1,t}, \\
-\mathrm{d}X_{2,t} & = (-\theta_2 X_{1,t} + \theta_3 X_{2,t} (1 - X_{1,t}^2)) \mathrm{d}t + (0.1 + \theta_5 e^{-X_{2,t}^2}) \mathrm{d}W_{2,t}.
+\mathrm{d}X_{1,t} & =  \theta_1 X_{2,t} \mathrm{d}t + (0.1 + \theta_4^2 e^{-X_{1,t}^2}) \mathrm{d}W_{1,t}, \\
+\mathrm{d}X_{2,t} & = (-\theta_2 X_{1,t} + \theta_3 X_{2,t} (1 - X_{1,t}^2)) \mathrm{d}t + (0.1 + \theta_5^2 e^{-X_{2,t}^2}) \mathrm{d}W_{2,t}.
 \end{align}
 \end{subequations}
 
-This system describes a noisy Van der Pol oscillator. The dependent variables $X_{1,t}$ and $X_{2,t}$ represent, respectively, the current and voltage of the circuit at time $t$.
+This system describes a noisy Van der Pol oscillator. The presence of $X_{1,t}$ and $X_{2,t}$ in the diffusion function ensures that the transition density is not Gaussian. Thus the transition density for the SDE is non-Gaussian and the assumption of a Gaussian density required in a simple Euler scheme would not be sufficient.
 
-Our goal here is to test the performance of the algorithm using simulated data and compare it against available methods, mainly POMP \cite{king2016statistical}. To generate this data, we start with known values of the parameters: $\theta_1 = 1, \theta_2 = 1, \theta_3 = 4$ and the noise parameters $\theta_4 =  \theta_5 = 0.25$. Using a fixed initial condition $(X_{1,0},X_{2,0})$, we then use the Euler-Maruyama method to step (\ref{eqn:sdeapplication}) forward in time until a final time $T > 0$. When we carry out this time-stepping, we use a step size of $0.001$ and then retain only those samples at times $t_m = m \Delta t$, from $m = 0$ to $m = M$, where $M \Delta t = T$. The simulated data is taken over two periods of the oscillator ($T = 20$) with a full resolution of $\Delta t = 0.01$. By, for example, taking every other row of this data set, we can obtain data with a resolution of $\Delta t = 0.02$.
+Our goal here is to test the performance of the algorithm using simulated data and compare it against available methods, mainly POMP \cite{king2016statistical}. To generate this data, we start with known values of the parameters: $\theta_1 = 1, \theta_2 = 1, \theta_3 = 4$ and the noise parameters $\theta_4 =  \theta_5 = 0.5$. Using a fixed initial condition $(X_{1,0},X_{2,0})$, we then use the Euler-Maruyama method to step (\ref{eqn:sdeapplication}) forward in time until a final time $T > 0$. When we carry out this time-stepping, we use a step size of $0.001$ and then retain only those samples at times $t_m = m \Delta t$, from $m = 0$ to $m = M$, where $M \Delta t = T$. The simulated data is taken over two periods of the oscillator ($T = 20$) with a full resolution of $\Delta t = 0.01$. By, for example, taking every other row of this data set, we can obtain data with a resolution of $\Delta t = 0.02$.
 
 Using the samples $\{ \mathbf{x}_m \}_{m=0}^M$ thus constructed, we run the Metropolis algorithm. For the tests presented here, we infer only the parameters in the drift function, i.e., $\theta_1, \theta_2$ and $\theta_3$, keeping other parameters fixed at their known values. For these parameters, we use a diffuse Gaussian prior with mean $0$ and standard deviation $100$. For the proposal distribution $Z_{N+1}$ in the auxiliary Markov chain, we choose i.i.d. Gaussians with mean $0$ and standard deviation $0.05$.
 
-When we run the Metropolis algorithm, we discard the first $100$ samples and retain the next $250,000$ samples. We compare these values against the true value of the parameter $\theta_1, \theta_2$ and $\theta_3$ and record the inferred parameter values, acceptance rate of the method, relative errors
+When we run the Metropolis algorithm, we discard the first $100$ samples and retain the next $250,000$ samples. We compare these values against the true value of the parameter $\theta_1, \theta_2$ and $\theta_3$ and record the inferred parameter values, acceptance rate of the method, mean relative percentage error for varying values of $h$ for the 3 methods.
 \begin{table}[] \centering 
 \begin{tabular}{@{\extracolsep{5pt}} cccccccc} 
 \\[-1.8ex]\hline 
@@ -300,14 +300,18 @@ $\theta_1$ & $\theta_2$ & $\theta_3$ & ar & err & $h$ & type \\
 $0.747$ & $0.906$ & $3.070$ & $0.296$ & $0.193$ & $0.100$ & Eulerian \\ \hline
 $0.866$ & $1.300$ & $4.260$ & $0.285$ & $0.168$ & $0.050$ &  \\ 
 $0.892$ & $1.160$ & $4.430$ & $0.254$ & $0.124$ & $0.025$ & DTQ \\ 
-$0.980$ & $1.170$ & $4.210$ & $0.239$ & $0.081$ & $0.013$ &  \\ \hline
+$0.980$ & $1.170$ & $4.210$ & $0.239$ & $0.081$ & $0.0125$ &  \\ \hline
 $1.250$ & $0.257$ & $4.340$ & $0.0003$ & $0.361$ & $0.050$ &  \\ 
 $1.110$ & $0.647$ & $4.060$ & $0.001$ & $0.158$ & $0.025$ & pomp \\ 
-$1.040$ & $0.752$ & $3.940$ & $0.0004$ & $0.102$ & $0.013$ &  \\ 
+$1.040$ & $0.752$ & $3.940$ & $0.0004$ & $0.102$ & $0.0125$ &  \\ 
 \hline \\[-1.8ex] 
 \end{tabular} 
 \caption{Table with comparisons among non-adaptive MCMC runs for the Eulerian method, DTQ method and pomp.} 
 \end{table} 
+
+When $h = \Delta t$, only one step of the method described in Section
+\ref{subsec:2-1} is required to go from time $t_m$ to $t_{m+1}$. This
+step is the same as the Euler method and does not use any quadrature at all---one merely evaluates (\ref{eqn:chapman}) using a point mass for the density at time $t_m$. The resulting likelihood function is a product of Gaussians. On the other hand, when $h$ is strictly less than $\Delta t$, we must use quadrature (i.e., the actual DTQ method) to step forward in time from $t_m$ to $t_{m+1}$. Clearly, using the DTQ method to compute the likelihood yields more accurate posteriors than using a purely Gaussian likelihood. In comparison to POMP, our method does slightly better in terms of the means of the posteriors. If we look at the Metropolis samples generated by the 2 methods, our method has radically higher acceptance ratio than POMP. The non-adaptive version of the Metropolis sampling for POMP does not explore the posterior adequately, rejecting a large number of samples. A carefully executed adaptive Metropolis algorithm for POMP, with known MLE values, does generate better results than the non-adaptive version, as shown in Table \ref{tbl:pomp-adaptive}.
 
 \begin{table}[!htbp] \centering 
 \begin{tabular}{@{\extracolsep{5pt}} cccccccc} 
@@ -320,37 +324,18 @@ $1.000$ & $0.954$ & $3.990$ & $0.164$ & $0.017$ & $0.025$ & pomp-adaptive \\
 $1.010$ & $1.010$ & $4.020$ & $0.171$ & $0.009$ & $0.013$ & \\ 
 \hline \\[-1.8ex] 
 \end{tabular} 
+\label{tbl:pomp-adaptive}
 \caption{Table of results for the adaptive MCMC runs for pomp} 
 \end{table} 
 
-% When $h = \Delta t$, only one step of the method described in Section
-% \ref{subsec:2-1} is required to go from time $t_m$ to $t_{m+1}$.  This
-% step does not use any quadrature at all---one merely evaluates
-% (\ref{eqn:chapman}) using a point mass for the density at time $t_m$.
-% The resulting likelihood function is a product of Gaussians.  On the
-% other hand, when $h$ is strictly less than $\Delta t$, we must use
-% quadrature (i.e., the actual DTQ method) to step forward in time from
-% $t_m$ to $t_{m+1}$.  Clearly, using the DTQ method to compute the likelihood yields more accurate posteriors than using a purely Gaussian likelihood.
+In this Bayesian computation, one can either invest effort into 
+\begin{itemize}
+\item making the likelihood calculation more accurate, efficient and stable to initial choice of parameters
+\item improving the vanilla Metropolis MCMC algorithm in various ways: adaptive MCMC, HMC \cite{gelman2014bayesian}
+\end{itemize}
+The improvement in the acceptance rate and the inferred parameters for POMP, merely by an improvement in the Metropolis algorithm imply that techniques like particle methods spend their effort on the latter part and make do with a relatively inaccurate likelihood function. Alternatively, we take care to compute the likelihood accurately and thereby enable vanilla MCMC algorithms to work.
 
-% To visualize the results, we present Figure \ref{fig:lcosc}.  The true
-% value of $1/L = 2 \pi$ is indicated by the dashed black line.  The
-% posterior mode for $h = 0.01$ is indicated by the solid black line.
-% The curves are kernel density estimates computed using the posterior
-% samples described above.
-% \begin{figure}
-% \begin{center}
-% \vspace{-0.55in}
-% \includegraphics[width=3in,angle=270]{densities.eps}
-% \end{center}
-% \vspace{-0.35in}
-% \caption{We plot kernel density estimates of posterior densities
-%   $p(\theta_1^2 | \mathbf{x})$.  We use simulated data with  $\Delta t
-%   = 0.04$, generated as described above.  Each posterior density
-%   corresponds to a finer DTQ step $h$.  As we take a finer DTQ step
-%   (i.e., as $h$ decreases), the posterior mode approaches the true
-%   value indicated by the solid vertical line at $1/L = 2 \pi$.}
-% \label{fig:lcosc}
-% \end{figure}
+To understand this point in more detail, consider a numerical experiment where we compute a grid of ($\theta_2,\theta_3$,log-likelihood) values using both POMP and DTQ methods. If we then rescale the log-likelihood values from both methods so that they achieve a maximum of 0 and then exponentiate, we find that the DTQ likelihood has more reasonable gradients than the POMP likelihood, which varies over 3 orders of magnitude. The Metropolis accept/reject ratio depends on the actual density, i.e., the exponential of the log-likelihood plus the log-prior.  Therefore, the sharp dropoff in the likelihood function away from the maximum---seen in pomp---will cause thousands of consecutive rejected steps. The more gradual dropoff in the DTQ likelihood function leads to a reasonable fraction of accepted steps in a vanilla Metropolis algorithm.
 
 Next, we test the method using the pursuit SDE
 (\ref{eqn:pursuitSDE}).  We set the runner's trajectory equal to a

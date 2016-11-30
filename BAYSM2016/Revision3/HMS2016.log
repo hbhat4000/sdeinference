@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.1415926-2.5-1.40.14 (TeX Live 2013/Debian) (format=pdflatex 2016.11.29)  29 NOV 2016 22:21
+This is pdfTeX, Version 3.1415926-2.5-1.40.14 (TeX Live 2013/Debian) (format=pdflatex 2016.11.29)  29 NOV 2016 22:59
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -490,44 +490,48 @@ LaTeX Font Info:    Font shape `OMS/ptm/m/n' in size <10> not available
 LaTeX Warning: No positions in optional float specifier.
                Default added (so using `htbp') on input line 294.
 
-[6] [7] [8] <nbaspatial.pdf, id=43, 361.35pt x 361.35pt>
+[6] [7] [8] [9] <nbaspatial.pdf, id=46, 361.35pt x 361.35pt>
 File: nbaspatial.pdf Graphic file (type pdf)
- <use nbaspatial.pdf>
-Package pdftex.def Info: nbaspatial.pdf used on input line 454.
+
+<use nbaspatial.pdf>
+Package pdftex.def Info: nbaspatial.pdf used on input line 439.
 (pdftex.def)             Requested size: 234.87749pt x 234.88023pt.
-
-<inferredgamma.pdf, id=44, 361.35pt x 289.08pt>
+ <inferredgamma.pdf, id=47, 361.35pt x 289.08pt>
 File: inferredgamma.pdf Graphic file (type pdf)
- <use inferredgamma.pdf>
-Package pdftex.def Info: inferredgamma.pdf used on input line 483.
-(pdftex.def)             Requested size: 234.87749pt x 187.90417pt.
 
-(./HMS2016.bbl [9 <./nbaspatial.pdf>]) [10 <./inferredgamma.pdf>]
-(./HMS2016.aux) ) 
+<use inferredgamma.pdf>
+Package pdftex.def Info: inferredgamma.pdf used on input line 468.
+(pdftex.def)             Requested size: 234.87749pt x 187.90417pt.
+ (./HMS2016.bbl [10 <./nbaspatial.pdf>]) [11 <./inferredgamma.pdf>] (./HMS2016.
+aux)
+
+LaTeX Warning: Label(s) may have changed. Rerun to get cross-references right.
+
+ ) 
 Here is how much of TeX's memory you used:
- 3533 strings out of 493304
- 46785 string characters out of 6139870
- 123535 words of memory out of 5000000
- 6872 multiletter control sequences out of 15000+600000
+ 3535 strings out of 493304
+ 46824 string characters out of 6139870
+ 121548 words of memory out of 5000000
+ 6874 multiletter control sequences out of 15000+600000
  50633 words of font info for 114 fonts, out of 8000000 for 9000
  957 hyphenation exceptions out of 8191
- 38i,10n,26p,947b,301s stack positions out of 5000i,500n,10000p,200000b,80000s
-{/usr/share/texlive/texmf-dist/fonts/enc/dvips/base/8r.enc}</u
-sr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmex10.pfb></usr/sha
-re/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi10.pfb></usr/share/tex
-live/texmf-dist/fonts/type1/public/amsfonts/cm/cmr10.pfb></usr/share/texlive/te
-xmf-dist/fonts/type1/public/amsfonts/cm/cmsy10.pfb></usr/share/texlive/texmf-di
-st/fonts/type1/public/amsfonts/symbols/msbm10.pfb></usr/share/texlive/texmf-dis
-t/fonts/type1/public/rsfs/rsfs10.pfb></usr/share/texlive/texmf-dist/fonts/type1
-/urw/symbol/usyr.pfb></usr/share/texlive/texmf-dist/fonts/type1/urw/symbol/usyr
-.pfb></usr/share/texlive/texmf-dist/fonts/type1/urw/times/utmb8a.pfb></usr/shar
-e/texlive/texmf-dist/fonts/type1/urw/times/utmbi8a.pfb></usr/share/texlive/texm
-f-dist/fonts/type1/urw/times/utmr8a.pfb></usr/share/texlive/texmf-dist/fonts/ty
-pe1/urw/times/utmri8a.pfb>
-Output written on HMS2016.pdf (10 pages, 230772 bytes).
+ 38i,10n,26p,1101b,303s stack positions out of 5000i,500n,10000p,200000b,80000s
+{/usr/share/texlive/texmf-dist/fonts/enc/dvips/base/8r.enc}</usr/share/texliv
+e/texmf-dist/fonts/type1/public/amsfonts/cm/cmex10.pfb></usr/share/texlive/texm
+f-dist/fonts/type1/public/amsfonts/cm/cmmi10.pfb></usr/share/texlive/texmf-dist
+/fonts/type1/public/amsfonts/cm/cmr10.pfb></usr/share/texlive/texmf-dist/fonts/
+type1/public/amsfonts/cm/cmsy10.pfb></usr/share/texlive/texmf-dist/fonts/type1/
+public/amsfonts/symbols/msbm10.pfb></usr/share/texlive/texmf-dist/fonts/type1/p
+ublic/rsfs/rsfs10.pfb></usr/share/texlive/texmf-dist/fonts/type1/urw/symbol/usy
+r.pfb></usr/share/texlive/texmf-dist/fonts/type1/urw/symbol/usyr.pfb></usr/shar
+e/texlive/texmf-dist/fonts/type1/urw/times/utmb8a.pfb></usr/share/texlive/texmf
+-dist/fonts/type1/urw/times/utmbi8a.pfb></usr/share/texlive/texmf-dist/fonts/ty
+pe1/urw/times/utmr8a.pfb></usr/share/texlive/texmf-dist/fonts/type1/urw/times/u
+tmri8a.pfb>
+Output written on HMS2016.pdf (11 pages, 233950 bytes).
 PDF statistics:
- 103 PDF objects out of 1000 (max. 8388607)
- 72 compressed objects within 1 object stream
+ 106 PDF objects out of 1000 (max. 8388607)
+ 74 compressed objects within 1 object stream
  0 named destinations out of 1000 (max. 500000)
  16 words of extra memory for PDF output out of 10000 (max. 10000000)
 
