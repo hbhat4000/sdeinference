@@ -1,4 +1,4 @@
-This is pdfTeXk, Version 3.141592-1.40.3 (Web2C 7.5.6) (format=pdflatex 2015.10.19)  30 NOV 2016 00:28
+This is pdfTeXk, Version 3.141592-1.40.3 (Web2C 7.5.6) (format=pdflatex 2015.10.19)  30 NOV 2016 03:09
 entering extended mode
  %&-line parsing enabled.
 **HMS2016
@@ -404,11 +404,7 @@ LaTeX Font Info:    Font shape `OT1/ptm/bx/n' in size <12> not available
 
 
 
-{/var/lib/texmf/fonts/map/pdftex/updmap/pdftex.map}] <pursuit.png, id=10, 491.8
-375pt x 201.75375pt>
-File: pursuit.png Graphic file (type png)
-
-<use pursuit.png> [2 <./pursuit.png>] [3]
+{/var/lib/texmf/fonts/map/pdftex/updmap/pdftex.map}] [2] [3]
 LaTeX Font Info:    Font shape `OT1/ptm/bx/it' in size <12> not available
 (Font)              Font shape `OT1/ptm/b/it' tried instead on input line 215.
  [4]
@@ -423,36 +419,36 @@ LaTeX Font Info:    Font shape `OMS/ptm/m/n' in size <10> not available
  [5]
 
 LaTeX Warning: No positions in optional float specifier.
-               Default added (so using `htbp') on input line 294.
+               Default added (so using `htbp') on input line 313.
 
-[6] [7] [8] [9] <nbaspatial.pdf, id=44, 361.35pt x 361.35pt>
+[6] [7] [8] <nbaspatial.pdf, id=39, 361.35pt x 361.35pt>
 File: nbaspatial.pdf Graphic file (type pdf)
-
-<use nbaspatial.pdf> <inferredgamma.pdf, id=45, 361.35pt x 289.08pt>
+ <use nbaspatial.pdf>
+<inferredgamma.pdf, id=40, 361.35pt x 289.08pt>
 File: inferredgamma.pdf Graphic file (type pdf)
-
-<use inferredgamma.pdf> (./HMS2016.bbl [10 <./nbaspatial.pdf>]) [11 <./inferred
-gamma.pdf>] (./HMS2016.aux) ) 
+ <use inferredgamma.pdf>
+(./HMS2016.bbl [9] [10 <./nbaspatial.pdf> <./inferredgamma.pdf>]) [11]
+(./HMS2016.aux) ) 
 Here is how much of TeX's memory you used:
- 2588 strings out of 256214
- 31078 string characters out of 1916999
- 96004 words of memory out of 1500000
- 5795 multiletter control sequences out of 10000+200000
+ 2581 strings out of 256214
+ 30965 string characters out of 1916999
+ 95004 words of memory out of 1500000
+ 5789 multiletter control sequences out of 10000+200000
  50633 words of font info for 114 fonts, out of 1200000 for 2000
  645 hyphenation exceptions out of 8191
- 29i,10n,24p,1101b,303s stack positions out of 5000i,500n,6000p,200000b,15000s
-{/usr/share/texmf/fonts/enc/dvips/base/8r.enc}</us
-r/share/texmf/fonts/type1/bluesky/cm/cmex10.pfb></usr/share/texmf/fonts/type1/b
-luesky/cm/cmmi10.pfb></usr/share/texmf/fonts/type1/bluesky/cm/cmr10.pfb></usr/s
-hare/texmf/fonts/type1/bluesky/cm/cmsy10.pfb></usr/share/texmf/fonts/type1/blue
-sky/ams/msbm10.pfb></usr/share/texmf/fonts/type1/hoekwater/rsfs/rsfs10.pfb></us
-r/share/texmf/fonts/type1/urw/symbol/usyr.pfb></usr/share/texmf/fonts/type1/urw
-/symbol/usyr.pfb></usr/share/texmf/fonts/type1/urw/times/utmb8a.pfb></usr/share
-/texmf/fonts/type1/urw/times/utmbi8a.pfb></usr/share/texmf/fonts/type1/urw/time
-s/utmr8a.pfb></usr/share/texmf/fonts/type1/urw/times/utmri8a.pfb>
-Output written on HMS2016.pdf (11 pages, 224611 bytes).
+ 29i,10n,24p,1062b,307s stack positions out of 5000i,500n,6000p,200000b,15000s
+{/usr/share/texmf/fonts/enc/dvips/base/8r.enc}</usr/share/texm
+f/fonts/type1/bluesky/cm/cmex10.pfb></usr/share/texmf/fonts/type1/bluesky/cm/cm
+mi10.pfb></usr/share/texmf/fonts/type1/bluesky/cm/cmr10.pfb></usr/share/texmf/f
+onts/type1/bluesky/cm/cmsy10.pfb></usr/share/texmf/fonts/type1/bluesky/ams/msbm
+10.pfb></usr/share/texmf/fonts/type1/hoekwater/rsfs/rsfs10.pfb></usr/share/texm
+f/fonts/type1/urw/symbol/usyr.pfb></usr/share/texmf/fonts/type1/urw/symbol/usyr
+.pfb></usr/share/texmf/fonts/type1/urw/times/utmb8a.pfb></usr/share/texmf/fonts
+/type1/urw/times/utmbi8a.pfb></usr/share/texmf/fonts/type1/urw/times/utmr8a.pfb
+></usr/share/texmf/fonts/type1/urw/times/utmri8a.pfb>
+Output written on HMS2016.pdf (11 pages, 219544 bytes).
 PDF statistics:
- 103 PDF objects out of 1000 (max. 8388607)
+ 101 PDF objects out of 1000 (max. 8388607)
  0 named destinations out of 1000 (max. 131072)
- 16 words of extra memory for PDF output out of 10000 (max. 10000000)
+ 11 words of extra memory for PDF output out of 10000 (max. 10000000)
 

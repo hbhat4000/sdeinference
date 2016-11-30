@@ -123,21 +123,21 @@ model for basketball fast breaks.
 \label{sec:2}
 Let the \emph{runner} be the player (on offense) who has the ball and
 is running toward the basket.  Let the \emph{chaser} be the player (on
-defense) who is trying to prevent the runner from scoring.   Let the
+defense) who is trying to prevent the runner from scoring. Let the
 current spatial coordinates of the runner and chaser be, respectively,
 $(x^{r}(t), y^{r}(t))$ and $(x^{c}(t), y^{c}(t))$.
 
-\begin{figure}[tb]
-\centering
-\includegraphics[width=0.8\textwidth]{pursuit.png}
-\caption{Diagram illustrating motion of runner and chaser.  At any
-  instant of time, the chaser's velocity vector points toward the
-  runner's current position.}
-\label{fig:pursuitdiagram}
-\end{figure}
+% \begin{figure}[tb]
+% \centering
+% \includegraphics[width=0.8\textwidth]{pursuit.png}
+% \caption{Diagram illustrating motion of runner and chaser.  At any
+%   instant of time, the chaser's velocity vector points toward the
+%   runner's current position.}
+% \label{fig:pursuitdiagram}
+% \end{figure}
 
-Consider the diagram in Figure \ref{fig:pursuitdiagram}.  Since the
-chaser is moving towards the runner, the velocity vector of the chaser
+% Consider the diagram in Figure \ref{fig:pursuitdiagram}.  
+Since the chaser is moving towards the runner, the velocity vector of the chaser
 points toward the runner's current position.  Let $\vec{\phi} = (x^{r}
 - x^{c}, y^{r} - y^{c})$. Then the unit vector that points toward the
 runner from the chaser is $\phi / \| \phi \|$.  The velocity of the chaser, $(\dot{x}^c, \dot{y}^c)$, can thus be given as
@@ -157,8 +157,8 @@ then add noise to each component:
 \begin{equation}
 \label{eqn:pursuitSDE}
 \mathrm{d}(x^{c}, y^{c}) = \gamma(t) \frac{\vec{\phi}}{ \|
-                           \vec{\phi} \| } \mathrm{d}t + (\nu_1
-                         \mathrm{d}W^1_t, \nu_2 \mathrm{d}W^2_t)
+                           \vec{\phi} \| } \mathrm{d}t + (\nu_1 \,
+                         \mathrm{d}W^1_t, \nu_2 \, \mathrm{d}W^2_t)
 \end{equation}
 Here $W_{1,t}$ and $W_{2,t}$ denote two independent Wiener processes
 with $W_{1,0} = W_{2,0} = 0$ almost surely.  We refer to this model as
@@ -171,8 +171,8 @@ together with $\nu_1$ and $\nu_2$?  Our first step is to consider
 \begin{subequations}
 \label{eqn:sde}
 \begin{align}
-\mathrm{d}X_{1,t} &= f_1(t, \mathbf{X}_t, \theta)\mathrm{d}t + g_1(t, \mathbf{X}_t, \theta) \mathrm{d}W_{1,t} \\
-\mathrm{d}X_{2,t} &= f_2(t, \mathbf{X}_t, \theta)\mathrm{d}t + g_2(t, \mathbf{X}_t, \theta) \mathrm{d}W_{2,t}.
+\mathrm{d}X_{1,t} &= f_1(t, \mathbf{X}_t, \theta) \, \mathrm{d} \, t + g_1(t, \mathbf{X}_t, \theta) \, \mathrm{d} \, W_{1,t} \\
+\mathrm{d}X_{2,t} &= f_2(t, \mathbf{X}_t, \theta)\, \mathrm{d} \, t + g_2(t, \mathbf{X}_t, \theta) \, \mathrm{d} \, W_{2,t}.
 \end{align}
 \end{subequations}
 Here $\mathbf{X}_t = (X_{1,t}, X_{2,t})$ is a two-dimensional
@@ -224,13 +224,13 @@ where
 &K(x_1,x_2,y_1,y_2,t_n; \theta) = \widetilde{p}^{{n+1} | {n}}(x_1,x_2 | y_1,y_2,\theta) \nonumber\\
 &= (2 \pi \sigma_1^2)^{-1/2} \exp \left[ -(x_1 - \mu_1)^2/(2 \sigma_1^2) \right] (2 \pi \sigma_2^2)^{-1/2} \exp \left[ -(x_2 - \mu_2)^2/(2 \sigma_2^2) \right]\nonumber.
 \end{align}
-Here $\mu_1 = y_1 + f_1(t_n,y_1,y_2; \theta) h,  \mu_2 = y_2 + f_2(t_n,y_1,y_2; \theta) h,  \sigma_1^2 = g_1^2(t_n,y_1,y_2; \theta) h$ and  $\sigma_2^2 = g_2^2(t_n,y_1,y_2; \theta) h$. That is, $K(x_1,x_2,y_1,y_2,t_n; \theta)$ is the conditional density of $X_1^{n+1}$ and $X_2^{n+1}$ given $X_1^n = y_1$, $X_2^n = y_2$ and $\theta = \theta$, evaluated at the point $(x_1,x_2)$.  The fact that the conditional density is a product of normal distributions with means $\mu_1, \mu_2$ and variances $\sigma_1^2, \sigma_2^2$ can be shown using (\ref{eqn:discretesde}) together with the fact that $X_1^{n+1}$ and $X_2^{n+1}$ are conditionally independent given $X_1^n$ and $X_2^n$. This conditional independence is a direct consequence of having two independent random variables $Z_1^n$ and $Z_2^n$ in (\ref{eqn:discretesde}).
+Here $\mu_1 = y_1 + f_1(t_n,y_1,y_2; \theta) h,  \mu_2 = y_2 + f_2(t_n,y_1,y_2; \theta) h,  \sigma_1^2 = g_1^2(t_n,y_1,y_2; \theta) h$ and  $\sigma_2^2 = g_2^2(t_n,y_1,y_2; \theta) h$. That is, $K(x_1,x_2,y_1,y_2,t_n; \theta)$ is the conditional density of $X_1^{n+1}$ and $X_2^{n+1}$ given $X_1^n = y_1$, $X_2^n = y_2$ and a fixed $\theta$, evaluated at the point $(x_1,x_2)$.  The fact that the conditional density is a product of normal distributions with means $\mu_1, \mu_2$ and variances $\sigma_1^2, \sigma_2^2$ can be shown using (\ref{eqn:discretesde}) together with the fact that $X_1^{n+1}$ and $X_2^{n+1}$ are conditionally independent given $X_1^n$ and $X_2^n$. This conditional independence is a direct consequence of having two independent random variables $Z_1^n$ and $Z_2^n$ in (\ref{eqn:discretesde}).
 
 The crux of the DTQ method is to apply quadrature to (\ref{eqn:chapman}) to evolve an initial density forward in time. We use the trapezoidal rule for quadrature since $\hat{p}$ converges to $\tilde{p}$ exponentially with the trapezoidal rule and this can not be improved upon by other choices, such as the Gauss-Hermite quadrature. In practice, the trapezoidal rule was both faster and more accurate than the Gauss-Hermite quadrature, as shown in \cite{BhatMadu2016} for the 1-D case.
 
-Consider a spatial grid with fixed spacing $k > 0$ and grid points $x_1^i = ik$, $x_2^j = jk$, $y_1^{i'} = i'k$, and $y_2^{j'} = j'k$.  Then we apply the trapezoidal rule in both the $y_1$ and $y_2$ variables to obtain:
+Consider a $(2M+1) \times (2M+1)$ spatial grid with fixed spacing $k > 0$ and grid points $x_1^i = ik$, $x_2^j = jk$, $y_1^{i'} = i'k$, and $y_2^{j'} = j'k$, where $i, i', j, j' \in \{-M, M\}$. Then we apply the trapezoidal rule in both the $y_1$ and $y_2$ variables to obtain:
 \begin{equation}
-\hat{p}^{n+1}(x_1^i, x_2^j ;\theta) = k^2 \sum\limits_{i' = -\infty}^{\infty} \sum\limits_{j' = -\infty}^{\infty} K(x_1^i, x_2^j, y_i^{i'}, y_2^{j'},t_n; \theta)  \hat{p}^n(y_1^{i'}, y_2^{j'}; \theta)
+\hat{p}^{n+1}(x_1^i, x_2^j ;\theta) = k^2 \sum\limits_{i' = -\infty}^{\infty} \sum\limits_{j' = -\infty}^{\infty} K(x_1^i, x_2^j, y_1^{i'}, y_2^{j'},t_n; \theta)  \hat{p}^n(y_1^{i'}, y_2^{j'}; \theta)
 \end{equation}
 It is unnecessary to sum over all of $\mathbb{Z}^2$.  We know that a two-dimensional Gaussian decays to zero far from its mean.  Since the mean $(\mu_1,\mu_2)$ is approximately $(y_1,y_2)$, we sum only from $y_1 = x_1 - \zeta k$ to $y_1 = x_1 + \zeta k$ and similarly for $y_2$:
 \begin{equation}
@@ -238,7 +238,7 @@ It is unnecessary to sum over all of $\mathbb{Z}^2$.  We know that a two-dimensi
 \hat{p}^{n+1}(x_1^i, x_2^j;\theta ) = k^2 \sum\limits_{i' = i - \zeta}^{i+ \zeta} \sum\limits_{j' = j-\zeta}^{j+\zeta} K(x_1^i, x_2^j, y_i^{i'}, y_2^{j'},t_n; \theta) \hat{p}^n(y_1^{i'}, y_2^{j'}; \theta)
 \end{equation}
 We choose $\zeta$ manually to ensure the accuracy of the computation.
-We now have our method to evaluate $\widetilde{p}(\mathbf{x}_{m+1} \, | \, \mathbf{x}_m, \theta)$.  Let us take $n=0$ in (\ref{eqn:phatalg}) to correspond to the time $t_m$.  We start with the deterministic initial condition $\mathbf{X}^0 = \mathbf{x}_m$, corresponding to the density $\widetilde{p}^0(\mathbf{x}) = \delta(\mathbf{x} - \mathbf{x}_m)$.  Inserting this point mass into (\ref{eqn:chapman}), we obtain a Gaussian density for $\widetilde{p}^1(\mathbf{x})$.  For each $i,j \in [-y_M/k, y_M/k]$, we set
+We now have our method to evaluate $\widetilde{p}(\mathbf{x}_{m+1} \, | \, \mathbf{x}_m, \theta)$.  Let us take $n=0$ in (\ref{eqn:phatalg}) to correspond to the time $t_m$.  We start with the deterministic initial condition $\mathbf{X}^0 = \mathbf{x}_m$, corresponding to the density $\widetilde{p}^0(\mathbf{x}) = \delta(\mathbf{x} - \mathbf{x}_m)$.  Inserting this point mass into (\ref{eqn:chapman}), we obtain a Gaussian density for $\widetilde{p}^1(\mathbf{x})$.  For each $i,j \in \{-M, M\}$ on the spatial grid, we set
 $$
 \hat{p}^1(x_1^i, x_2^j; \theta) = \widetilde{p}^1(x_1^i, x_2^j; \theta).
 $$
@@ -272,62 +272,90 @@ Once we have obtained all the samples $q_0, q_1, \cdots, q_N$ from the Metropoli
 
 \section{Numerical Tests}
 \label{sec:3}
-We implement the Metropolis algorithm in R. Inside the Metropolis algorithm, we evaluate the likelihood function using the DTQ method, which is implemented in C++ as an R package. Note that all code and data used in this work is available online (\url{https://github.com/hbhat4000/sdeinference})---see the ``Rdtq2d'' and ``pursuit2d'' directories.
+We implement the Metropolis algorithm in R. Inside the Metropolis algorithm, we evaluate the likelihood function using the DTQ method, which is implemented in C++ as an R package. Note that all codes and data used in this work are available online (\url{https://github.com/hbhat4000/sdeinference})---see the ``Rdtq2d'' and ``pursuit2d'' directories.
 To test the method, we first consider the nonlinear SDE
 \begin{subequations}
 \label{eqn:sdeapplication}
 \begin{align}
-\mathrm{d}X_{1,t} & =  \theta_1 X_{2,t} \mathrm{d}t + (0.1 + \theta_4^2 e^{-X_{1,t}^2}) \mathrm{d}W_{1,t}, \\
-\mathrm{d}X_{2,t} & = (-\theta_2 X_{1,t} + \theta_3 X_{2,t} (1 - X_{1,t}^2)) \mathrm{d}t + (0.1 + \theta_5^2 e^{-X_{2,t}^2}) \mathrm{d}W_{2,t}.
+\mathrm{d}X_{1,t} & =  \theta_1 \, X_{2,t} \, \mathrm{d} \, t + (0.1 + \theta_4^2 \, e^{-X_{1,t}^2}) \, \mathrm{d} \, W_{1,t}, \\
+\mathrm{d}X_{2,t} & = (-\theta_2 \, X_{1,t} + \theta_3 X_{2,t} \, (1 - X_{1,t}^2)) \, \mathrm{d} \, t + (0.1 + \theta_5^2 \, e^{-X_{2,t}^2}) \, \mathrm{d} \, W_{2,t}.
 \end{align}
 \end{subequations}
 
 This system describes a noisy Van der Pol oscillator. The presence of $X_{1,t}$ and $X_{2,t}$ in the diffusion function ensures that the transition density is not Gaussian. Thus the transition density for the SDE is non-Gaussian and the assumption of a Gaussian density required in a simple Euler scheme would not be sufficient.
 
-Our goal here is to test the performance of the algorithm using simulated data and compare it against other Bayesian methods, mainly POMP \cite{king2016statistical}. It is a Bayesian inference and filtering method based on partially-observed Markov processes. To generate this data, we start with known values of the parameters: $\theta_1 = 1, \theta_2 = 1, \theta_3 = 4$ and the noise parameters $\theta_4 =  \theta_5 = 0.5$. Using a fixed initial condition $(X_{1,0},X_{2,0})$, we then use the Euler-Maruyama method to step (\ref{eqn:sdeapplication}) forward in time until a final time $T > 0$. When we carry out this time-stepping, we use a step size of $0.001$ and then retain only those samples at times $t_m = m \Delta t$, from $m = 0$ to $m = M$, where $M \Delta t = T$. The simulated data is taken upto $T = 20$, with a full resolution of $\Delta t = 0.01$.
+Our goal here is to test the performance of the algorithm using simulated data and compare it against other Bayesian methods, mainly ``Pomp'' \cite{king2016statistical}. It is a Bayesian inference and filtering method based on partially-observed Markov processes. To generate this data, we start with known values of the parameters: $\theta_1 = 1, \theta_2 = 1, \theta_3 = 4$ and the noise parameters $\theta_4 =  \theta_5 = 0.5$. Using a fixed initial condition $(X_{1,0},X_{2,0})$, we then use the Euler-Maruyama method to step (\ref{eqn:sdeapplication}) forward in time until a final time $T > 0$. When we carry out this time-stepping, we use a finer step size of $0.001$ to generate more accurate data.The simulated data is taken upto $T = 20$, with a full resolution of $\Delta t = 0.1$, i.e., every $100^{th}$ sample is kept to make the data sparse.
 
 Using the samples $\{ \mathbf{x}_m \}_{m=0}^M$ thus constructed, we run the Metropolis algorithm. For the tests presented here, we infer only the parameters in the drift function, i.e., $\theta_1, \theta_2$ and $\theta_3$, keeping other parameters fixed at their known values. For these parameters, we use a diffuse Gaussian prior with mean $0$ and standard deviation $100$. For the proposal distribution $Z_{N+1}$ in the auxiliary Markov chain, we choose i.i.d. Gaussians with mean $0$ and standard deviation $0.05$.
 
-When we run the Metropolis algorithm, we discard the first $100$ samples and retain the next $250,000$ samples. We compare these values against the true value of the parameter $\theta_1, \theta_2$ and $\theta_3$ and record the inferred parameter values, acceptance rate of the method, mean relative percentage error for varying values of $h$ for the 3 methods.
+When we run the Metropolis algorithm, we discard the first $100$ samples and retain the next $250,000$ samples. We compare these values against the true value of the parameter $\theta_1, \theta_2$ and $\theta_3$ and record the inferred parameter values, acceptance rate of the method, mean absolute percentage error (MAPE) for varying values of $h$ for the 3 methods.
 \vspace{-4mm}
-\setlength{\tabcolsep}{8pt}
+% \setlength{\tabcolsep}{8pt}
+% \begin{table}[] \centering 
+% \begin{tabular}{llllllll} 
+% \\[-1.8ex]\hline 
+% \hline \\[-1.8ex] 
+% $\theta_1$ & $\theta_2$ & $\theta_3$ & ar & err & $h$ & type \\ 
+% \hline \\[-1.8ex] 
+% $0.747$ & $0.906$ & $3.070$ & $0.296$ & $0.193$ & $0.100$ & Eulerian \\ \hline
+% $0.866$ & $1.300$ & $4.260$ & $0.285$ & $0.168$ & $0.050$ &  \\ 
+% $0.892$ & $1.160$ & $4.430$ & $0.254$ & $0.124$ & $0.025$ & DTQ \\ 
+% $0.980$ & $1.170$ & $4.210$ & $0.239$ & $0.081$ & $0.0125$ &  \\ \hline
+% $1.250$ & $0.257$ & $4.340$ & $0.0003$ & $0.361$ & $0.050$ &  \\ 
+% $1.110$ & $0.647$ & $4.060$ & $0.001$ & $0.158$ & $0.025$ & Pomp \\ 
+% $1.040$ & $0.752$ & $3.940$ & $0.0004$ & $0.102$ & $0.0125$ &  \\ 
+% \hline \\[-1.8ex] 
+% \end{tabular} 
+% % \caption{Table with comparisons among non-adaptive MCMC runs for the Eulerian method, DTQ method and Pomp.} 
+% \end{table} 
+
+\setlength{\tabcolsep}{10pt}
 \begin{table}[] \centering 
 \begin{tabular}{llllllll} 
 \\[-1.8ex]\hline 
 \hline \\[-1.8ex] 
-$\theta_1$ & $\theta_2$ & $\theta_3$ & ar & err & $h$ & type \\ 
+parameters & $\theta_1$ & $\theta_2$ & $\theta_3$ & ar & MAPE & type \\ 
 \hline \\[-1.8ex] 
-$0.747$ & $0.906$ & $3.070$ & $0.296$ & $0.193$ & $0.100$ & Eulerian \\ \hline
-$0.866$ & $1.300$ & $4.260$ & $0.285$ & $0.168$ & $0.050$ &  \\ 
-$0.892$ & $1.160$ & $4.430$ & $0.254$ & $0.124$ & $0.025$ & DTQ \\ 
-$0.980$ & $1.170$ & $4.210$ & $0.239$ & $0.081$ & $0.0125$ &  \\ \hline
-$1.250$ & $0.257$ & $4.340$ & $0.0003$ & $0.361$ & $0.050$ &  \\ 
-$1.110$ & $0.647$ & $4.060$ & $0.001$ & $0.158$ & $0.025$ & pomp \\ 
-$1.040$ & $0.752$ & $3.940$ & $0.0004$ & $0.102$ & $0.0125$ &  \\ 
+$\Delta t = 0.1; h = 0.1/1$ & $0.747$ & $0.906$ & $3.070$ & $0.296$ & $0.193$ & Euler \\ \hline
+$\Delta t = 0.1; h = 0.1/2$ & $0.866$ & $1.300$ & $4.260$ & $0.285$ & $0.168$ &  \\ 
+$\Delta t = 0.1; h = 0.1/4$ & $0.892$ & $1.160$ & $4.430$ & $0.254$ & $0.124$ & DTQ \\ 
+$\Delta t = 0.1; h = 0.1/8$ & $0.980$ & $1.170$ & $4.210$ & $0.239$ & $0.081$ &  \\ \hline
+$\Delta t = 0.1; h = 0.1/2$ & $1.250$ & $0.257$ & $4.340$ & $0.0003$ & $0.361$ &  \\ 
+$\Delta t = 0.1; h = 0.1/4$ & $1.110$ & $0.647$ & $4.060$ & $0.001$ & $0.158$ & Pomp \\ 
+$\Delta t = 0.1; h = 0.1/8$ & $1.040$ & $0.752$ & $3.940$ & $0.0004$ & $0.102$ &  \\ 
 \hline \\[-1.8ex] 
 \end{tabular} 
-% \caption{Table with comparisons among non-adaptive MCMC runs for the Eulerian method, DTQ method and pomp.} 
+% \caption{Table with comparisons among non-adaptive MCMC runs for the Eulerian method, DTQ method and Pomp.} 
 \end{table} 
 \vspace{-5mm}
-\\
+% \\
 When $h = \Delta t$, only one step of the method described in Section
 \ref{subsec:2-1} is required to go from time $t_m$ to $t_{m+1}$. This
-step is the same as the Euler method and does not use any quadrature at all---one merely evaluates (\ref{eqn:chapman}) using a point mass for the density at time $t_m$. The resulting likelihood function is a product of Gaussians. On the other hand, when $h$ is strictly less than $\Delta t$, we must use quadrature (i.e., the actual DTQ method) to step forward in time from $t_m$ to $t_{m+1}$. Clearly, using the DTQ method to compute the likelihood yields more accurate posteriors than using a purely Gaussian likelihood. In comparison to POMP, our method does slightly better in terms of the means of the posteriors. If we look at the Metropolis samples generated by the 2 methods, our method has radically higher acceptance ratio than POMP. The non-adaptive version of the Metropolis sampling for POMP does not explore the posterior adequately, rejecting a large number of samples. A carefully executed adaptive Metropolis algorithm for POMP, with known MLE values, does generate better results than the non-adaptive version, as shown in Table \ref{tbl:pomp-adaptive}.
+step is the same as the Euler method and does not use any quadrature at all---one merely evaluates (\ref{eqn:chapman}) using a point mass for the density at time $t_m$. The resulting likelihood function is a product of Gaussians. On the other hand, when $h$ is strictly less than $\Delta t$, we must use quadrature (i.e., the actual DTQ method) to step forward in time from $t_m$ to $t_{m+1}$. Clearly, using the DTQ method to compute the likelihood yields more accurate posteriors than using a purely Gaussian likelihood. In comparison to Pomp, our method does slightly better in terms of the means of the posteriors. If we look at the Metropolis samples generated by the 2 methods, our method has radically higher acceptance ratio than Pomp. The non-adaptive version of the Metropolis sampling for Pomp does not explore the posterior adequately, rejecting a large number of samples. A carefully executed adaptive Metropolis algorithm for Pomp, with known MLE values, does generate better results than the non-adaptive version, as shown:
 \vspace{-4mm}
-\setlength{\tabcolsep}{6pt}
+\setlength{\tabcolsep}{8pt}
 \begin{table}[!htbp] \centering 
+% \begin{tabular}{llllllll} 
+% \\[-1.8ex]\hline 
+% \hline \\[-1.8ex] 
+% $\theta_1$ & $\theta_2$ & $\theta_3$ & ar & MRE & h & type \\ 
+% \hline \\[-1.8ex] 
+% $0.960$ & $0.809$ & $4.010$ & $0.110$ & $0.078$ & $0.050$ & \\ 
+% $1.000$ & $0.954$ & $3.990$ & $0.164$ & $0.017$ & $0.025$ & Pomp-adaptive \\ 
+% $1.010$ & $1.010$ & $4.020$ & $0.171$ & $0.009$ & $0.0125$ & \\ 
+% \hline \\[-1.8ex] 
+% \end{tabular} 
+
 \begin{tabular}{llllllll} 
 \\[-1.8ex]\hline 
 \hline \\[-1.8ex] 
-$\theta_1$ & $\theta_2$ & $\theta_3$ & ar & err & h & type \\ 
+parameters & $\theta_1$ & $\theta_2$ & $\theta_3$ & ar & MAPE & type \\ 
 \hline \\[-1.8ex] 
-$0.960$ & $0.809$ & $4.010$ & $0.110$ & $0.078$ & $0.050$ & \\ 
-$1.000$ & $0.954$ & $3.990$ & $0.164$ & $0.017$ & $0.025$ & pomp-adaptive \\ 
-$1.010$ & $1.010$ & $4.020$ & $0.171$ & $0.009$ & $0.0125$ & \\ 
+$\Delta t = 0.1; h = 0.1/2$ & $0.960$ & $0.809$ & $4.010$ & $0.110$ & $0.078$ & \\ 
+$\Delta t = 0.1; h = 0.1/4$ & $1.000$ & $0.954$ & $3.990$ & $0.164$ & $0.017$ & Pomp-adaptive \\ 
+$\Delta t = 0.1; h = 0.1/8$ & $1.010$ & $1.010$ & $4.020$ & $0.171$ & $0.009$ & \\ 
 \hline \\[-1.8ex] 
 \end{tabular} 
-\label{tbl:pomp-adaptive}
-% \caption{Table of results for the adaptive MCMC runs for pomp} 
 \end{table} 
 \vspace{-5mm}
 \\
@@ -336,9 +364,9 @@ In this Bayesian computation, one can either invest effort into
 \item making the likelihood calculation more accurate, efficient and stable to initial choice of parameters
 \item improving the vanilla Metropolis MCMC algorithm in various ways: adaptive MCMC, HMC \cite{gelman2014bayesian}
 \end{itemize}
-The improvement in the acceptance rate and the inferred parameters for POMP, merely by an improvement in the Metropolis algorithm imply that techniques like particle methods spend their effort on the latter part and make do with a relatively inaccurate likelihood function. Alternatively, we take care to compute the likelihood accurately and thereby enable vanilla MCMC algorithms to work.
+The improvement in the acceptance rate and the inferred parameters for Pomp, merely by an improvement in the Metropolis algorithm imply that techniques like particle methods spend their effort on the latter part and make do with a relatively inaccurate likelihood function. Alternatively, we take care to compute the likelihood accurately and thereby enable vanilla MCMC algorithms to work.
 
-To understand this point in more detail, consider a numerical experiment where we compute a grid of ($\theta_2,\theta_3$,log-likelihood) values using both POMP and DTQ methods. If we then rescale the log-likelihood values from both methods so that they achieve a maximum of 0 and then exponentiate, we find that the DTQ likelihood has more reasonable gradients than the POMP likelihood, which varies over 3 orders of magnitude. The Metropolis accept/reject ratio depends on the actual density, i.e., the exponential of the log-likelihood plus the log-prior.  Therefore, the sharp dropoff in the likelihood function away from the maximum---seen in pomp---will cause thousands of consecutive rejected steps. The more gradual dropoff in the DTQ likelihood function leads to a reasonable fraction of accepted steps in a vanilla Metropolis algorithm.
+To understand this point in more detail, consider a numerical experiment where we compute a grid of ($\theta_2,\theta_3$,log-likelihood) values using both Pomp and DTQ methods. If we then rescale the log-likelihood values from both methods so that they achieve a maximum of 0 and then exponentiate, we find that the DTQ likelihood has more reasonable gradients than the Pomp likelihood, which varies over 3 orders of magnitude. The Metropolis accept/reject ratio depends on the actual density, i.e., the exponential of the log-likelihood plus the log-prior.  Therefore, the sharp dropoff in the likelihood function away from the maximum---seen in Pomp---will cause thousands of consecutive rejected steps. The more gradual dropoff in the DTQ likelihood function leads to a reasonable fraction of accepted steps in a vanilla Metropolis algorithm.
 
 Next, we test the method using the pursuit SDE
 (\ref{eqn:pursuitSDE}).  We set the runner's trajectory equal to a
@@ -375,35 +403,36 @@ linear interpolation between times $t_m$ and $t_{m+1}$.  We tabulate
 the results below; each value of $\gamma_1$ represents the mean of
 $e^{\theta_1}$ over all Metropolis samples of $\theta_1$:
 
-\vspace{-4mm}
 \setlength{\tabcolsep}{12pt}
-\begin{center}
-\begin{tabular}{lllll}
+% \begin{center}
+\begin{table}[!htbp] \centering 
+\begin{tabular}{llllll}
 \\[-1.8ex]\hline 
 \hline \\[-1.8ex]
-        parameters & $\gamma_1$ & $\gamma_2$ & $\nu_1$ & $\nu_2$ \\ \hline
- $\Delta t=0.1; h=0.1/1$  &   0.301  &   0.748 & 0.124 & 0.0886 \\ 
-  $\Delta t=0.1; h=0.1/2$  &   0.311  &   0.956 & 0.124 & 0.0858\\ 
-  $\Delta t=0.1; h=0.1/3$  &   0.307  &   1.011 & 0.117 & 0.0805\\
-  $\Delta t=0.1; h=0.1/4$  &   0.308  &   1.025 & 0.120 & 0.0829 \\ \hline
-  $\Delta t=0.2; h=0.2/1$  &   0.306  &   0.650 & 0.142 & 0.1146 \\
-  $\Delta t=0.2; h=0.2/2$  &   0.310  &   0.877 & 0.137 & 0.1197 \\
-  $\Delta t=0.2; h=0.2/3$  &   0.309  &   1.015 & 0.112 & 0.0844 \\
-  $\Delta t=0.2; h=0.2/4$  &   0.304  &   1.019 & 0.111 & 0.0852 \\ \hline
-  $\Delta t=0.4; h=0.4/1$  &   0.292  &   0.514 & 0.188 & 0.2010 \\ 
- $\Delta t=0.4; h=0.4/2$  &   0.312  &   0.960 & 0.177 & 0.1774 \\
- $\Delta t=0.4; h=0.4/3$  &   0.307  &   0.987 & 0.124 & 0.1447 \\
- $\Delta t=0.4; h=0.4/4$  &   0.303  &   1.014 & 0.145 & 0.1130
+Parameters & $\gamma_1$ & $\gamma_2$ & $\nu_1$ & $\nu_2$ & RMSE \\ \hline
+$\Delta t=0.1; h=0.1/1$  &   0.301  &   0.748 & 0.124 & 0.088 & 0.136 \\ 
+$\Delta t=0.1; h=0.1/2$  &   0.311  &   0.956 & 0.124 & 0.085 & 0.051 \\ 
+$\Delta t=0.1; h=0.1/3$  &   0.307  &   1.011 & 0.117 & 0.080 & 0.050 \\
+$\Delta t=0.1; h=0.1/4$  &   0.308  &   1.025 & 0.120 & 0.082 & 0.050 \\ \hline
+$\Delta t=0.2; h=0.2/1$  &   0.306  &   0.650 & 0.142 & 0.114 & 0.181 \\
+$\Delta t=0.2; h=0.2/2$  &   0.310  &   0.877 & 0.137 & 0.119 & 0.077 \\
+$\Delta t=0.2; h=0.2/3$  &   0.309  &   1.015 & 0.112 & 0.084 & 0.050 \\
+$\Delta t=0.2; h=0.2/4$  &   0.304  &   1.019 & 0.111 & 0.085 & 0.053 \\ \hline
+$\Delta t=0.4; h=0.4/1$  &   0.292  &   0.514 & 0.188 & 0.201 & 0.254 \\ 
+$\Delta t=0.4; h=0.4/2$  &   0.312  &   0.960 & 0.177 & 0.177 & 0.063 \\
+$\Delta t=0.4; h=0.4/3$  &   0.307  &   0.987 & 0.124 & 0.144 & 0.053 \\
+$\Delta t=0.4; h=0.4/4$  &   0.303  &   1.014 & 0.145 & 0.113 & 0.049
 \end{tabular}
-\end{center}
+\end{table} 
+% \end{center}
+% \vspace{-4mm}
 
 Overall, the results show that our algorithm produces mean posterior
-estimates that are reasonably close to the ground truth values.  When
-the spacing of the data $\Delta t$ is large, we see greater benefit
-from using the DTQ method.  For instance, when $\Delta t = 0.4$, the
-mean estimates of $\gamma_2$ improve dramatically from $0.514$ to
-$1.014$ as we decrease $h$, i.e., as we take more internal DTQ steps.
-Similar trends can be seen for $\nu_1$ and $\nu_2$.
+estimates that are reasonably close to the ground truth values. When
+the spacing of the data $\Delta t$ is large, we see the results improving drastically from using the DTQ method as opposed to the Gaussian assumption of the Euler method, i.e., the $\Delta t = h$ case. For instance, when $\Delta t = 0.4$, the
+RMS error improves dramatically from $0.254$ to
+$0.049$ as we decrease $h$, i.e., as we take more internal DTQ steps.
+Similar trends can be seen for the mean estimates of $\gamma_2$, $\nu_1$ and $\nu_2$.
 
 \section{NBA Tracking Data}
 We now turn to real tracking data taken from the game played between
