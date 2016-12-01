@@ -27,11 +27,6 @@ Fuchs, C.: Inference for Diffusion Processes: With Applications in Life
   Sciences.
 \newblock Springer, Berlin (2013)
 
-\bibitem{gelman2014bayesian}
-Gelman, A., Carlin, J.B., Stern, H.S., Rubin, D.B.: Bayesian data analysis,
-  vol.~2.
-\newblock Chapman \& Hall/CRC Boca Raton, FL, USA (2014)
-
 \bibitem{iacus2009simulation}
 Iacus, S.M.: Simulation and {I}nference for {S}tochastic {D}ifferential
   {E}quations: {W}ith {R} {E}xamples.
@@ -40,7 +35,7 @@ Iacus, S.M.: Simulation and {I}nference for {S}tochastic {D}ifferential
 \bibitem{king2016statistical}
 King, A.A., Nguyen, D., Ionides, E.L., et~al.: Statistical inference for
   partially observed {M}arkov processes via the {R} package pomp.
-\newblock Journal of Statistical Software \textbf{69}(i12) (2016)
+\newblock Journal of Statistical Software \textbf{69} (2016)
 
 \bibitem{Picchini2014}
 Picchini, U.: Inference for {SDE} models via approximate {B}ayesian

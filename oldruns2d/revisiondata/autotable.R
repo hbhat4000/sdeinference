@@ -37,7 +37,7 @@ for (iii in c(1:length(fnames)))
 {
     load(fnames[iii])
     mymat[iii,9] = myh
-    mymat[iii,1:8] = compstats(mcmcsamples, artrack)
+    mymat[iii,1:8] = compstats(mcmcsamples[1:10000,], artrack)
 }
 
 type = c(rep('pomp',3),rep('pomp-adaptive',3),'Eulerian',rep('DTQ',3))
