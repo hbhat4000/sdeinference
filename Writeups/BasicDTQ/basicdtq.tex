@@ -1,0 +1,94 @@
+\documentclass[a4paper,11pt]{article}\usepackage[]{graphicx}\usepackage[]{color}
+%% maxwidth is the original width if it is less than linewidth
+%% otherwise use linewidth (to make sure the graphics do not exceed the margin)
+\makeatletter
+\def\maxwidth{ %
+  \ifdim\Gin@nat@width>\linewidth
+    \linewidth
+  \else
+    \Gin@nat@width
+  \fi
+}
+\makeatother
+
+\definecolor{fgcolor}{rgb}{0.345, 0.345, 0.345}
+\newcommand{\hlnum}[1]{\textcolor[rgb]{0.686,0.059,0.569}{#1}}%
+\newcommand{\hlstr}[1]{\textcolor[rgb]{0.192,0.494,0.8}{#1}}%
+\newcommand{\hlcom}[1]{\textcolor[rgb]{0.678,0.584,0.686}{\textit{#1}}}%
+\newcommand{\hlopt}[1]{\textcolor[rgb]{0,0,0}{#1}}%
+\newcommand{\hlstd}[1]{\textcolor[rgb]{0.345,0.345,0.345}{#1}}%
+\newcommand{\hlkwa}[1]{\textcolor[rgb]{0.161,0.373,0.58}{\textbf{#1}}}%
+\newcommand{\hlkwb}[1]{\textcolor[rgb]{0.69,0.353,0.396}{#1}}%
+\newcommand{\hlkwc}[1]{\textcolor[rgb]{0.333,0.667,0.333}{#1}}%
+\newcommand{\hlkwd}[1]{\textcolor[rgb]{0.737,0.353,0.396}{\textbf{#1}}}%
+\let\hlipl\hlkwb
+
+\usepackage{framed}
+\makeatletter
+\newenvironment{kframe}{%
+ \def\at@end@of@kframe{}%
+ \ifinner\ifhmode%
+  \def\at@end@of@kframe{\end{minipage}}%
+  \begin{minipage}{\columnwidth}%
+ \fi\fi%
+ \def\FrameCommand##1{\hskip\@totalleftmargin \hskip-\fboxsep
+ \colorbox{shadecolor}{##1}\hskip-\fboxsep
+     % There is no \\@totalrightmargin, so:
+     \hskip-\linewidth \hskip-\@totalleftmargin \hskip\columnwidth}%
+ \MakeFramed {\advance\hsize-\width
+   \@totalleftmargin\z@ \linewidth\hsize
+   \@setminipage}}%
+ {\par\unskip\endMakeFramed%
+ \at@end@of@kframe}
+\makeatother
+
+\definecolor{shadecolor}{rgb}{.97, .97, .97}
+\definecolor{messagecolor}{rgb}{0, 0, 0}
+\definecolor{warningcolor}{rgb}{1, 0, 1}
+\definecolor{errorcolor}{rgb}{1, 0, 0}
+\newenvironment{knitrout}{}{} % an empty environment to be redefined in TeX
+
+\usepackage{alltt}
+
+\usepackage[left=2.5cm,right=2.5cm,top=3cm,bottom=3cm,pdftex]{geometry}
+\usepackage{amssymb, amsmath, url, natbib, float, subcaption, listings,mathtools}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[pdftex]{graphicx}
+
+\DeclareGraphicsExtensions{.png, .pdf, .jpg}
+\usepackage[pdftex, colorlinks, linkcolor=blue, urlcolor=blue, citecolor=blue, pagecolor=blue, breaklinks=true]{hyperref}
+\IfFileExists{upquote.sty}{\usepackage{upquote}}{}
+\begin{document}
+
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlcom{# function to compute the Gaussian for matrix/vector}
+\hlstd{G} \hlkwb{<-} \hlkwa{function}\hlstd{(}\hlkwc{f}\hlstd{,} \hlkwc{g}\hlstd{,} \hlkwc{x}\hlstd{,} \hlkwc{y}\hlstd{,} \hlkwc{h}\hlstd{) \{}
+    \hlkwd{exp}\hlstd{(}\hlopt{-}\hlstd{(x} \hlopt{-} \hlstd{y} \hlopt{-} \hlkwd{f}\hlstd{(y)}\hlopt{*}\hlstd{h)}\hlopt{^}\hlnum{2}\hlopt{/}\hlstd{(}\hlnum{2}\hlopt{*}\hlkwd{g}\hlstd{(y)}\hlopt{^}\hlnum{2}\hlopt{*}\hlstd{h))}\hlopt{/}\hlstd{(}\hlkwd{abs}\hlstd{(}\hlkwd{g}\hlstd{(y))}\hlopt{*}\hlkwd{sqrt}\hlstd{(}\hlnum{2}\hlopt{*}\hlstd{pi}\hlopt{*}\hlstd{h))}
+\hlstd{\}}
+
+\hlstd{dtq} \hlkwb{<-} \hlkwa{function}\hlstd{(}\hlkwc{f}\hlstd{,} \hlkwc{g}\hlstd{,} \hlkwc{h}\hlstd{,} \hlkwc{k}\hlstd{,} \hlkwc{T}\hlstd{,} \hlkwc{L}\hlstd{,} \hlkwc{init}\hlstd{,} \hlkwc{final}\hlstd{) \{}
+    \hlstd{numsteps} \hlkwb{=} \hlkwd{ceiling}\hlstd{(T}\hlopt{/}\hlstd{h)}     \hlcom{# number of DTQ steps}
+    \hlstd{zvec} \hlkwb{=} \hlkwd{seq}\hlstd{(}\hlopt{-}\hlstd{L, L,} \hlkwc{by} \hlstd{= k)}       \hlcom{# grid z}
+
+    \hlcom{# creating the matrix A}
+    \hlstd{zmat} \hlkwb{=} \hlkwd{replicate}\hlstd{(}\hlkwd{length}\hlstd{(zvec), zvec)}
+    \hlstd{A} \hlkwb{=} \hlkwd{G}\hlstd{(f, g, zmat,} \hlkwd{t}\hlstd{(zmat), h)}
+
+    \hlcom{# pdf after first timestep}
+    \hlstd{approxpdf} \hlkwb{=} \hlstd{k} \hlopt{*} \hlstd{(}\hlkwd{as.matrix}\hlstd{(}\hlkwd{G}\hlstd{(f, g, zvec, init, h)))}
+
+    \hlcom{# (n-2) iterative steps}
+    \hlkwa{for} \hlstd{(i} \hlkwa{in} \hlkwd{c}\hlstd{(}\hlnum{2}\hlopt{:}\hlstd{numsteps}\hlopt{-}\hlnum{1}\hlstd{))}
+        \hlstd{approxpdf} \hlkwb{=} \hlstd{k}\hlopt{*}\hlstd{(A} \hlopt{%*%} \hlstd{approxpdf)}
+
+    \hlcom{# pdf at final timestep}
+    \hlstd{approxpdf} \hlkwb{=} \hlstd{k} \hlopt{*} \hlstd{(}\hlkwd{as.matrix}\hlstd{(}\hlkwd{G}\hlstd{(f, g, final, zvec, h)))}
+\hlstd{\}}
+\end{alltt}
+\end{kframe}
+\end{knitrout}
+
+\end{document}

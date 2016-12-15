@@ -1,0 +1,23 @@
+\documentclass[a4paper,11pt]{article}
+
+\usepackage[left=2.5cm,right=2.5cm,top=3cm,bottom=3cm,pdftex]{geometry}
+\usepackage{amssymb, amsmath, url, natbib, float, subcaption, listings,mathtools}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[pdftex]{graphicx}
+
+\DeclareGraphicsExtensions{.png, .pdf, .jpg}
+\usepackage[pdftex, colorlinks, linkcolor=blue, urlcolor=blue, citecolor=blue, pagecolor=blue, breaklinks=true]{hyperref}
+
+\begin{document}
+
+\pagestyle{empty}
+\title{Comparison}
+\begin{center}
+\Large\textbf{CRAN packages comparison} \\[11pt]
+\normalsize
+\end{center}
+
+\section{Comparison with pomp}
+
+\end{document}
