@@ -1,8 +1,9 @@
-\documentclass[10pt]{article}
- 
+\documentclass[12pt]{article}
 \usepackage[margin=1in]{geometry} 
 \usepackage{amsmath,amsthm,amssymb, graphicx, multicol, array, float}
-
+\newcommand{\bx}{\ensuremath{\mathbf{x}}}
+\newcommand{\bz}{\ensuremath{\mathbf{z}}}
+\newcommand{\btheta}{\ensuremath{\boldsymbol{\theta}}}
 \begin{document}
 \vspace*{-15mm}
 \title{em_calc}
@@ -10,5 +11,70 @@
 \Large\textbf{Expectation Maximization calculation for the DTQ method} \\
 \normalsize
 \end{center}
+We consider a parameteric SDE model:
+\begin{equation}
+dX_t = f(X_t; \btheta) dt + g(X_t; \btheta) dW_t
+\end{equation}
+In this model $f(X_t; \btheta)$ is the drift function and $g(X_t; \btheta)$ is the diffusion function. A concrete example of such an SDE is the Ornstein-Uhlenback SDE (linear in nature),
+\begin{equation}
+dX_t = \theta_1 (\theta_2 - X_t) dt + \theta_3 dW_t
+\end{equation}
+We start with the parameter inference problem where we have data available as a time series, denoted by $\bx = (x_0, x_1, \cdots, x_N)$. Since the observed data might be have large inter-observation times, we consider intermediate points which we consider as \textit{missing data points}, denoted by $\bz$. On the interval $[t_i, t_{i+1}]$, we have 2 observed data points, $X_{t_i} = x_i$ and $X_{t_{i+1}} = x_{i+1}$. We consider $F$ missing data points on this interval, denoted by $z_{i,F}$, the first subscript corresponding to the interval and the second subscript for the missing data point on the interval. Thus the missing data on an interval $[t_i, t_{i+1}]$, can be represented as $\bz_i = (z_{i1}, z_{i2}, \cdots, z_{iF})$. The complete data on this interval would thus become $(x_i, z_{i1}, z_{i2}, \cdots, z_{iF}, x_{i+1})$, comprising of the observed data and the unknown missing data that we introduced.
+
+\section{EM algorithm}
+The Expectation-Maximization algorithm consists of 2 steps, computing the expectation of the log likelihood function and maximizing this value with respect to the parameters.
+\begin{enumerate}
+\item Start with an initial guess for the parameter, $\btheta^{(0)}$
+\item For the expectation step,
+\begin{align}
+\label{eqn:expectation}
+Q(\btheta, \btheta^{(k)}) & = \mathbb{E}_{\bz \mid \bx, \btheta^{(k)}} [\log p(\bx, \bz \mid \btheta)] \\
+& = \sum_{\bz} \underbrace{\log p(\bx, \bz \mid \btheta)}_{\text{Part I}} \cdot \underbrace{p(\bz \mid \bx, \btheta^{(k)})}_{\text{Part II}}
+\end{align}
+\item For the maximization step,
+\begin{align}
+\label{eqn:maximization}
+\btheta^{(k+1)} = \arg \max_{\btheta} Q(\btheta, \btheta^{(k)}) 
+\end{align}
+We can either use a numerical optimizer for the optimization step or differentiate the $Q(\btheta, \btheta^{(k)})$ function with respect to $\btheta$ vector and equate it to zero to get the maximal value.
+\item Iterate Step 2 and 3 until convergence.
+\end{enumerate}
+
+\subsection{Computation of the complete log likelihood}
+The first part of the expectation is the complete likelihood, $\log p(\bx, \bz \mid \btheta)$, which can be expanded as,
+\begin{align}
+\label{eqn:loglik}
+\log p(\bx, \bz \mid \btheta) = \log p(x_0 \mid \btheta) & + \underbrace{\sum_{i=0}^{N-1} \log p(z_{i1} \mid x_i, \btheta)}_{(1)} + \underbrace{\sum_{i=0}^{N-1} \sum_{j=1}^{F-1} \log p(z_{i,j+1} \mid z_{ij}, \btheta)}_{(2)} \\ 
+& + \underbrace{\sum_{i=0}^{N-1} \log p(x_{i+1} \mid z_{iF}, \btheta)}_{(3)}
+\end{align}
+The expression can be simplified under the assumption that $F$ is sufficiently large so that we can make an assumption that one-step transition densities in $(1), (2)$ and $(3)$ follow Gaussian distribution.
+
+\subsection{Computation of the density of the missing data points}
+Looking back at the expectation equation (\ref{eqn:expectation}), the expected value if computed by summing over all $\bz$ values which is a nested integral. Since the log likelihood can be expanded in 4 terms, so the density $p(\bz \mid \bx, \btheta^{(k)})$ gets multiplied by each of these terms. Upon summing over all the values of $\bz$, there will be 3 steps of terms remaining, corresponding to the respective terms in the equation (\ref{eqn:loglik}), as described below,
+\begin{enumerate}
+\item Corresponding to term $(1)$, we have the term $p(z_{i1} \mid \bx, \btheta^{(k)})$. Using Bayes theorem we get,
+\begin{align}
+p(z_{i1}, \bx \mid \btheta^{(k)}) = p(z_{i1} \mid \bx, \btheta^{(k)}) \cdot p(\bx \mid \btheta^{(k)})
+\end{align}
+\end{enumerate}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 \end{document}
