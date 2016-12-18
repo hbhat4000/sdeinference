@@ -31,7 +31,7 @@ The Expectation-Maximization algorithm consists of 2 steps, computing the expect
 Q(\btheta, \btheta^{(k)}) & = \mathbb{E}_{\bz \mid \bx, \btheta^{(k)}} [\log p(\bx, \bz \mid \btheta)] \\
 & = \sum_{\bz} \underbrace{\log p(\bx, \bz \mid \btheta)}_{\text{Part I}} \cdot \underbrace{p(\bz \mid \bx, \btheta^{(k)})}_{\text{Part II}}
 \end{align}
-\item For the maximization step,
+\item For the maximization step, we start with the current iterate and a dummy variable $\btheta$, so that the next iterate of the parameters would be the maximal value of $\btheta$
 \begin{align}
 \label{eqn:maximization}
 \btheta^{(k+1)} = \arg \max_{\btheta} Q(\btheta, \btheta^{(k)}) 
@@ -41,25 +41,83 @@ We can either use a numerical optimizer for the optimization step or differentia
 \end{enumerate}
 
 \subsection{Computation of the complete log likelihood}
+\label{sect:loglik}
 The first part of the expectation is the complete likelihood, $\log p(\bx, \bz \mid \btheta)$, which can be expanded as,
 \begin{align}
 \label{eqn:loglik}
-\log p(\bx, \bz \mid \btheta) = \log p(x_0 \mid \btheta) & + \underbrace{\sum_{i=0}^{N-1} \log p(z_{i1} \mid x_i, \btheta)}_{(1)} + \underbrace{\sum_{i=0}^{N-1} \sum_{j=1}^{F-1} \log p(z_{i,j+1} \mid z_{ij}, \btheta)}_{(2)} \\ 
-& + \underbrace{\sum_{i=0}^{N-1} \log p(x_{i+1} \mid z_{iF}, \btheta)}_{(3)}
+\log p(\bx, \bz \mid \btheta) = \log p(x_0 \mid \btheta) & + \underbrace{\sum_{i=0}^{N-1} \log p(z_{i1} \mid x_i, \btheta)}_{(1)} + \underbrace{\sum_{i=0}^{N-1} \sum_{j=1}^{F-1} \log p(z_{i,j+1} \mid z_{ij}, \btheta)}_{(2)} \nonumber \\ 
+& + \underbrace{\sum_{i=0}^{N-1} \log p(x_{i+1} \mid z_{iF}, \btheta)}_{(3)} 
 \end{align}
-The expression can be simplified under the assumption that $F$ is sufficiently large so that we can make an assumption that one-step transition densities in $(1), (2)$ and $(3)$ follow Gaussian distribution.
+The expression can be simplified under the assumption that $F$ is sufficiently large so that we can make an assumption that one-step transition densities in $(1), (2)$ and $(3)$ follow Gaussian distribution. Thus all the terms, $p(z_{i1} \mid x_i, \btheta), p(z_{i,j+1} \mid z_{ij}, \btheta)$ and $p(x_{i+1} \mid z_{iF}, \btheta)$ can be expressed with a Gaussian function
+\begin{align*}
+G(x,y, \btheta) = p(x \mid y, \btheta) = \frac{1}{\sqrt{2 \pi g^2(y, \btheta)h}} \exp \left( - \frac{1}{2 g^2(y, \btheta)h} (x - y - f(y, \btheta)h)^2 \right)
+\end{align*}
 
 \subsection{Computation of the density of the missing data points}
+\label{sect:densz}
 Looking back at the expectation equation (\ref{eqn:expectation}), the expected value if computed by summing over all $\bz$ values which is a nested integral. Since the log likelihood can be expanded in 4 terms, so the density $p(\bz \mid \bx, \btheta^{(k)})$ gets multiplied by each of these terms. Upon summing over all the values of $\bz$, there will be 3 steps of terms remaining, corresponding to the respective terms in the equation (\ref{eqn:loglik}), as described below,
 \begin{enumerate}
 \item Corresponding to term $(1)$, we have the term $p(z_{i1} \mid \bx, \btheta^{(k)})$. Using Bayes theorem we get,
 \begin{align}
-p(z_{i1}, \bx \mid \btheta^{(k)}) = p(z_{i1} \mid \bx, \btheta^{(k)}) \cdot p(\bx \mid \btheta^{(k)})
+\label{eqn:term1}
+p(z_{i1}, \bx \mid \btheta^{(k)}) & = p(z_{i1} \mid \bx, \btheta^{(k)}) \cdot p(\bx \mid \btheta^{(k)}) \\ 
+\implies p(z_{i1} \mid \bx, \btheta^{(k)}) & = \frac{p(z_{i1}, \bx \mid \btheta^{(k)})}{p(\bx \mid \btheta^{(k)})}  = \frac{p(z_{i1}, \bx \mid \btheta^{(k)})}{p(x_0 \mid \btheta^{(k)}) \prod_{j=0}^{N-1} p(x_{j+1} \mid x_{j}, \btheta^{(k)})} \nonumber
+\end{align}
+The numerator for the expression can be expanded using Markov property as,
+\begin{align*}
+& p(z_{i1}, \bx \mid \btheta^{(k)}) = p(z_{i1}, x_0, x_1, \cdots, x_N \mid \btheta^{(k)}) \\
+& = p(x_0 \mid \btheta^{(k)}) \prod_{j = i+1}^{N-1} p(x_{j+1} \mid x_{j}, \btheta^{(k)}) \, p(x_{i+1} \mid z_{i1}, \btheta^{(k)}) \, p(z_{i1} \mid x_i, \btheta^{(k)}) \prod_{j=0}^{i-1} p(x_{j+1} \mid x_{j}, \btheta^{(k)})
+\end{align*}
+
+Substituting the expression for $p(z_{i1}, \bx \mid \btheta^{(k)})$ in equation (\ref{eqn:term1}) and expanding the denominator using Markov property in a similar way gives,
+\begin{align}
+p(z_{i1}, \bx \mid \btheta^{(k)}) = \frac{p(x_{i+1} \mid z_{i1}, \btheta^{(k)}) \, p(z_{i1} \mid x_i, \btheta^{(k)})}{p(x_{i+1} \mid x_{i}, \btheta^{(k)})}
+\end{align}
+\item Corresponding to the $F$ internal steps represented by term (2), we have the terms $p(z_{i,j+1}, z_{ij} \mid \bx, \btheta^{(k)})$. We again use Bayes theorem in a similar way as before to get,
+\begin{align}
+p(z_{i,j+1}, z_{ij} \mid \bx, \btheta^{(k)}) = \frac{p(z_{i,j+1}, z_{ij}, \bx \mid \btheta^{(k)})}{p(x_0 \mid \btheta^{(k)}) \prod_{j=0}^{N-1} p(x_{j+1} \mid x_{j}, \btheta^{(k)})}
+\end{align}
+The numerator can be expanded using Markov property as follows,
+\begin{align}
+p(z_{i,j+1}, z_{ij}, \bx \mid \btheta^{(k)}) = p(x_0 \mid \btheta^{(k)}) & \prod_{j=0}^{i-1} p(x_{j+1} \mid x_j, \btheta^{(k)}) \cdot p(z_{ij} \mid x_i, \btheta^{(k)}) \cdot p(z_{i,j+1} \mid z_{ij}, \btheta^{(k)}) \nonumber \\
+& \cdot p(x_{i+1} \mid z_{i,j+1}, \btheta^{(k)}) \prod_{j=1}^{N-1} p(x_{j+1} \mid x_{j}, \btheta^{(k)}) \end{align}
+\begin{align}
+\implies p(z_{i,j+1}, z_{ij} \mid \bx, \btheta^{(k)}) = \frac{p \, (z_{ij} \mid x_i, \btheta^{(k)}) \, p \, (z_{i,j+1} \mid z_{ij}, \btheta^{(k)}) \, p \, (x_{i+1} \mid z_{i,j+1}, \btheta^{(k)})}{p \, (x_{i+1} \mid x_{i}, \btheta^{(k)})}
+\end{align}
+\item The last term (3) has the corresponding term $p(z_{iF} \mid \bx, \btheta^{(k)})$, similar to the first term,
+\begin{align}
+p(z_{iF} \mid \bx, \btheta^{(k)}) = \frac{p(x_{i+1} \mid z_{iF}, \btheta^{(k)}) \, p(z_{iF} \mid x_{i}, \btheta^{(k)})}{p(x_{i+1} \mid x_{i}, \btheta^{(k)})}
 \end{align}
 \end{enumerate}
 
+\subsection{Expectation Step}
+Combining the terms from Section \ref{sect:loglik} and Section \ref{sect:densz}, we can form a complete expression for the expectation. Going back to Section \ref{sect:loglik}, we recall that the transition densities can be assumed to be Gaussian for sufficiently large enough $F$. Thus, the expectation expression can be rewritten as,
+\begin{align}
+Q(\btheta, \btheta^{(k)}) = \log p(x_0 \mid \btheta) & + \sum_{i=0}^{N-1} \log G(z_{i1}, x_i, \btheta) \cdot p(z_{i1} \mid \bx, \btheta^{(k)}) \nonumber \\
+& + \sum_{i=0}^{N-1} \sum_{j=1}^{F-1} \log G(z_{i,j+1}, z_{ij}, \btheta) \cdot p(z_{i,j+1}, z_{ij} \mid \bx, \btheta^{(k)}) \nonumber \\
+& + \sum_{i=0}^{N-1} \log G(x_{i+1}, z_{iF}, \btheta) \cdot p(z_{iF} \mid \bx, \btheta^{(k)})
+\end{align}
 
+\subsection{Maximization Step}
+For the maximization step, there are 2 ways to maximize $Q(\btheta, \btheta^{(k)})$, either through numerical optimizers or through equating the derivative with respect to the parameters to zero and using a root-finding solver if required.
 
+Since both these methods require the gradient of $Q(\btheta, \btheta^{(k)})$ so we specify the gradients below. The derivative of $Q(\btheta, \btheta^{(k)})$ with respect to the $\btheta$ parameters would then be,
+\begin{align*}
+0 = \frac{\partial Q(\btheta, \btheta^{(k)})}{\partial \theta_{\ell}} = \frac{p'(x_0 \mid \btheta)}{p(x_0 \mid \btheta)} & + \sum_{i=0}^{N-1} \frac{H_{\ell}(z_{i1}, x_i, \btheta)}{G(z_{i1}, x_i, \btheta)} \cdot p(z_{i1} \mid x_i, \btheta^{(k)}) \\
+& + \sum_{i=0}^{N-1} \sum_{j=1}^{F-1} \frac{H_{\ell}(z_{i,j+1}, z_{ij}, \btheta)}{G(z_{i,j+1}, z_{ij}, \btheta)} \cdot p(z_{i,j+1}, z_{ij} \mid \bx, \btheta^{(k)}) \nonumber \\
+& + \sum_{i=0}^{N-1} \frac{H_{\ell}(x_{i+1}, z_{iF}, \btheta)}{G(x_{i+1}, z_{iF}, \btheta)} \cdot p(z_{iF} \mid \bx, \btheta^{(k)})
+\end{align*}
+where, $$H_{\ell}(x,y,\btheta) = \frac{\partial G(x,y,\btheta)}{\partial \theta_{\ell}} = \frac{\partial G}{\partial f}\cdot \frac{\partial f}{\partial \theta_{\ell}} + \frac{\partial G}{\partial g} \cdot \frac{\partial g}{\partial \theta_{\ell}} $$
+\begin{enumerate}
+\item With respect to $\theta_1$, $\theta_2$
+\begin{align*}
+\frac{H_{1}}{G}(x,y,\btheta) = \frac{\partial f}{\partial \theta_1} \left[ \frac{(x - y - f(y)h)}{g^2(y)} \right], \frac{H_{2}}{G}(x,y,\btheta) = \frac{\partial f}{\partial \theta_2} \left[ \frac{(x - y - f(y)h)}{g^2(y)} \right]
+\end{align*}
+\item With respect to $\theta_3$
+\begin{align*}
+\frac{H_{3}}{G}(x,y,\btheta) = \frac{\partial g}{\partial \theta_3} \left[ \frac{(x - y - f(y)h)^2}{h g^3(y)} - \frac{1}{g(y)} \right]
+\end{align*}
+\end{enumerate}
 
 
 
