@@ -25,7 +25,7 @@ difffun1 <- function(c0, y)
 
 source('integrandmat.R')
 
-cdt <- function(c0, h, k, bigm, littlet, data)
+dtq <- function(c0, h, k, bigm, littlet, data)
 {
     numsteps = ceiling(littlet/h)
     xvec = c((-bigm):bigm)*k

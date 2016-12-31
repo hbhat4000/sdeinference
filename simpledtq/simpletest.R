@@ -1,7 +1,7 @@
 rm(list = ls(all = TRUE))
 
 # load data
-load('doublewell.RData')
+# load('doublewell.RData')
 
 # load necessary functions
 source('dtq.R')
@@ -12,13 +12,24 @@ mybigm = ceiling(pi/(myk^1.5))
 nsamples = 10000
 thetamat = matrix(nrow=(nsamples+1),ncol=3)
 
-source('mcmcstuff.R')
+# source('mcmcstuff.R')
+# define log prior
+logprior <- function(z)
+{
+  return(sum(dnorm(x = z, mean = 0, sd = 100, log = TRUE)))
+}
+thetamat[1,] = c(1,1,1)
+
+propZ <- function(n)
+{
+  return(rnorm(n, sd = 0.025))
+}
 
 loglik = numeric(length=(nsamples+1))
 logpost = numeric(length=(nsamples+1))
 ar = numeric(length=nsamples)
 
-rawlik = cdt(thetamat[1,],h=myh,k=myk,bigm=mybigm,littlet=1,data=xtraj)
+rawlik = dtq(thetamat[1,],h=myh,k=myk,bigm=mybigm,littlet=1,data=xtraj)
 rawlik[rawlik <= 2.2e-16] = 0
 loglik[1] = sum(log(rawlik))
 logpost[1] = loglik[1] + logprior(thetamat[1,])
@@ -27,7 +38,7 @@ logpost[1] = loglik[1] + logprior(thetamat[1,])
 for (i in c(1:nsamples))
 {
   thetastar = thetamat[i,] + propZ(n=1)
-  rawlik = cdt(thetastar,h=myh,k=myk,bigm=mybigm,littlet=1,data=xtraj)
+  rawlik = dtq(thetastar,h=myh,k=myk,bigm=mybigm,littlet=1,data=xtraj)
   rawlik[rawlik <= 2.2e-16] = 0
   thisloglik = sum(log(rawlik))
   thislogpost = thisloglik + logprior(thetastar)
@@ -47,7 +58,3 @@ for (i in c(1:nsamples))
   }
   print(mean(ar[1:i]))
 }
-
-save.image(file="dtqresults.RData")
-
-
