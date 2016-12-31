@@ -10,7 +10,7 @@ g <- function(theta, x)
 
 integrandmat <- function(x, y, h, f, g, theta)
 {
-  return(exp(-(x - y - f(theta,y)*h)^2/(2*g(theta,y)^2*h))/(abs(g(theta, y))*sqrt(2*pi*h)))
+  return(exp(-(x - y - f(theta, y)*h)^2/(2*g(theta, y)^2*h))/(abs(g(theta, y))*sqrt(2*pi*h)))
 }
 
 # front propagation from x_{i} to x_{i+1}

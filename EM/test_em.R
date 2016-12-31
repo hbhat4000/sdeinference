@@ -4,6 +4,7 @@ xtraj = matrix(nrow = 1, ncol = 2)
 xtraj[1,] = seq(from = 2, to = 3, by = 1)
 # load necessary functions
 source('dtq_main.R')
+source('Dtheta.R')
 
 h = 0.2
 k = 0.1
