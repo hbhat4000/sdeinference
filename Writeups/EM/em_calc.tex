@@ -93,9 +93,9 @@ p(z_{iF} \mid \bx, \btheta^{(k)}) = \frac{p(x_{i+1} \mid z_{iF}, \btheta^{(k)}) 
 \subsection{Expectation Step}
 Combining the terms from Section \ref{sect:loglik} and Section \ref{sect:densz}, we can form a complete expression for the expectation. Going back to Section \ref{sect:loglik}, we recall that the transition densities can be assumed to be Gaussian for sufficiently large enough $F$. Thus, the expectation expression can be rewritten as,
 \begin{align}
-Q(\btheta, \btheta^{(k)}) = \log p(x_0 \mid \btheta) & + \sum_{i=0}^{N-1} \log G(z_{i1}, x_i, \btheta) \cdot p(z_{i1} \mid \bx, \btheta^{(k)}) \nonumber \\
+Q(\btheta, \btheta^{(k)}) = \sum_{\bz} \Big \{ \log p(x_0 \mid \btheta) & + \sum_{i=0}^{N-1} \log G(z_{i1}, x_i, \btheta) \cdot p(z_{i1} \mid \bx, \btheta^{(k)}) \nonumber \\
 & + \sum_{i=0}^{N-1} \sum_{j=1}^{F-1} \log G(z_{i,j+1}, z_{ij}, \btheta) \cdot p(z_{i,j+1}, z_{ij} \mid \bx, \btheta^{(k)}) \nonumber \\
-& + \sum_{i=0}^{N-1} \log G(x_{i+1}, z_{iF}, \btheta) \cdot p(z_{iF} \mid \bx, \btheta^{(k)})
+& + \sum_{i=0}^{N-1} \log G(x_{i+1}, z_{iF}, \btheta) \cdot p(z_{iF} \mid \bx, \btheta^{(k)}) \Big \}
 \end{align}
 
 \subsection{Maximization Step}
@@ -119,6 +119,15 @@ where, $$H_{\ell}(x,y,\btheta) = \frac{\partial G(x,y,\btheta)}{\partial \theta_
 \end{align*}
 \end{enumerate}
 
+\subsection{Summary of terms that need to be computed}
+\begin{enumerate}
+\item $p(x_{i+1} \mid z_{i1}, \btheta^{(k)}) \cdot p(z_{i1} \mid x_{i}, \btheta^{(k)})$
+\item $p(z_{ij} \mid x_i, \btheta^{(k)}) \cdot p(z_{i, j+1} \mid z_{ij}, \btheta^{(k)}) \cdot p(x_{i+1} \mid z_{i,j+1}, \btheta^{(k)})$
+\item $p(x_{i+1} \mid z_{iF}, \btheta^{(k)}) \cdot p(z_{iF} \mid x_{i}, \btheta^{(k)})$
+\item $p(x_{i+1} \mid x_{i}, \btheta^{(k)})$ - the complete DTQ computation
+\item $\partial G/\partial f, \partial G/\partial g$ - computed in Dtheta function
+\item $\partial f/\partial \theta_1, \partial f/\partial \theta_2, \partial g/\partial \theta_3$ - computed in Dtheta function
+\end{enumerate}
 
 
 
