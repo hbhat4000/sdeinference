@@ -6,22 +6,42 @@ xtraj[1,] = seq(from = 2, to = 3, by = 1)
 source('dtq_main.R')
 source('Dtheta.R')
 
-h = 0.2
+h = 0.5
 k = 0.1
 M = 20
+deltat = 1
+numsteps = ceiling(deltat/h)
 theta = c(1, 1, 1)
 init = xtraj[1,1]
 final = xtraj[1,2]
-completelik_front = dtq_complete_front(theta, h, k, M, 1, init, final)
-completelik_back = dtq_complete_back(theta, h, k, M, 1, init, final)
 
-print(c(completelik_front, completelik_back))
+if(numsteps >= 1)
+{
+  completelik_front = dtq_complete_front(theta, h, k, M, numsteps, init, final)
+  completelik_back = dtq_complete_back(theta, h, k, M, numsteps, init, final)
+  # print(c(completelik_front, completelik_back))
+}
 
-firststeplik_front = dtq_firststep_back(theta, h, k, M, 1, init, final)
-firststeplik_back = dtq_firststep_front(theta, h, k, M, 1, init, final)
-
-print(c(firststeplik_front, firststeplik_back))
-
+if(numsteps >= 2)
+{
+  # first step should be equal to the last step if 2 steps
+  firststeplik_front = dtq_firststep_back(theta, h, k, M, numsteps, init, final)
+  firststeplik_back = dtq_firststep_front(theta, h, k, M, numsteps, init, final)
+  # print(c(firststeplik_front, firststeplik_back))
+  
+  laststeplik_front = dtq_laststep_back(theta, h, k, M, numsteps, init, final)
+  laststeplik_back = dtq_laststep_front(theta, h, k, M, numsteps, init, final)
+  # print(c(laststeplik_front, laststeplik_back))
+}
+# 
+# if(numsteps >= 3)
+# {
+#   internallik_front = dtq_internal_back(theta, h, k, M, numsteps, init, final)
+#   internallik_back = dtq_internal_front(theta, h, k, M, numsteps, init, final)
+#   print(c(internallik_front, internallik_back))
+# }
+  
+  
 # nsamples = 10
 # thetamat = matrix(nrow = (nsamples + 1), ncol = 3)
 # # define log prior
