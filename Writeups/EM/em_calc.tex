@@ -8,21 +8,21 @@
 \vspace*{-15mm}
 \title{em_calc}
 \begin{center}
-\Large\textbf{Expectation Maximization calculation for the DTQ method} \\
+\Large\textbf{Expectation Maximization for the DTQ method} \\
 \normalsize
 \end{center}
 We consider a parameteric SDE model:
 \begin{equation}
 dX_t = f(X_t; \btheta) dt + g(X_t; \btheta) dW_t
 \end{equation}
-In this model $f(X_t; \btheta)$ is the drift function and $g(X_t; \btheta)$ is the diffusion function. A concrete example of such an SDE is the Ornstein-Uhlenback SDE (linear in nature),
+In this model, $f(X_t; \btheta)$ is the drift function and $g(X_t; \btheta)$ is the diffusion function.  A concrete example of such an SDE is the Ornstein-Uhlenbeck SDE,
 \begin{equation}
-dX_t = \theta_1 (\theta_2 - X_t) dt + \theta_3 dW_t
+dX_t = \theta_1 (\theta_2 - X_t) dt + \theta_3 dW_t.
 \end{equation}
-We start with the parameter inference problem where we have data available as a time series, denoted by $\bx = (x_0, x_1, \cdots, x_N)$. Since the observed data might be have large inter-observation times, we consider intermediate points which we consider as \textit{missing data points}, denoted by $\bz$. On the interval $[t_i, t_{i+1}]$, we have 2 observed data points, $X_{t_i} = x_i$ and $X_{t_{i+1}} = x_{i+1}$. We consider $F$ missing data points on this interval, denoted by $z_{i,F}$, the first subscript corresponding to the interval and the second subscript for the missing data point on the interval. Thus the missing data on an interval $[t_i, t_{i+1}]$, can be represented as $\bz_i = (z_{i1}, z_{i2}, \cdots, z_{iF})$. The complete data on this interval would thus become $(x_i, z_{i1}, z_{i2}, \cdots, z_{iF}, x_{i+1})$, comprising of the observed data and the unknown missing data that we introduced.
+We start with the parameter inference problem where we have data available as a time series, denoted by $\bx = (x_0, x_1, \ldots, x_N)$. Suppose the observed data has large inter-observation times.  Then we consider observations at intermediate times as \textit{missing data points}, denoted by $\bz$. On the interval $[t_i, t_{i+1}]$, we have two observed data points, $X_{t_i} = x_i$ and $X_{t_{i+1}} = x_{i+1}$. We consider $F$ missing data points on this interval, denoted by $z_{i,F}$, the first subscript corresponding to the interval and the second subscript for the missing data point on the interval. Thus the missing data on an interval $[t_i, t_{i+1}]$, can be represented as $\bz_i = (z_{i1}, z_{i2}, \ldots, z_{iF})$. The complete data on this interval would thus become $(x_i, z_{i1}, z_{i2}, \ldots, z_{iF}, x_{i+1})$, comprising the observed data and the unknown missing data that we introduced.
 
 \section{EM algorithm}
-The Expectation-Maximization algorithm consists of 2 steps, computing the expectation of the log likelihood function and maximizing this value with respect to the parameters.
+The Expectation-Maximization algorithm consists of two steps, computing the expectation of the log likelihood function and maximizing this value with respect to the parameters.
 \begin{enumerate}
 \item Start with an initial guess for the parameter, $\btheta^{(0)}$
 \item For the expectation step,
@@ -31,6 +31,7 @@ The Expectation-Maximization algorithm consists of 2 steps, computing the expect
 Q(\btheta, \btheta^{(k)}) & = \mathbb{E}_{\bz \mid \bx, \btheta^{(k)}} [\log p(\bx, \bz \mid \btheta)] \\
 & = \sum_{\bz} \underbrace{\log p(\bx, \bz \mid \btheta)}_{\text{Part I}} \cdot \underbrace{p(\bz \mid \bx, \btheta^{(k)})}_{\text{Part II}}
 \end{align}
+In the above expression and in what follows, we use $\sum_{\bz}$ to stand for either summation or integration over the random vector $\bz$, depending on whether $\bz$ is discrete or continuous, respectively.
 \item For the maximization step, we start with the current iterate and a dummy variable $\btheta$, so that the next iterate of the parameters would be the maximal value of $\btheta$
 \begin{align}
 \label{eqn:maximization}
@@ -39,6 +40,61 @@ Q(\btheta, \btheta^{(k)}) & = \mathbb{E}_{\bz \mid \bx, \btheta^{(k)}} [\log p(\
 We can either use a numerical optimizer for the optimization step or differentiate the $Q(\btheta, \btheta^{(k)})$ function with respect to $\btheta$ vector and equate it to zero to get the maximal value.
 \item Iterate Step 2 and 3 until convergence.
 \end{enumerate}
+
+\subsection{Why does this work?}
+\label{sect:why}
+We begin with
+$$
+p(\bx, \bz \mid \btheta) = p(\bz \mid \bx, \btheta) p(\bx \mid \btheta).
+$$
+This is an identity, valid by the laws of probability.  If we assume 
+$p(\bz \mid \bx, \btheta) \neq 0$, then we can divide both sides by the
+same and then take the log of both sides to arrive at
+$$
+\log p(\bx \mid \btheta) = \log p(\bx, \bz \mid \btheta) - \log p(\bz \mid \bx, \btheta).
+$$
+We now multiple both sides by the density $p(\bz \mid \bx , \btheta^{(k)})$ and sum over $\bz$---this is the same as computing, on both sides, the conditional expectation of $\bz$ given $\bx$ and $\btheta^{(k)}$.  The result is
+$$
+\log p(\bx \mid \btheta) = \sum_{\bz} \log p(\bx, \bz \mid \btheta) p(\bz \mid \bx , \btheta^{(k)}) - \sum_{\bz} \log p(\bz \mid \bx, \btheta) p(\bz \mid \bx , \btheta^{(k)}).
+$$
+Let us define
+$$
+H(\btheta \mid \btheta^{(k)}) = - \sum_{\bz} \log p(\bz \mid \bx, \btheta) p(\bz \mid \bx , \btheta^{(k)}).
+$$
+Then we have
+$$
+\log p(\bx \mid \btheta) = Q(\btheta \mid \btheta^{(k)}) + H(\btheta \mid \btheta^{(k)}).
+$$
+If we insert $\btheta = \btheta^{(k)}$ into this last equation, we obtain
+$$
+\log p(\bx \mid \btheta^{(k)}) = Q(\btheta^{(k)} \mid \btheta^{(k)}) + H(\btheta^{(k)} \mid \btheta^{(k)}).
+$$
+Now we subtract the last equation from the previous one to obtain
+$$
+\log p(\bx \mid \btheta) - \log p(\bx \mid \btheta^{(k)}) = Q(\btheta \mid \btheta^{(k)}) - Q(\btheta^{(k)} \mid \btheta^{(k)}) + H(\btheta \mid \btheta^{(k)}) - H(\btheta^{(k)} \mid \btheta^{(k)}).
+$$
+Let $a = p(\bz \mid \bx, \btheta^{(k)})$ and $b = p(\bz \mid \bx, \btheta)$.  Then we have
+\begin{align*}
+H(\btheta \mid \btheta^{(k)}) - H(\btheta^{(k)} \mid \btheta^{(k)}) &= \sum_{\bz} a \log a - a \log b \\
+ &= - \sum_{\bz} a \log \frac{b}{a} = \mathbb{E}_a[\phi(b/a)] \\
+ &\geq -\log \sum_{\bz} a \cdot \frac{b}{a} = \phi(\mathbb{E}_a[b/a]) \\
+ &\geq -\log \sum_{\bz} b = -\log 1 = 0.
+\end{align*}
+The inequality above is Jensen's inequality applied to the convex function $\phi(x) = -\log x$.  The overall inequality for generic densities $a$ and $b$ is often called Gibbs' inequality.
+
+With this fact, we have
+$$
+\log p(\bx \mid \btheta) - \log p(\bx \mid \btheta^{(k)}) \geq Q(\btheta \mid \btheta^{(k)}) - Q(\btheta^{(k)} \mid \btheta^{(k)}) 
+$$
+Now as long as we choose $\btheta$ such that
+$$
+Q(\btheta \mid \btheta^{(k)}) \geq Q(\btheta^{(k)} \mid \btheta^{(k)}),
+$$
+then we are guaranteed that
+$$
+\log p(\bx \mid \btheta) \geq \log p(\bx \mid \btheta^{(k)}).
+$$
+In words, what this says is that if $\btheta$ improves the value of the $Q$ function, then the same $\btheta$ improves the value of the (incomplete) log likelihood function as well.
 
 \subsection{Computation of the complete log likelihood}
 \label{sect:loglik}
