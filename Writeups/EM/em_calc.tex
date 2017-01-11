@@ -115,22 +115,25 @@ G(x,y, \btheta) = p(x \mid y, \btheta) = \frac{1}{\sqrt{2 \pi g^2(y, \btheta)h}}
 \label{sect:densz}
 Looking back at the expectation equation (\ref{eqn:expectation}), the expected value if computed by summing over all $\bz$ values which is a nested integral. Since the log likelihood can be expanded in 4 terms, so the density $p(\bz \mid \bx, \btheta^{(k)})$ gets multiplied by each of these terms. Upon summing over all the values of $\bz$, there will be 3 steps of terms remaining, corresponding to the respective terms in the equation (\ref{eqn:loglik}), as described below,
 \begin{enumerate}
-\item Corresponding to term $(1)$, we have the term $p(z_{i1} \mid \bx, \btheta^{(k)})$. Using Bayes theorem we get,
-\begin{align}
+\item Corresponding to term $(1)$, we have the term $p(z_{i1} \mid \bx, \btheta^{(k)})$. Using Bayes' theorem, we get
+\begin{equation}
+\label{eqn:term01}
+p(z_{i1}, \bx \mid \btheta^{(k)}) = p(z_{i1} \mid \bx, \btheta^{(k)}) \cdot p(\bx \mid \btheta^{(k)}).
+\end{equation}
+This implies
+\begin{equation}
 \label{eqn:term1}
-p(z_{i1}, \bx \mid \btheta^{(k)}) & = p(z_{i1} \mid \bx, \btheta^{(k)}) \cdot p(\bx \mid \btheta^{(k)}) \\ 
-\implies p(z_{i1} \mid \bx, \btheta^{(k)}) & = \frac{p(z_{i1}, \bx \mid \btheta^{(k)})}{p(\bx \mid \btheta^{(k)})}  = \frac{p(z_{i1}, \bx \mid \btheta^{(k)})}{p(x_0 \mid \btheta^{(k)}) \prod_{j=0}^{N-1} p(x_{j+1} \mid x_{j}, \btheta^{(k)})} \nonumber
-\end{align}
-The numerator for the expression can be expanded using Markov property as,
+ p(z_{i1} \mid \bx, \btheta^{(k)}) = \frac{p(z_{i1}, \bx \mid \btheta^{(k)})}{p(\bx \mid \btheta^{(k)})}  = \frac{p(z_{i1}, \bx \mid \btheta^{(k)})}{p(x_0 \mid \btheta^{(k)}) \prod_{j=0}^{N-1} p(x_{j+1} \mid x_{j}, \btheta^{(k)})} 
+\end{equation}
+The numerator can be expanded using the Markov property:
 \begin{align*}
 & p(z_{i1}, \bx \mid \btheta^{(k)}) = p(z_{i1}, x_0, x_1, \cdots, x_N \mid \btheta^{(k)}) \\
 & = p(x_0 \mid \btheta^{(k)}) \prod_{j = i+1}^{N-1} p(x_{j+1} \mid x_{j}, \btheta^{(k)}) \, p(x_{i+1} \mid z_{i1}, \btheta^{(k)}) \, p(z_{i1} \mid x_i, \btheta^{(k)}) \prod_{j=0}^{i-1} p(x_{j+1} \mid x_{j}, \btheta^{(k)})
 \end{align*}
-
-Substituting the expression for $p(z_{i1}, \bx \mid \btheta^{(k)})$ in equation (\ref{eqn:term1}) and expanding the denominator using Markov property in a similar way gives,
-\begin{align}
-p(z_{i1}, \bx \mid \btheta^{(k)}) = \frac{p(x_{i+1} \mid z_{i1}, \btheta^{(k)}) \, p(z_{i1} \mid x_i, \btheta^{(k)})}{p(x_{i+1} \mid x_{i}, \btheta^{(k)})}
-\end{align}
+Substituting this expansion into (\ref{eqn:term1}), we obtain
+\begin{equation*}
+p(z_{i1}\mid \bx, \btheta^{(k)}) = \frac{p(x_{i+1} \mid z_{i1}, \btheta^{(k)}) \, p(z_{i1} \mid x_i, \btheta^{(k)})}{p(x_{i+1} \mid x_{i}, \btheta^{(k)})}
+\end{equation*}
 \item Corresponding to the $F$ internal steps represented by term (2), we have the terms $p(z_{i,j+1}, z_{ij} \mid \bx, \btheta^{(k)})$. We again use Bayes theorem in a similar way as before to get,
 \begin{align}
 p(z_{i,j+1}, z_{ij} \mid \bx, \btheta^{(k)}) = \frac{p(z_{i,j+1}, z_{ij}, \bx \mid \btheta^{(k)})}{p(x_0 \mid \btheta^{(k)}) \prod_{j=0}^{N-1} p(x_{j+1} \mid x_{j}, \btheta^{(k)})}
@@ -194,9 +197,17 @@ To be perfectly clear, the $j$-th column of $A$ is the $(2M+1) \times 1$ column 
 $$
 G^h_{\btheta}( \mathbf{z}, j \Delta x)
 $$
-obtained by evaluating $G^h_{\btheta}( a \Delta x, j \Delta x)$ for each value of $a \in \{-M, \ldots, M\}$.  Now that we have the $A$ matrix, we can write
+obtained by evaluating $G^h_{\btheta}( a \Delta x, j \Delta x)$ for each value of $a \in \{-M, \ldots, M\}$.  At this point, we  recognize that$$
+A_{ab} = G^h_{\btheta} ( a \Delta x, b \Delta x),
 $$
-p(x_{i+1} \mid z_{i,j+1}, \btheta^{(k)}) \approx \bGamma^i K^{F - (j+2)} A.
+implying that
+$$
+A = (\Delta x)^{-1} K.
+$$
+Now that we have the $A$ matrix, we can write
+$$
+p(x_{i+1} \mid z_{i,j+1}, \btheta^{(k)}) \approx \bGamma^i K^{F - (j+2)} A 
+= (\Delta x)^{-1} \bGamma^i  K^{F - (j + 1)}.
 $$
 To compute the quantity on the right-hand side, we start with the row vector $\bGamma^i$.  We repeatedly multiply on the right by the matrix $K$.  Finally, we multiply on the right by the matrix $A$.
 
@@ -204,6 +215,20 @@ Note that we need $1$ step to get from $z_{i,j+1}$ to $z_{i,j+2}$, $F-(j+2)$ ste
 
 \paragraph{Important Point.} In the expressions we have given for $\bGamma^i$, $\bLambda^i$, $K$, and $A$, we have not specified the actual value to use for the parameter vector $\btheta$.  This is to be determined by context.  If we are conditioning on $\btheta^{(k)}$, then we should use $\btheta = \btheta^{(k)}$ consistently in $\bGamma^i$, $\bLambda^i$, $K$, and $A$.
 
+\paragraph{Self-Consistency.} Let us examine the self-consistency of our derivations.  Using the laws of probability and the Markov property, we can write
+$$
+p(x_{i+1} \mid x_i, \btheta^{(k)}) = \int_{z_{ij}} p(x_{i+1} \mid z_{ij}, \btheta^{(k)}) p( z_{ij} \mid x_i, \btheta^{(k)} ) \, dz_{ij}.
+$$
+Suppose we now insert all of the approximations we have derived.  The integral becomes a summation and we replace $dz_{ij}$ with $\Delta x$.  On the right-hand side, we obtain the approximation
+$$
+(\Delta x)^{-1} \bGamma^i K^{F - j} \cdot K^{j-1} \bLambda^i \cdot \Delta x = 
+\bGamma^i K^{F-1} \bLambda^i,
+$$
+which is exactly identical to our approximation of the left-hand side.  Hence our method is self-consistent.  One consequence of this is that densities such as
+$$
+p(z_{ij} \mid \mathbf{x}, \btheta^{(k)})
+$$
+computed using our method will be correctly normalized.
 
 \subsection{Expectation Step}
 Combining the terms from Section \ref{sect:loglik} and Section \ref{sect:densz}, we can form a complete expression for the expectation. Going back to Section \ref{sect:loglik}, we recall that the transition densities can be assumed to be Gaussian for sufficiently large enough $F$. Thus, the expectation expression can be rewritten as,
