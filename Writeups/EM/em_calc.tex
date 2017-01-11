@@ -4,6 +4,8 @@
 \newcommand{\bx}{\ensuremath{\mathbf{x}}}
 \newcommand{\bz}{\ensuremath{\mathbf{z}}}
 \newcommand{\btheta}{\ensuremath{\boldsymbol{\theta}}}
+\newcommand{\bLambda}{\ensuremath{\boldsymbol{\Lambda}}}
+\newcommand{\bGamma}{\ensuremath{\boldsymbol{\Gamma}}}
 \begin{document}
 \vspace*{-15mm}
 \title{em_calc}
@@ -145,6 +147,63 @@ p(z_{i,j+1}, z_{ij}, \bx \mid \btheta^{(k)}) = p(x_0 \mid \btheta^{(k)}) & \prod
 p(z_{iF} \mid \bx, \btheta^{(k)}) = \frac{p(x_{i+1} \mid z_{iF}, \btheta^{(k)}) \, p(z_{iF} \mid x_{i}, \btheta^{(k)})}{p(x_{i+1} \mid x_{i}, \btheta^{(k)})}
 \end{align}
 \end{enumerate}
+
+\subsection{DTQ Computations}
+Now for the part where we explain how the DTQ method enables us to calculate the terms above.  We focus on two terms in particular.  In what follows, we will need several definitions.  Let $\Delta x > 0$ denote the spatial grid spacing. Then the spatial grid is defined by $y_j = j \Delta x$ for $j = -M, \ldots, M$.  In this scheme, there are $2M+1$ grid points.  Let
+$$
+G^h_{\btheta}(x,y) = \frac{1}{\sqrt{2 \pi g^2(y; \btheta) h}} \exp \left( -\frac{ x - y - f(y;\btheta) h}{2 g^2(y; \btheta) h} \right).
+$$
+This gives rise to the $(2M+1) \times (2M+1)$ matrix $K$ where
+$$
+K_{ab} = (\Delta x) G^h_{\btheta}(a \Delta x, b \Delta x)
+$$
+for $a, b \in \{-M, \ldots, M\}$.  Note the prefactor of $\Delta x$.  We also define the $(2M+1) \times 1$ vector $\bLambda^i$ by 
+$$
+\bLambda^i_a = G^h_{\btheta}(a \Delta x, x_i).
+$$
+Finally, we define the $1 \times (2M+1)$ vector $\bGamma^i$ by
+$$
+\bGamma^i_a = (\Delta x) G^h_{\btheta}( x_{i+1}, a \Delta x ).
+$$
+With these definitions, we have the DTQ approximation to the likelihood:
+$$
+p(x_{i+1} \mid x_i, \btheta^{(k)}) \approx \bGamma^i K^{F-1} \bLambda^i.
+$$
+
+\paragraph{Type I (forward).} The term we have in mind here is
+$$
+p(z_{ij} \mid x_i, \btheta^{(k)}).
+$$
+To get from time $t_i$ to the time associated with $z_{ij}$ requires $j$ steps of size $h$.  The first such step is handled analytically and the result is $\bLambda^i$.  Hence only $j-1$ steps remain to reach the time associated with $z_{ij}$.  Therefore,
+$$
+p(z_{ij} \mid x_i, \btheta^{(k)}) \approx K^{j-1} \bLambda^i.
+$$
+To compute the right-hand side, we start with the column vector $\bLambda^i$ and repeatedly multiply on the left by the matrix $K$.
+
+\paragraph{Type II (backward).} The term we have in mind here is
+$$
+p(x_{i+1} \mid z_{i,j+1}, \btheta^{(k)}).
+$$
+Here we think of initializing $(2M+1)$ parallel trajectories at the time 
+associated with $z_{i,j+1}$.  The $a$-th such trajectory is initialized with a Dirac delta centered at $a \Delta x$.  Then, at the time associated with $z_{i,j+2}$, we have a matrix of Gaussians.  Let us denote this matrix by
+$$
+A = \begin{bmatrix} G^h_{\btheta}( \mathbf{z}, -M \Delta x) \cdots
+G^h_{\btheta}( \mathbf{z}, M \Delta x ) \end{bmatrix}.
+$$
+To be perfectly clear, the $j$-th column of $A$ is the $(2M+1) \times 1$ column vector
+$$
+G^h_{\btheta}( \mathbf{z}, j \Delta x)
+$$
+obtained by evaluating $G^h_{\btheta}( a \Delta x, j \Delta x)$ for each value of $a \in \{-M, \ldots, M\}$.  Now that we have the $A$ matrix, we can write
+$$
+p(x_{i+1} \mid z_{i,j+1}, \btheta^{(k)}) \approx \bGamma^i K^{F - (j+2)} A.
+$$
+To compute the quantity on the right-hand side, we start with the row vector $\bGamma^i$.  We repeatedly multiply on the right by the matrix $K$.  Finally, we multiply on the right by the matrix $A$.
+
+Note that we need $1$ step to get from $z_{i,j+1}$ to $z_{i,j+2}$, $F-(j+2)$ steps to get from $z_{i,j+2}$ to $z_{iF}$, and then one last $\bGamma^i$ step to get to time $t_{i+1}$.
+
+\paragraph{Important Point.} In the expressions we have given for $\bGamma^i$, $\bLambda^i$, $K$, and $A$, we have not specified the actual value to use for the parameter vector $\btheta$.  This is to be determined by context.  If we are conditioning on $\btheta^{(k)}$, then we should use $\btheta = \btheta^{(k)}$ consistently in $\bGamma^i$, $\bLambda^i$, $K$, and $A$.
+
 
 \subsection{Expectation Step}
 Combining the terms from Section \ref{sect:loglik} and Section \ref{sect:densz}, we can form a complete expression for the expectation. Going back to Section \ref{sect:loglik}, we recall that the transition densities can be assumed to be Gaussian for sufficiently large enough $F$. Thus, the expectation expression can be rewritten as,
