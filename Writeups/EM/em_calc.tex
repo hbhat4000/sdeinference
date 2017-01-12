@@ -107,19 +107,20 @@ The first part of the expectation is the complete likelihood, $\log p(\bx, \bz \
 & + \underbrace{\sum_{i=0}^{N-1} \log p(x_{i+1} \mid z_{iF}, \btheta)}_{(3)} 
 \end{align}
 The expression can be simplified under the assumption that $F$ is sufficiently large so that we can make an assumption that one-step transition densities in $(1), (2)$ and $(3)$ follow Gaussian distribution. Thus all the terms, $p(z_{i1} \mid x_i, \btheta), p(z_{i,j+1} \mid z_{ij}, \btheta)$ and $p(x_{i+1} \mid z_{iF}, \btheta)$ can be expressed with a Gaussian function
-\begin{align*}
-G(x,y, \btheta) = p(x \mid y, \btheta) = \frac{1}{\sqrt{2 \pi g^2(y, \btheta)h}} \exp \left( - \frac{1}{2 g^2(y, \btheta)h} (x - y - f(y, \btheta)h)^2 \right)
-\end{align*}
+\begin{equation}
+\label{eqn:gaussian}
+G^h_{\btheta}(x,y) = p(x \mid y, \btheta) = \frac{1}{\sqrt{2 \pi g^2(y, \btheta)h}} \exp \left( - \frac{1}{2 g^2(y, \btheta)h} (x - y - f(y, \btheta)h)^2 \right)
+\end{equation}
+In what follows, we will return to the question of how to evaluate this function on a spatially discrete grid.
 
 \subsection{Computation of the density of the missing data points}
 \label{sect:densz}
 Looking back at the expectation equation (\ref{eqn:expectation}), the expected value if computed by summing over all $\bz$ values which is a nested integral. Since the log likelihood can be expanded in 4 terms, so the density $p(\bz \mid \bx, \btheta^{(k)})$ gets multiplied by each of these terms. Upon summing over all the values of $\bz$, there will be 3 steps of terms remaining, corresponding to the respective terms in the equation (\ref{eqn:loglik}), as described below,
 \begin{enumerate}
 \item Corresponding to term $(1)$, we have the term $p(z_{i1} \mid \bx, \btheta^{(k)})$. Using Bayes' theorem, we get
-\begin{equation}
-\label{eqn:term01}
+$$
 p(z_{i1}, \bx \mid \btheta^{(k)}) = p(z_{i1} \mid \bx, \btheta^{(k)}) \cdot p(\bx \mid \btheta^{(k)}).
-\end{equation}
+$$
 This implies
 \begin{equation}
 \label{eqn:term1}
@@ -131,32 +132,34 @@ The numerator can be expanded using the Markov property:
 & = p(x_0 \mid \btheta^{(k)}) \prod_{j = i+1}^{N-1} p(x_{j+1} \mid x_{j}, \btheta^{(k)}) \, p(x_{i+1} \mid z_{i1}, \btheta^{(k)}) \, p(z_{i1} \mid x_i, \btheta^{(k)}) \prod_{j=0}^{i-1} p(x_{j+1} \mid x_{j}, \btheta^{(k)})
 \end{align*}
 Substituting this expansion into (\ref{eqn:term1}), we obtain
-\begin{equation*}
+\begin{equation}
+\label{eqn:zi1term}
 p(z_{i1}\mid \bx, \btheta^{(k)}) = \frac{p(x_{i+1} \mid z_{i1}, \btheta^{(k)}) \, p(z_{i1} \mid x_i, \btheta^{(k)})}{p(x_{i+1} \mid x_{i}, \btheta^{(k)})}
-\end{equation*}
-\item Corresponding to the $F$ internal steps represented by term (2), we have the terms $p(z_{i,j+1}, z_{ij} \mid \bx, \btheta^{(k)})$. We again use Bayes theorem in a similar way as before to get,
-\begin{align}
+\end{equation}
+\item Corresponding to the $F$ internal steps represented by term (2), we have the terms $p(z_{i,j+1}, z_{ij} \mid \bx, \btheta^{(k)})$. We again use Bayes' theorem to get
+\begin{equation}
+\label{eqn:term2}
 p(z_{i,j+1}, z_{ij} \mid \bx, \btheta^{(k)}) = \frac{p(z_{i,j+1}, z_{ij}, \bx \mid \btheta^{(k)})}{p(x_0 \mid \btheta^{(k)}) \prod_{j=0}^{N-1} p(x_{j+1} \mid x_{j}, \btheta^{(k)})}
-\end{align}
-The numerator can be expanded using Markov property as follows,
-\begin{align}
-p(z_{i,j+1}, z_{ij}, \bx \mid \btheta^{(k)}) = p(x_0 \mid \btheta^{(k)}) & \prod_{j=0}^{i-1} p(x_{j+1} \mid x_j, \btheta^{(k)}) \cdot p(z_{ij} \mid x_i, \btheta^{(k)}) \cdot p(z_{i,j+1} \mid z_{ij}, \btheta^{(k)}) \nonumber \\
-& \cdot p(x_{i+1} \mid z_{i,j+1}, \btheta^{(k)}) \prod_{j=1}^{N-1} p(x_{j+1} \mid x_{j}, \btheta^{(k)}) \end{align}
-\begin{align}
-\implies p(z_{i,j+1}, z_{ij} \mid \bx, \btheta^{(k)}) = \frac{p \, (z_{ij} \mid x_i, \btheta^{(k)}) \, p \, (z_{i,j+1} \mid z_{ij}, \btheta^{(k)}) \, p \, (x_{i+1} \mid z_{i,j+1}, \btheta^{(k)})}{p \, (x_{i+1} \mid x_{i}, \btheta^{(k)})}
-\end{align}
-\item The last term (3) has the corresponding term $p(z_{iF} \mid \bx, \btheta^{(k)})$, similar to the first term,
-\begin{align}
+\end{equation}
+The numerator can be expanded using the Markov property as follows
+\begin{multline*}
+p(z_{i,j+1}, z_{ij}, \bx \mid \btheta^{(k)}) = p(x_0 \mid \btheta^{(k)}) \prod_{j=0}^{i-1} p(x_{j+1} \mid x_j, \btheta^{(k)}) \cdot p(z_{ij} \mid x_i, \btheta^{(k)}) \cdot p(z_{i,j+1} \mid z_{ij}, \btheta^{(k)}) \\
+p(x_{i+1} \mid z_{i,j+1}, \btheta^{(k)}) \prod_{j=1}^{N-1} p(x_{j+1} \mid x_{j}, \btheta^{(k)}) 
+\end{multline*}
+We insert this into the numerator of (\ref{eqn:term2}) to obtain
+\begin{equation}
+\label{eqn:z2pt}
+p(z_{i,j+1}, z_{ij} \mid \bx, \btheta^{(k)}) = \frac{ p (x_{i+1} \mid z_{i,j+1}, \btheta^{(k)}) \, p (z_{i,j+1} \mid z_{ij}, \btheta^{(k)}) \, p (z_{ij} \mid x_i, \btheta^{(k)}) }{p (x_{i+1} \mid x_{i}, \btheta^{(k)})}
+\end{equation}
+\item The last term (3) corresponds to $p(z_{iF} \mid \bx, \btheta^{(k)})$.  Using the same techniques described above, we can write this term as
+\begin{equation}
+\label{eqn:ziFterm}
 p(z_{iF} \mid \bx, \btheta^{(k)}) = \frac{p(x_{i+1} \mid z_{iF}, \btheta^{(k)}) \, p(z_{iF} \mid x_{i}, \btheta^{(k)})}{p(x_{i+1} \mid x_{i}, \btheta^{(k)})}
-\end{align}
+\end{equation}
 \end{enumerate}
 
 \subsection{DTQ Computations}
-Now for the part where we explain how the DTQ method enables us to calculate the terms above.  We focus on two terms in particular.  In what follows, we will need several definitions.  Let $\Delta x > 0$ denote the spatial grid spacing. Then the spatial grid is defined by $y_j = j \Delta x$ for $j = -M, \ldots, M$.  In this scheme, there are $2M+1$ grid points.  Let
-$$
-G^h_{\btheta}(x,y) = \frac{1}{\sqrt{2 \pi g^2(y; \btheta) h}} \exp \left( -\frac{ x - y - f(y;\btheta) h}{2 g^2(y; \btheta) h} \right).
-$$
-This gives rise to the $(2M+1) \times (2M+1)$ matrix $K$ where
+Now for the part where we explain how the DTQ method enables us to calculate the terms above.  We focus on two terms in particular.  In what follows, we will need several definitions.  Let $\Delta x > 0$ denote the spatial grid spacing. Then the spatial grid is defined by $y_j = j \Delta x$ for $j = -M, \ldots, M$.  In this scheme, there are $2M+1$ grid points.  Recall the definition of $G^h_{\btheta}$ from (\ref{eqn:gaussian}).  This gives rise to the $(2M+1) \times (2M+1)$ matrix $K$ where
 $$
 K_{ab} = (\Delta x) G^h_{\btheta}(a \Delta x, b \Delta x)
 $$
@@ -229,6 +232,46 @@ $$
 p(z_{ij} \mid \mathbf{x}, \btheta^{(k)})
 $$
 computed using our method will be correctly normalized.
+
+\paragraph{How to Actually Compute What We Want.}
+The first term we actually want is (\ref{eqn:zi1term}).  
+Given two vectors $\mathbf{a}$ and $\mathbf{b}$ of the same length---whether they are row or column vectors---we define their component-wise (or Hadamard) product to be the vector $\mathbf{a} \circ \mathbf{b}$ given by
+$$
+(\mathbf{a} \circ \mathbf{b})_i = a_i b_i.
+$$
+The vector $(\mathbf{a} \circ \mathbf{b})$ can be either a column or row vector, as appropriate.  With this notation, we have
+\begin{align*}
+p(z_{i1}\mid \bx, \btheta^{(k)}) &= \frac{p(x_{i+1} \mid z_{i1}, \btheta^{(k)}) \, p(z_{i1} \mid x_i, \btheta^{(k)})}{p(x_{i+1} \mid x_{i}, \btheta^{(k)})} \\
+ &= \frac{ (\Delta x)^{-1} \bGamma^i K^{F-1} \circ \bLambda^i } { \bGamma^i K^{F-1} \bLambda^i }.
+\end{align*}
+This is term (\ref{eqn:zi1term}) above.  We can handle (\ref{eqn:ziFterm}) similarly:
+\begin{align*}
+p(z_{iF} \mid \bx, \btheta^{(k)}) &= \frac{p(x_{i+1} \mid z_{iF}, \btheta^{(k)}) \, p(z_{iF} \mid x_{i}, \btheta^{(k)})}{p(x_{i+1} \mid x_{i}, \btheta^{(k)})} \\
+ &= \frac{ (\Delta x)^{-1} \bGamma^i \circ K^{F-1} \bLambda^i }{ \bGamma^i K^{F-1} \bLambda^i }.
+\end{align*}
+There is a slight increase in complexity when we seek to compute (\ref{eqn:z2pt}).  Let us start by recognizing that the quantity
+$$
+p(z_{i,j+1}, z_{ij} \mid \bx, \btheta^{(k)})
+$$
+will be represented by a $(2M+1) \times (2M+1)$ matrix.  Based on the right-hand side of (\ref{eqn:z2pt}), we start with
+$$
+p(z_{i,j+1} \mid z_{ij}, \btheta^{(k)}) = G^h_{\btheta^{(k)}}(z_{i,j+1}, z_{ij}).
+$$
+Discretizing the variables $z_{i,j+1}$ and $z_{ij}$ using our equispaced grid results in the same matrix $A = (\Delta x)^{-1} K$ discussed above.  Now let us add in the remaining pieces of (\ref{eqn:z2pt}).  Consider
+\begin{align*}
+z_{i,j+1} &= a (\Delta x) \\
+z_{ij} &= b (\Delta x)
+\end{align*}
+for $a, b \in \{-M, \ldots, M\}$.  Then our approximation of $p(z_{i,j+1}, z_{ij} \mid \bx, \btheta^{(k)})$ is the matrix $\Psi$ given by
+\begin{equation}
+\label{eqn:Psidef}
+\Psi_{a,b} = (\Delta x)^{-1} \frac{ \left[ \bGamma^i K^{F-(j+1)} \right]_a A_{ab} \left[ K^{j-1} \bLambda^i \right]_b }{ \bGamma^i K^{F-1} \bLambda^i }.
+\end{equation}
+For vectors $\mathbf{a}$ and $\mathbf{b}$, let $\mathbf{a} \otimes \mathbf{b}$ denote the Kronecker product.  This product is defined by $[\mathbf{a} \otimes \mathbf{b}]_{ij} = a_i b_j$.  Then we can write:
+$$
+p(z_{i,j+1}, z_{ij} \mid \bx, \btheta^{(k)}) \approx \Psi = \frac{ (\Delta x)^{-1} } { \bGamma^i K^{F-1} \bLambda^i } \left( \left[ \bGamma^i K^{F-(j+1)} \right] \otimes \left[ K^{j-1} \bLambda^i \right] \right) \circ A.
+$$
+Here the Hadamard product $\circ$ is an element-wise product between two matrices of equal size.
 
 \subsection{Expectation Step}
 Combining the terms from Section \ref{sect:loglik} and Section \ref{sect:densz}, we can form a complete expression for the expectation. Going back to Section \ref{sect:loglik}, we recall that the transition densities can be assumed to be Gaussian for sufficiently large enough $F$. Thus, the expectation expression can be rewritten as,
