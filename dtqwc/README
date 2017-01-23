@@ -1,0 +1,15 @@
+dtqwc = "DTQ with classes"
+
+When we are only solving forward problems, we don't really need this.  The main complication was to figure out how the user can pass in drift and diffusion functions defined in C++.
+
+As soon as we seek to solve inference/inverse problems, we must keep track of:
+1) internal DTQ algorithm parameters
+2) gradients of one kind or another
+3) data
+4) the parameter vector \theta
+5) optimization algorithm parameters
+
+It is too cumbersome and redundant to write C-style functions that take (1-5) as input.  We need an approach in which member functions all have access to the same stash of private data.  Hence classes and objects.
+
+
+
