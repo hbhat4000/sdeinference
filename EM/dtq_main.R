@@ -88,17 +88,17 @@ dtq_firststep_back <- function(theta, h, k, M, numsteps, init, final) {
   
   A = integrandmat(gridmat, t(gridmat), h, f, g, theta)
   
-  # lambda_i  
+  # \lambda_i  
   lambda = as.matrix(integrandmat(grid, init, h, f, g, theta))
   
-  # (1/k) \gamma_i A^{F-1}
+  # \gamma_i
   gamma = (1/k) * t(as.matrix(integrandmat(final, grid, h, f, g, theta)))
   
-  # main loop
+  # (1/k) \gamma_i A^{F-1}
   for (i in c(1:numsteps-1))
     gamma = k * (gamma %*% A)
   
-  finalval = lambda % gamma
+  finalval = hadamard.prod(t(gamma), lambda)
   logfinalval = sum(log(finalval))
   print(logfinalval)
   
@@ -134,27 +134,36 @@ dtq_internal_back <- function(theta, h, k, M, numsteps, init, final, j) {
   	lambda = k * (A %*% lambda)
   }
 
-  return(finalval)
+  for (i in c(1:numsteps-(j+1))) {
+  	gamma = k * (gamma %*% A)
+  }
+
+  kronpdt = kronecker(gamma, lambda)
+  
+  finalval = hadamard.prod(kronpdt, modifiedA)
+  logfinalval = sum(log(finalval))
+  print(c(j,logfinalval))
+  return(logfinalval)
 }
 
-# front propagation from x_{i} to z_{iF}: lambda = p(z_{iF} | x_{i})
-# one step Gaussian from z_{iF} to x_{i+1}: gamma = p(x_{i+1} | z_{iF})
-dtq_laststep_front <- function(theta, h, k, M, numsteps, init, final) {
-  grid = c((-M):M)*k
-  gridmat = replicate(length(grid), grid)
+# # front propagation from x_{i} to z_{iF}: lambda = p(z_{iF} | x_{i})
+# # one step Gaussian from z_{iF} to x_{i+1}: gamma = p(x_{i+1} | z_{iF})
+# dtq_laststep_front <- function(theta, h, k, M, numsteps, init, final) {
+#   grid = c((-M):M)*k
+#   gridmat = replicate(length(grid), grid)
   
-  A = integrandmat(gridmat, t(gridmat), h, f, g, theta)
+#   A = integrandmat(gridmat, t(gridmat), h, f, g, theta)
 
-  lambda = k * (as.matrix(integrandmat(grid, init, h, f, g, theta)))
-  for(i in c(2:numsteps-2))
-    lambda = k * (A %*% lambda)
+#   lambda = k * (as.matrix(integrandmat(grid, init, h, f, g, theta)))
+#   for(i in c(2:numsteps-2))
+#     lambda = k * (A %*% lambda)
   
-  gamma = k * t(as.matrix(integrandmat(grid, init, h, f, g, theta))) %*% lambda
+#   gamma = k * t(as.matrix(integrandmat(grid, init, h, f, g, theta))) %*% lambda
     
-  print(c(sum(log(lambda)), sum(log(gamma))))
-  finalval = sum(log(lambda)) * sum(log(gamma))
-  return(finalval)
-}
+#   print(c(sum(log(lambda)), sum(log(gamma))))
+#   finalval = sum(log(lambda)) * sum(log(gamma))
+#   return(finalval)
+# }
 
 # front propagation from x_{i} to z_{iF}: lambda = p(z_{iF} | x_{i})
 # one step Gaussian back from x_{i+1} to z_{iF}: gamma = p(x_{i+1} | z_{iF})
@@ -164,16 +173,14 @@ dtq_laststep_back <- function(theta, h, k, M, numsteps, init, final) {
   
   A = integrandmat(gridmat, t(gridmat), h, f, g, theta)
   
-  lambda = k * (as.matrix(integrandmat(grid, init, h, f, g, theta)))
-  for(i in c(2:numsteps-2))
+  lambda = as.matrix(integrandmat(grid, init, h, f, g, theta))
+  for(i in c(1:numsteps-1))
     lambda = k * (A %*% lambda)
   
-  gamma = k * (as.matrix(integrandmat(final, grid, h, f, g, theta)))
-    
-  # lambda[lambda <= 2.2e-16] = 0
-  # gamma[gamma <= 2.2e-16] = 0
-  
-  print(c(sum(log(lambda)), sum(log(gamma))))
-  finalval = sum(log(lambda)) * sum(log(gamma))
-  return(finalval)
+  gamma = (1/k) * (as.matrix(integrandmat(final, grid, h, f, g, theta)))
+
+  finalval = hadamard.prod(gamma, lambda)
+  logfinalval = sum(log(finalval))
+  print(logfinalval)
+  return(logfinalval)
 }
