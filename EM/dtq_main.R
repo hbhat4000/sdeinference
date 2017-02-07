@@ -1,21 +1,17 @@
-f <- function(theta, x) 
-{
+f <- function(theta, x) {
   return((theta[1])*(theta[2] - x))
 }
 
-g <- function(theta, x)
-{
+g <- function(theta, x) {
   return(theta[3])
 }
 
-integrandmat <- function(x, y, h, f, g, theta)
-{
+integrandmat <- function(x, y, h, f, g, theta) {
   return(exp(-(x - y - f(theta, y)*h)^2/(2*g(theta, y)^2*h))/(abs(g(theta, y))*sqrt(2*pi*h)))
 }
 
 # front propagation from x_{i} to x_{i+1}
-dtq_complete_front <- function(theta, h, k, M, numsteps, init, final)
-{
+dtq_complete_front <- function(theta, h, k, M, numsteps, init, final) {
   grid = c((-M):M)*k
   gridmat = replicate(length(grid), grid)
   
@@ -37,8 +33,7 @@ dtq_complete_front <- function(theta, h, k, M, numsteps, init, final)
 }
 
 # back propagation from x_{i} to x_{i+1}
-dtq_complete_back <- function(theta, h, k, M, numsteps, init, final)
-{
+dtq_complete_back <- function(theta, h, k, M, numsteps, init, final) {
   grid = c((-M):M)*k
   gridmat = replicate(length(grid), grid)
   
@@ -59,136 +54,126 @@ dtq_complete_back <- function(theta, h, k, M, numsteps, init, final)
   return(sum(log(approxpdf)))
 }
 
-# one step Gaussian from x_{i} to z_{i1}: part1 = p(z_{i1} | x_{i})
-# front propagation from z_{i1} to x_{i+1}: part2 = p(x_{i+1} | z_{i1})
-dtq_firststep_front <- function(theta, h, k, M, numsteps, init, final)
-{
-  grid = c((-M):M)*k
-  gridmat = replicate(length(grid), grid)
+# # one step Gaussian from x_{i} to z_{i1}: lambda = p(z_{i1} | x_{i})
+# # front propagation from z_{i1} to x_{i+1}: gamma = p(x_{i+1} | z_{i1})
+# dtq_firststep_front <- function(theta, h, k, M, numsteps, init, final) {
+#   grid = c((-M):M)*k
+#   gridmat = replicate(length(grid), grid)
   
-  A = integrandmat(gridmat, t(gridmat), h, f, g, theta)
+#   A = integrandmat(gridmat, t(gridmat), h, f, g, theta)
   
-  part1 = k * (as.matrix(integrandmat(grid, init, h, f, g, theta)))
+#   lambda = k * (as.matrix(integrandmat(grid, init, h, f, g, theta)))
   
-  # part2 = k * (A %*% part1)
-  part2 = part1
+#   # gamma = k * (A %*% lambda)
+#   gamma = lambda
   
-  for(i in c(3:numsteps-1))
-    part2 = k * (A %*% part2)
+#   for(i in c(3:numsteps-1))
+#     gamma = k * (A %*% gamma)
   
-  part2 = k * t(as.matrix(integrandmat(final, grid, h, f, g, theta))) %*% part2
+#   gamma = k * t(as.matrix(integrandmat(final, grid, h, f, g, theta))) %*% gamma
   
-  # part1[part1 <= 2.2e-16] = 0
-  # part2[part2 <= 2.2e-16] = 0
+#   # lambda[lambda <= 2.2e-16] = 0
+#   # gamma[gamma <= 2.2e-16] = 0
   
-  print(c(sum(log(part1)), sum(log(part2))))
-  finalval = sum(log(part1)) * sum(log(part2))
-  return(finalval)
-}
+#   print(c(sum(log(lambda)), sum(log(gamma))))
+#   finalval = sum(log(lambda)) * sum(log(gamma))
+#   return(finalval)
+# }
 
-# one step Gaussian from x_{i} to z_{i1}: part1 = p(z_{i1} | x_{i})
-# back propagation from x_{i+1} to z_{i1}: part2 = p(x_{i+1} | z_{i1})
-dtq_firststep_back <- function(theta, h, k, M, numsteps, init, final)
-{
+# one step Gaussian from x_{i} to z_{i1}: lambda = p(z_{i1} | x_{i})
+# back propagation from x_{i+1} to z_{i1}: gamma = p(x_{i+1} | z_{i1})
+dtq_firststep_back <- function(theta, h, k, M, numsteps, init, final) {
   grid = c((-M):M)*k
   gridmat = replicate(length(grid), grid)
   
   A = integrandmat(gridmat, t(gridmat), h, f, g, theta)
   
-  part1 = k * (as.matrix(integrandmat(grid, init, h, f, g, theta)))
+  # lambda_i  
+  lambda = as.matrix(integrandmat(grid, init, h, f, g, theta))
   
-  part2 = k * t(as.matrix(integrandmat(final, grid, h, f, g, theta)))
+  # (1/k) \gamma_i A^{F-1}
+  gamma = (1/k) * t(as.matrix(integrandmat(final, grid, h, f, g, theta)))
   
   # main loop
-  for (i in c(2:numsteps-2))
-    part2 = k * (part2 %*% A)
+  for (i in c(1:numsteps-1))
+    gamma = k * (gamma %*% A)
   
-  part2 = k * (part2 %*% part1)
+  finalval = lambda % gamma
+  logfinalval = sum(log(finalval))
+  print(logfinalval)
   
-  # part1[part1 <= 2.2e-16] = 0
-  # part2[part2 <= 2.2e-16] = 0
-  
-  print(c(sum(log(part1)), sum(log(part2))))
-  finalval = sum(log(part1)) * sum(log(part2))
-  return(finalval)
+  return(logfinalval)
 }
 
-# front propagation from x_{i} to z_{ij}: part1 = p(z_{ij} | x_{i})
-# one step Gaussian from z_{ij} to z_{i,j+1}: part2 = p(z_{i,j+1} | z_{ij})
-# front propagation from z_{i,j+1} to x_{i+1}: part3 = p(x_{i+1} | z_{i,j+1})
-dtq_internal_front <- function(theta, h, k, M, numsteps, init, final)
-{
-  grid = c((-M):M)*k
-  gridmat = replicate(length(grid), grid)
+# # front propagation from x_{i} to z_{ij}: lambda = p(z_{ij} | x_{i})
+# # one step Gaussian from z_{ij} to z_{i,j+1}: gamma = p(z_{i,j+1} | z_{ij})
+# # front propagation from z_{i,j+1} to x_{i+1}: part3 = p(x_{i+1} | z_{i,j+1})
+# dtq_internal_front <- function(theta, h, k, M, numsteps, init, final) {
+#   grid = c((-M):M)*k
+#   gridmat = replicate(length(grid), grid)
   
-  A = integrandmat(gridmat, t(gridmat), h, f, g, theta)
+#   A = integrandmat(gridmat, t(gridmat), h, f, g, theta)
   
+#   # return(finalval)
+# }
 
-  # 
-  # part1[part1 <= 2.2e-16] = 0
-  # part2[part2 <= 2.2e-16] = 0
-  # part3[part3 <= 2.2e-16] = 0
-  # 
-  # finalval = sum(log(part1)) * sum(log(part2) * sum(log(part3)))
-  # return(finalval)
-}
-
-# front propagation from x_{i} to z_{ij}: part1 = p(z_{ij} | x_{i})
-# one step Gaussian from z_{ij} to z_{i,j+1}: part2 = p(z_{i,j+1} | z_{ij})
+# front propagation from x_{i} to z_{ij}: lambda = p(z_{ij} | x_{i})
+# one step Gaussian from z_{ij} to z_{i,j+1}: gamma = p(z_{i,j+1} | z_{ij})
 # back propagation from x_{i+1} to z_{i,j+1}: part3 = p(x_{i+1} | z_{i,j+1})
-dtq_internal_back <- function(theta, h, k, M, numsteps, init, final)
-{
+dtq_internal_back <- function(theta, h, k, M, numsteps, init, final, j) {
   grid = c((-M):M)*k
   gridmat = replicate(length(grid), grid)
   
- 
-  # part1[part1 <= 2.2e-16] = 0
-  # part2[part2 <= 2.2e-16] = 0
-  # part3[part3 <= 2.2e-16] = 0
-  # 
-  # finalval = sum(log(part1)) * sum(log(part2) * sum(log(part3)))
+  A = integrandmat(gridmat, t(gridmat), h, f, g, theta)
+  modifiedA = (1/k) * A
+
+  lambda = as.matrix(integrandmat(grid, init, h, f, g, theta))
+  gamma = (1/k) * t(as.matrix(integrandmat(final, grid, h, f, g, theta)))
+
+  for (i in c(1:j-1)) {
+  	lambda = k * (A %*% lambda)
+  }
+
   return(finalval)
 }
 
-# front propagation from x_{i} to z_{iF}: part1 = p(z_{iF} | x_{i})
-# one step Gaussian from z_{iF} to x_{i+1}: part2 = p(x_{i+1} | z_{iF})
-dtq_laststep_front <- function(theta, h, k, M, numsteps, init, final)
-{
+# front propagation from x_{i} to z_{iF}: lambda = p(z_{iF} | x_{i})
+# one step Gaussian from z_{iF} to x_{i+1}: gamma = p(x_{i+1} | z_{iF})
+dtq_laststep_front <- function(theta, h, k, M, numsteps, init, final) {
   grid = c((-M):M)*k
   gridmat = replicate(length(grid), grid)
   
   A = integrandmat(gridmat, t(gridmat), h, f, g, theta)
 
-  part1 = k * (as.matrix(integrandmat(grid, init, h, f, g, theta)))
+  lambda = k * (as.matrix(integrandmat(grid, init, h, f, g, theta)))
   for(i in c(2:numsteps-2))
-    part1 = k * (A %*% part1)
+    lambda = k * (A %*% lambda)
   
-  part2 = k * t(as.matrix(integrandmat(grid, init, h, f, g, theta))) %*% part1
+  gamma = k * t(as.matrix(integrandmat(grid, init, h, f, g, theta))) %*% lambda
     
-  print(c(sum(log(part1)), sum(log(part2))))
-  finalval = sum(log(part1)) * sum(log(part2))
+  print(c(sum(log(lambda)), sum(log(gamma))))
+  finalval = sum(log(lambda)) * sum(log(gamma))
   return(finalval)
 }
 
-# front propagation from x_{i} to z_{iF}: part1 = p(z_{iF} | x_{i})
-# one step Gaussian back from x_{i+1} to z_{iF}: part2 = p(x_{i+1} | z_{iF})
-dtq_laststep_back <- function(theta, h, k, M, numsteps, init, final)
-{
+# front propagation from x_{i} to z_{iF}: lambda = p(z_{iF} | x_{i})
+# one step Gaussian back from x_{i+1} to z_{iF}: gamma = p(x_{i+1} | z_{iF})
+dtq_laststep_back <- function(theta, h, k, M, numsteps, init, final) {
   grid = c((-M):M)*k
   gridmat = replicate(length(grid), grid)
   
   A = integrandmat(gridmat, t(gridmat), h, f, g, theta)
   
-  part1 = k * (as.matrix(integrandmat(grid, init, h, f, g, theta)))
+  lambda = k * (as.matrix(integrandmat(grid, init, h, f, g, theta)))
   for(i in c(2:numsteps-2))
-    part1 = k * (A %*% part1)
+    lambda = k * (A %*% lambda)
   
-  part2 = k * (as.matrix(integrandmat(final, grid, h, f, g, theta)))
+  gamma = k * (as.matrix(integrandmat(final, grid, h, f, g, theta)))
     
-  # part1[part1 <= 2.2e-16] = 0
-  # part2[part2 <= 2.2e-16] = 0
+  # lambda[lambda <= 2.2e-16] = 0
+  # gamma[gamma <= 2.2e-16] = 0
   
-  print(c(sum(log(part1)), sum(log(part2))))
-  finalval = sum(log(part1)) * sum(log(part2))
+  print(c(sum(log(lambda)), sum(log(gamma))))
+  finalval = sum(log(lambda)) * sum(log(gamma))
   return(finalval)
 }

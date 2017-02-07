@@ -6,7 +6,7 @@ xtraj[1,] = seq(from = 2, to = 3, by = 1)
 source('dtq_main.R')
 source('Dtheta.R')
 
-h = 0.5
+h = 0.1
 k = 0.1
 M = 20
 deltat = 1
