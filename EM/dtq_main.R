@@ -100,7 +100,7 @@ dtq_firststep_back <- function(theta, h, k, M, numsteps, init, final) {
   
   finalval = hadamard.prod(t(gamma), lambda)
   logfinalval = sum(log(finalval))
-  print(logfinalval)
+  # print(logfinalval)
   
   return(logfinalval)
 }
@@ -142,7 +142,7 @@ dtq_internal_back <- function(theta, h, k, M, numsteps, init, final, j) {
   
   finalval = hadamard.prod(kronpdt, modifiedA)
   logfinalval = sum(log(finalval))
-  print(c(j,logfinalval))
+  # print(c(j,logfinalval))
   return(logfinalval)
 }
 
@@ -181,6 +181,6 @@ dtq_laststep_back <- function(theta, h, k, M, numsteps, init, final) {
 
   finalval = hadamard.prod(gamma, lambda)
   logfinalval = sum(log(finalval))
-  print(logfinalval)
+  # print(logfinalval)
   return(logfinalval)
 }
