@@ -1,12 +1,14 @@
 rm(list = ls(all = TRUE))
 
+library("matrixcalc")
+
 xtraj = matrix(nrow = 1, ncol = 2)
 xtraj[1,] = seq(from = 2, to = 3, by = 1)
 # load necessary functions
 source('dtq_main.R')
 source('Dtheta.R')
 
-h = 0.5
+h = 0.1
 k = 0.1
 M = 20
 deltat = 1
@@ -17,7 +19,7 @@ final = xtraj[1,2]
 
 if(numsteps >= 1)
 {
-  completelik_front = dtq_complete_front(theta, h, k, M, numsteps, init, final)
+  # completelik_front = dtq_complete_front(theta, h, k, M, numsteps, init, final)
   completelik_back = dtq_complete_back(theta, h, k, M, numsteps, init, final)
   # print(c(completelik_front, completelik_back))
 }
@@ -25,21 +27,22 @@ if(numsteps >= 1)
 if(numsteps >= 2)
 {
   # first step should be equal to the last step if 2 steps
-  firststeplik_front = dtq_firststep_back(theta, h, k, M, numsteps, init, final)
-  firststeplik_back = dtq_firststep_front(theta, h, k, M, numsteps, init, final)
-  # print(c(firststeplik_front, firststeplik_back))
+  # firststeplik_front = dtq_firststep_front(theta, h, k, M, numsteps, init, final)
+  firststeplik_back = dtq_firststep_back(theta, h, k, M, numsteps, init, final)
+  print(firststeplik_back / completelik_back)
   
-  laststeplik_front = dtq_laststep_back(theta, h, k, M, numsteps, init, final)
-  laststeplik_back = dtq_laststep_front(theta, h, k, M, numsteps, init, final)
-  # print(c(laststeplik_front, laststeplik_back))
+  # laststeplik_front = dtq_laststep_front(theta, h, k, M, numsteps, init, final)
+  laststeplik_back = dtq_laststep_back(theta, h, k, M, numsteps, init, final)
+  print(laststeplik_back / completelik_back)
 }
 # 
-# if(numsteps >= 3)
-# {
-#   internallik_front = dtq_internal_back(theta, h, k, M, numsteps, init, final)
-#   internallik_back = dtq_internal_front(theta, h, k, M, numsteps, init, final)
-#   print(c(internallik_front, internallik_back))
-# }
+if(numsteps >= 3)
+{
+  for (j in c(1:numsteps)) {
+    internallik_back = dtq_internal_back(theta, h, k, M, numsteps, init, final, j)
+    print(c(j, internallik_back / completelik_back))
+  }
+}
   
   
 # nsamples = 10
