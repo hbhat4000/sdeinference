@@ -72,6 +72,7 @@ class dtq {
   arma::vec gy;
 
   arma::vec loglikvec; // log likelihood at each consecutive pair of times
+  arma::mat loglikmat;
   double loglik; // total log likelihood
   arma::vec gradloglik; // gradient of total log likelihood w.r.t. theta
 
@@ -302,17 +303,132 @@ int dtq::compLL(void)
   return 0;
 }
 
+int dtq::compGrad(void)
+{
+  // remember, everything here is for equispaced data
+  // we'll save the non-equispaced case for our scala + spark code :)
+  if ((! haveData) || (! haveMyh)) return 1;
+  if (spi<1) return 1;
+
+  loglikmat = arma::zeros(ltvec-1,numts);
+
+  if (spi==1) // special case
+  {
+  } 
+  else
+  {
+    // two main strategies
+    // 1. store everything in Cubes using slices <-- try first for speed
+    // 2. proceed time slice by time slice through ltvec <-- later to save mem
+
+    // build the big matrix of initial conditions
+    arma::cube dtqcube = arma::zeros(ylen,(ltvec-1),(spi-1));
+    double myh12 = sqrt(myh);
+    for (int i=0; i<(ltvec-1); i++)
+    {
+      // go through each particular initial condition at this time
+      // and make a Gaussian
+      for (int j=0; j<numts; j++)
+      {
+        double xi = (*odata)(i,j);
+        double mu = xi + ((*f)(xi,curtheta))*myh;
+        double sig = ((*g)(xi,curtheta))*myh12;
+        dtqcube.slice(0).col(i) += gausspdf(yvec,mu,sig);
+      }
+      dtqcube.slice(0).col(i) = dtqcube.slice(0).col(i) / numts;
+    }
+
+    // propagate this forward in time by (spi-2) steps
+    if (spi >= 3)
+      for (int i=1; i<=(spi-2); i++)
+        dtqcube.slice(i) = myk * prop * dtqcube.slice(i-1);
+
+    // now multiply on the left by the Gamma vectors
+    arma::vec muvec = yvec + fy*myh;
+    arma::vec sigvec = gy*myh12;
+    arma::cube allgamma = arma::zeros(ylen,numts,(ltvec-2));
+    for (int i=0; i<(ltvec-1); i++)
+    {
+      for (int j=0; j<numts; j++)
+      {
+        allgamma.slice(i).col(j) = myk*gausspdf((*odata)(i+1,j),muvec,sigvec);
+        loglikmat(i,j) = arma::dot(allgamma.slice(i).col(j),dtqcube.slice(spi-2).col(i));
+      }
+    }
+
+    // initialize the adjoint calculation
+    arma::cube adjcube = arma::zeros(ylen,(ltvec-1),(spi-1));
+    for (int i=0; i<(ltvec-1); i++)
+    {
+      for (int j=0; j<numts; j++)
+      {
+        adjcube.slice(spi-2).col(i) += allgamma.slice(i).col(j) / loglikmat(i,j);
+      }
+    }
+
+    // propagate this backward in time by (spi-2) steps
+    arma::sp_mat transprop = prop.t();
+    if (spi >= 3)
+      for (int i=(spi-2); i>=1; i--)
+        adjcube.slice(i-1) = myk * transprop * adjcube.slice(i);
+
+    // apply gradf and gradg to yvec
+    arma::mat gradfy = arma::zeros(ylen,curtheta.n_elem);
+    arma::mat gradgy = arma::zeros(ylen,curtheta.n_elem);
+    for (int i=0; i<ylen; i++)
+    {
+      gradfy.row(i) = (*gradf)(yvec(i),curtheta);
+      gradgy.row(i) = (*gradg)(yvec(i),curtheta);
+    }
+
+    // stuff that we need for a bunch of gradients
+    gradloglik = arma::zeros(curtheta.n_elem);
+    arma::vec agvec = abs(gy);
+    arma::vec agvecm2 = pow(agvec,-2);
+    arma::vec agvecm3 = pow(agvec,-3);
+    arma::vec agvecm4 = pow(agvec,-4);
+    double comcon = (myk/sqrt(2.0*M_PI*myh));
+
+    // actual gradient calculation
+    // proceed element-wise through theta_i
+    for (int i=0; i<curtheta.n_elem; i++)
+    {
+      // form dK/dtheta_i row by row
+      arma::mat dkdtheta = arma::zeros(ylen,ylen);
+      for (int ii=0; i<ylen; ii++)
+      {
+        arma::vec comvec = ii*myk - (yvec + fy*myh);
+        dkdtheta.row(ii) += agvecm3 % comvec % gradfy.col(i);
+        dkdtheta.row(ii) -= agvecm2 % comvec % gradgy.col(i);
+        dkdtheta.row(ii) += (1.0/myh)*agvecm4 % pow(comvec,2) % gradgy.col(i);
+        dkdtheta.row(ii) = comcon*dkdtheta.row(ii);
+      }
+      for (int j=0; j<(ltvec-1); j++)
+      {
+        // need gradient of phat{j+1/F}
+        // need gradient of Gamma{F-1}
+        arma::vec phatgrad = 
+        arma::vec gammagrad = 
+
+        // implement formula (22) from the DSAA paper
+        
+      }
+    }
+  }
+
+  haveLoglik = true;
+  haveGradloglik = true;
+  return 0;
+}
+
 int main(void)
 {
   // create fake data and compute log likelihood
 
-  arma::vec test = arma::zeros(3);
-  arma::vec *testptr;
-  testptr = &test;
-  test(0) = 0.5;
-  test(1) = 2.0;
-  test(2) = -1.0;
-  std::cout << (*testptr)(1) << '\n';
+  arma::cube test = arma::zeros(2,2,2);
+  test.slice(0)(0,0) = 3.0;
+  test.slice(0)(1,0) = -2.5;
+  std::cout << test.slice(0).col(0) << '\n';
 }
 
 
