@@ -31,6 +31,7 @@ cdt <- function(c0, h, k, bigm, littlet, data)
     npts = length(xvec)
 
     A = integrandmat(xvec, xvec, h, driftfun, difffun, c0)
+    print(A[,2])
     D = Dtheta(xvec, xvec, h, driftfun, difffun1, c0)
     
     pdfmatrix = matrix(0,nrow=npts,ncol=(ncol(data)-1))
@@ -46,6 +47,7 @@ cdt <- function(c0, h, k, bigm, littlet, data)
         for (i in c(1:nc0))
             qmattheta[[i]][,curcol] = rowMeans(initderivs[[i]])
     }
+    print(qmattheta)
     startstep = 2
 
     for (curstep in c(startstep:(numsteps-1)))
