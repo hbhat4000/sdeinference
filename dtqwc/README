@@ -11,5 +11,11 @@ As soon as we seek to solve inference/inverse problems, we must keep track of:
 
 It is too cumbersome and redundant to write C-style functions that take (1-5) as input.  We need an approach in which member functions all have access to the same stash of private data.  Hence classes and objects.
 
+Command to get this code to compile on my MacBook Air:
 
+clang++ -O3 -std=c++11 -march=native -framework Accelerate -larmadillo -lblas -llapack -lm -o newdtq newdtq.cpp
+
+Minimalist/debug version:
+
+clang++ -g -std=c++11 -larmadillo -lm -o newdtq newdtq.cpp
 
