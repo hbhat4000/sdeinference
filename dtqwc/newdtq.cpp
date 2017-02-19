@@ -14,14 +14,14 @@ double gausspdfscalar(double x, double mu, double sigma)
 arma::vec gausspdf(const arma::vec &x, double mu, double sigma)
 {
   arma::vec u = (x - mu) / fabs(sigma);
-  arma::vec p = (1 / (sqrt (2 * M_PI) * fabs (sigma))) * exp (-(u % u) / 2);
+  arma::vec p = (1 / (sqrt (2 * M_PI) * fabs (sigma))) * arma::exp (-(u % u) / 2);
   return p; 
 }
 
 arma::vec gausspdf(double x, const arma::vec &mu, const arma::vec &sigma)
 {
-  arma::vec u = (x - mu) / abs(sigma);
-  arma::vec p = (1 / (sqrt (2 * M_PI) * abs (sigma))) % exp (-(u % u) / 2);
+  arma::vec u = (x - mu) / arma::abs(sigma);
+  arma::vec p = (1 / (sqrt (2 * M_PI) * arma::abs (sigma))) % arma::exp (-(u % u) / 2);
   return p; 
 }
 
@@ -154,7 +154,7 @@ int dtq::compProp(void)
   arma::vec myvar = gy2*myh;
 
   // compute and set main diagonal
-  arma::vec maindiag = exp(-(myh/2.0)*(fy%fy)/gy2) % c0mod;
+  arma::vec maindiag = arma::exp(-(myh/2.0)*(fy%fy)/gy2) % c0mod;
   prop.diag() = maindiag;
 
   // superdiagonals
@@ -165,7 +165,7 @@ int dtq::compProp(void)
   while (! done)
   {
     arma::vec mymean = curdiag*myk + fy*myh;
-    arma::vec thisdiag = exp(-mymean%mymean/(2.0*myvar))%c0mod;
+    arma::vec thisdiag = arma::exp(-mymean%mymean/(2.0*myvar))%c0mod;
     thisdiag = thisdiag.tail(ylen - curdiag);
     double thissum = arma::sum(arma::abs(thisdiag));
     if ((curdiag == 1) || (thissum > mytol*refsum))
@@ -180,7 +180,7 @@ int dtq::compProp(void)
   for (curdiag=1; curdiag<=maxdiag; curdiag++)
   {
     arma::vec mymean = -curdiag*myk + fy*myh;
-    arma::vec thisdiag = exp(-mymean%mymean/(2.0*myvar))%c0mod;
+    arma::vec thisdiag = arma::exp(-mymean%mymean/(2.0*myvar))%c0mod;
     thisdiag = thisdiag.head(ylen - curdiag);
     prop.diag(-curdiag) = thisdiag;
   }
@@ -382,7 +382,7 @@ int dtq::compGrad(void)
         {
           arma::vec pgtemp = (yvec - mu)*gradfdata(i,j,l)/(gval*gval);
           pgtemp -= gradgdata(i,j,l)/gval;
-          pgtemp += pow(yvec - mu,2)*gradgdata(i,j,l)/(myh*gval*gval*gval);
+          pgtemp += arma::pow(yvec - mu,2)*gradgdata(i,j,l)/(myh*gval*gval*gval);
           phatgrad.slice(i).col(j) += pgtemp % thisphat;
         }
       }
@@ -428,9 +428,9 @@ int dtq::compGrad(void)
 
     // stuff that we need for a bunch of gradients
     gradloglik = arma::zeros(curtheta.n_elem);
-    arma::vec gvecm1 = pow(gy,-1);
-    arma::vec gvecm2 = pow(gy,-2);
-    arma::vec gvecm3 = pow(gy,-3);
+    arma::vec gvecm1 = arma::pow(gy,-1);
+    arma::vec gvecm2 = arma::pow(gy,-2);
+    arma::vec gvecm3 = arma::pow(gy,-3);
     arma::vec stashvec = yvec + fy*myh;
 
     // actual gradient calculation
@@ -438,35 +438,43 @@ int dtq::compGrad(void)
     for (int i=0; i<curtheta.n_elem; i++)
     {
       // form dK/dtheta_i row by row
-      arma::sp_mat dkdtheta(ylen,ylen);
+      arma::sp_mat dkdthetatrans(ylen,ylen);
       arma::vec temp1 = gvecm2 % gradfy.col(i);
       arma::vec temp2 = gvecm1 % gradgy.col(i);
       arma::vec temp3 = (1.0/myh)*gvecm3 % gradgy.col(i);
       for (int ii=0; ii<ylen; ii++)
       {
         arma::vec comvec = yvec(ii) - stashvec;
-        dkdtheta.row(ii) = myk*( prop.row(ii) % (comvec % temp1 - temp2 + temp3 % pow(comvec,2)).t() );
+        dkdthetatrans.col(ii) = myk*( transprop.col(ii) % (comvec % temp1 - temp2 + temp3 % arma::pow(comvec,2)) );
       }
-      for (int j=0; j<(ltvec-1); j++)
-      {
+      arma::sp_mat dkdtheta = dkdthetatrans.t();
+      double tally = 0.0;
         // implement formula (22) from the DSAA paper
         // need gradient of Gamma{F-1}
-        arma::vec gammagrad = arma::zeros(ylen);
+        // arma::vec gammagrad = arma::zeros(ylen);
+#pragma omp parallel for reduction(+:tally)
+      for (int j=0; j<(ltvec-1); j++)
+      {
+        tally += arma::dot(phatgrad.slice(i).col(j),adjcube.slice(0).col(j));
+      }
+#pragma omp parallel for collapse(2) reduction(+:tally)
+      for (int j=0; j<(ltvec-1); j++)
         for (int l=0; l<numts; l++)
         {
           double xi = (*odata)((j+1),l);
-          gammagrad += (xi-stashvec) % temp1;
-          gammagrad += pow(xi-stashvec,2) % temp3;
+          arma::vec gammagrad = (xi-stashvec) % temp1;
+          gammagrad += arma::pow(xi-stashvec,2) % temp3;
           gammagrad -= temp2;
           gammagrad = gammagrad % allgamma.slice(j).col(l);
-          gradloglik(i) += arma::dot(gammagrad,dtqcube.slice(spi-2).col(j)) / exp(loglikmat(j,l));
+          tally += arma::dot(gammagrad,dtqcube.slice(spi-2).col(j)) / exp(loglikmat(j,l));
         }
-        gradloglik(i) += arma::dot(phatgrad.slice(i).col(j),adjcube.slice(0).col(j));
+#pragma omp parallel for collapse(2) reduction(+:tally)
+      for (int j=0; j<(ltvec-1); j++)
         for (int l=0; l<(spi-2); l++)
         {
-          gradloglik(i) += arma::dot((dkdtheta*dtqcube.slice(l).col(j)),adjcube.slice(l+1).col(j));
+          tally += arma::dot((dkdtheta*dtqcube.slice(l).col(j)),adjcube.slice(l+1).col(j));
         }
-      }
+      gradloglik(i) = tally;
     }
   }
   haveLoglik = true;
@@ -504,12 +512,14 @@ arma::vec myggrad(const double& x, const arma::vec& theta)
 
 int main(void)
 {
+  omp_set_num_threads(48);
+
   funcPtr myfptr = &myf;
   funcPtr mygptr = &myg;
   gradPtr myfgptr = &myfgrad;  
   gradPtr myggptr = &myggrad;
 
-  int myspi = 100;
+  int myspi = 400;
   double myh = 1.0/myspi;
   double myk = pow(myh,0.75);
   int mybigm = ceil(M_PI/pow(myk,1.5));

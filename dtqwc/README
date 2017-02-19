@@ -19,3 +19,7 @@ Minimalist/debug version:
 
 clang++ -g -std=c++11 -larmadillo -lm -o newdtq newdtq.cpp
 
+OpenMP version for the HP workstation in my office:
+
+g++ -std=gnu++11 -O3 -march=native -L/opt/intel/mkl/lib/intel64 -Wl,--no-as-needed -lmkl_intel_lp64 -lmkl_core -lmkl_gnu_thread -ldl -lpthread -lgomp -larmadillo -m64 -march=native -mtune=native -fopenmp -o newdtq newdtq.cpp
+
