@@ -76,6 +76,7 @@ class dtq {
   double loglik; // total log likelihood
   arma::vec gradloglik; // gradient of total log likelihood w.r.t. theta
 
+  // internal helper functions
   int gradFGyvec(arma::mat &, arma::mat &);
   int gradFGdata(arma::cube &, arma::cube &);
   int phatinitgrad(arma::mat &, arma::cube &, const arma::cube &, const arma::cube &);
@@ -108,13 +109,18 @@ class dtq {
     // setting/loading data
     int setData(arma::vec *, arma::mat *);
 
-    // compute log likelihood and gradient
+    // compute only the log likelihood
     int compLL(void);
+
+    // compute log likelihood and gradient
     int compGrad(void);
 
     // retrieve log likelihood and gradient
     double getLL();
     int getGrad(arma::vec &);
+
+    // reset theta
+    int resetTheta(arma::vec &);
 };
 
 int dtq::setGrads(gradPtr ingradf, gradPtr ingradg)
@@ -123,6 +129,23 @@ int dtq::setGrads(gradPtr ingradf, gradPtr ingradg)
   gradg = ingradg; 
   haveGradfg = true;
   return 0;
+}
+
+int dtq::resetTheta(arma::vec &newtheta)
+{
+  // make sure the new theta is of the right size
+  if (newtheta.n_elem != curtheta.n_elem) return 1;
+  else
+  {
+    for (int i=0; i<curtheta.n_elem; i++)
+      curtheta[i] = newtheta[i];
+
+    // since you changed theta, you have to recompute some things...
+    haveProp = false;
+    haveLoglik = false;
+    haveGradloglik = false;
+    return 0;
+  }
 }
 
 int dtq::compProp(void)
@@ -158,11 +181,11 @@ int dtq::compProp(void)
   arma::vec myvar = gy2*myh;
 
   // compute and set main diagonal
+  // prop.diag() = maindiag;
   arma::vec propvals = arma::exp(-(myh/2.0)*(fy%fy)/gy2) % c0mod;
   arma::umat proploc(2, ylen);
   proploc.row(0) = arma::regspace<arma::urowvec>(0, (ylen-1));
   proploc.row(1) = arma::regspace<arma::urowvec>(0, (ylen-1));
-  // prop.diag() = maindiag;
 
   // superdiagonals
   bool done = false;
@@ -194,12 +217,12 @@ int dtq::compProp(void)
     arma::vec mymean = -curdiag*myk + fy*myh;
     arma::vec thisdiag = arma::exp(-mymean%mymean/(2.0*myvar))%c0mod;
     thisdiag = thisdiag.head(ylen - curdiag);
+    // prop.diag(-curdiag) = thisdiag;
     arma::umat newloc(2, ylen-curdiag);
     newloc.row(1) = arma::regspace<arma::urowvec>(0, (ylen-curdiag-1));
     newloc.row(0) = newloc.row(1) + curdiag;
     proploc = join_horiz(proploc, newloc);
     propvals = join_vert(propvals, thisdiag);
-    // prop.diag(-curdiag) = thisdiag;
   }
   prop = arma::sp_mat(proploc, propvals, ylen, ylen);
   // check normalization, should get all 1's
@@ -326,11 +349,13 @@ int dtq::compLL(void)
   return 0;
 }
 
+// retrieve the sum total log likelihood
 double dtq::getLL(void)
 {
   return arma::accu(loglikmat);
 }
 
+// retrieve the gradient of the total log likelihood w.r.t. theta
 int dtq::getGrad(arma::vec& outvec)
 {
   for (int i=0; i<curtheta.n_elem; i++)
@@ -396,6 +421,7 @@ int dtq::phatinitgrad(arma::mat &phatI, arma::cube &phatG, const arma::cube &gfd
   return 0;
 }
 
+// compute the log likelihood and its gradient w.r.t. theta
 int dtq::compGrad(void)
 {
   // remember, everything here is for equispaced data
