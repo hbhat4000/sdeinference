@@ -76,6 +76,10 @@ class dtq {
   double loglik; // total log likelihood
   arma::vec gradloglik; // gradient of total log likelihood w.r.t. theta
 
+  int gradFGyvec(arma::mat &, arma::mat &);
+  int gradFGdata(arma::cube &, arma::cube &);
+  int phatinitgrad(arma::mat &, arma::cube &, const arma::cube &, const arma::cube &);
+
   public:
     // constructors
     // minimal constructor for likelihood calculation
@@ -154,14 +158,17 @@ int dtq::compProp(void)
   arma::vec myvar = gy2*myh;
 
   // compute and set main diagonal
-  arma::vec maindiag = arma::exp(-(myh/2.0)*(fy%fy)/gy2) % c0mod;
-  prop.diag() = maindiag;
+  arma::vec propvals = arma::exp(-(myh/2.0)*(fy%fy)/gy2) % c0mod;
+  arma::umat proploc(2, ylen);
+  proploc.row(0) = arma::regspace<arma::urowvec>(0, (ylen-1));
+  proploc.row(1) = arma::regspace<arma::urowvec>(0, (ylen-1));
+  // prop.diag() = maindiag;
 
   // superdiagonals
   bool done = false;
   int curdiag = 1;
   double mytol = 2.0e-16;
-  double refsum = arma::sum(arma::abs(maindiag))*myk;
+  double refsum = arma::sum(arma::abs(propvals))*myk;
   while (! done)
   {
     arma::vec mymean = curdiag*myk + fy*myh;
@@ -170,7 +177,12 @@ int dtq::compProp(void)
     double thissum = arma::sum(arma::abs(thisdiag));
     if ((curdiag == 1) || (thissum > mytol*refsum))
     {
-      prop.diag(curdiag) = thisdiag;
+      // prop.diag(curdiag) = thisdiag;
+      arma::umat newloc(2, ylen-curdiag);
+      newloc.row(0) = arma::regspace<arma::urowvec>(0, (ylen-curdiag-1));
+      newloc.row(1) = newloc.row(0) + curdiag;
+      proploc = join_horiz(proploc, newloc);
+      propvals = join_vert(propvals, thisdiag);
       curdiag++;
       if (curdiag == ylen) done = true;
     }
@@ -182,8 +194,14 @@ int dtq::compProp(void)
     arma::vec mymean = -curdiag*myk + fy*myh;
     arma::vec thisdiag = arma::exp(-mymean%mymean/(2.0*myvar))%c0mod;
     thisdiag = thisdiag.head(ylen - curdiag);
-    prop.diag(-curdiag) = thisdiag;
+    arma::umat newloc(2, ylen-curdiag);
+    newloc.row(1) = arma::regspace<arma::urowvec>(0, (ylen-curdiag-1));
+    newloc.row(0) = newloc.row(1) + curdiag;
+    proploc = join_horiz(proploc, newloc);
+    propvals = join_vert(propvals, thisdiag);
+    // prop.diag(-curdiag) = thisdiag;
   }
+  prop = arma::sp_mat(proploc, propvals, ylen, ylen);
   // check normalization, should get all 1's
   // std::cout << myk*sum(prop,0) << '\n';
   haveProp = true;
@@ -321,6 +339,63 @@ int dtq::getGrad(arma::vec& outvec)
   return 0;
 }
 
+// compute the gradients of f and g at all spatial grid points in yvec
+int dtq::gradFGyvec(arma::mat &gfy, arma::mat &ggy)
+{
+  for (int i=0; i<ylen; i++)
+  {
+    gfy.row(i) = ((*gradf)(yvec(i),curtheta)).t();
+    ggy.row(i) = ((*gradg)(yvec(i),curtheta)).t();
+  }
+  return 0;
+}
+
+// compute the gradients of f and g at all data points
+int dtq::gradFGdata(arma::cube &gfd, arma::cube &ggd)
+{
+  for (int j=0; j<(ltvec-1); j++)
+  {
+    for (int l=0; l<numts; l++)
+    {
+      double xi = (*odata)(j,l);
+      gfd.slice(l).col(j) = (*gradf)(xi,curtheta);
+      ggd.slice(l).col(j) = (*gradg)(xi,curtheta);
+    }
+  }
+  return 0;
+}
+
+// build the big matrix of initial conditions
+// and the gradients of those initial conditions!
+int dtq::phatinitgrad(arma::mat &phatI, arma::cube &phatG, const arma::cube &gfd, const arma::cube &ggd)
+{
+  double myh12 = sqrt(myh);
+  for (int j=0; j<(ltvec-1); j++)
+  {
+    // go through each particular initial condition at this time
+    // and make a Gaussian
+    for (int l=0; l<numts; l++)
+    {
+      double xi = (*odata)(j,l);
+      double mu = xi + ((*f)(xi,curtheta))*myh;
+      double gval = (*g)(xi,curtheta);
+      double sig = gval*myh12;
+      arma::vec thisphat = gausspdf(yvec,mu,sig);
+      phatI.col(j) += thisphat;
+      for (int i=0; i<curtheta.n_elem; i++)
+      {
+        arma::vec pgtemp = (yvec - mu)*gfd(i,j,l)/(gval*gval);
+        pgtemp -= ggd(i,j,l)/gval;
+        pgtemp += arma::pow(yvec - mu,2)*ggd(i,j,l)/(myh*gval*gval*gval);
+        phatG.slice(i).col(j) += pgtemp % thisphat;
+      }
+    }
+  }
+  phatI = phatI / numts;
+  phatG = phatG / numts;
+  return 0;
+}
+
 int dtq::compGrad(void)
 {
   // remember, everything here is for equispaced data
@@ -335,92 +410,62 @@ int dtq::compGrad(void)
   } 
   else
   {
-    // two main strategies
-    // 1. store everything in Cubes using slices <-- try first for speed
-    // 2. proceed time slice by time slice through ltvec <-- later to save mem
+    // strategy: precompute and store common elements in Mats and Cubs
 
-    // apply gradf and gradg to yvec
+    // compute gradf and gradg at all spatial grid points
     arma::mat gradfy = arma::zeros(ylen,curtheta.n_elem);
     arma::mat gradgy = arma::zeros(ylen,curtheta.n_elem);
-    for (int i=0; i<ylen; i++)
-    {
-      gradfy.row(i) = ((*gradf)(yvec(i),curtheta)).t();
-      gradgy.row(i) = ((*gradg)(yvec(i),curtheta)).t();
-    }
+    this->gradFGyvec(gradfy, gradgy);
 
-    // need gradf and gradg at all the data points
-    arma::cube gradfdata = arma::cube(curtheta.n_elem, (ltvec-1), numts);
-    arma::cube gradgdata = arma::cube(curtheta.n_elem, (ltvec-1), numts);
-    for (int j=0; j<(ltvec-1); j++)
-    {
-      for (int l=0; l<numts; l++)
-      {
-        double xi = (*odata)(j,l);
-        gradfdata.slice(l).col(j) = (*gradf)(xi,curtheta);
-        gradgdata.slice(l).col(j) = (*gradg)(xi,curtheta);
-      }
-    }
+    // ompute gradf and gradg at all the data points
+    arma::cube gradfdata = arma::zeros(curtheta.n_elem, (ltvec-1), numts);
+    arma::cube gradgdata = arma::zeros(curtheta.n_elem, (ltvec-1), numts);
+    this->gradFGdata(gradfdata, gradgdata);
+    
+    // initialize cubes to store all states and adjoints,
+    // at all internal time points (spi-1),
+    // for each pair of time series points (ltvec-1),
+    // and at all spatial grid points (ylen)
+    arma::cube dtqcube = arma::zeros(ylen,(ltvec-1),(spi-1));
+    arma::cube adjcube = arma::zeros(ylen,(ltvec-1),(spi-1));
+
+    // temporary matrix to store the initial state, phatinit
+    arma::mat phatinit = arma::zeros(ylen,(ltvec-1));
+    
+    // cube to store the gradient of the initial state w.r.t. theta
+    arma::cube phatgrad = arma::zeros(ylen,(ltvec-1),curtheta.n_elem);
 
     // build the big matrix of initial conditions
     // and the gradients of those initial conditions!
-    arma::cube dtqcube = arma::zeros(ylen,(ltvec-1),(spi-1));
-    arma::cube phatgrad = arma::zeros(ylen,(ltvec-1),curtheta.n_elem);
-    double myh12 = sqrt(myh);
-    for (int j=0; j<(ltvec-1); j++)
-    {
-      // go through each particular initial condition at this time
-      // and make a Gaussian
-      for (int l=0; l<numts; l++)
-      {
-        double xi = (*odata)(j,l);
-        double mu = xi + ((*f)(xi,curtheta))*myh;
-        double gval = (*g)(xi,curtheta);
-        double sig = gval*myh12;
-        arma::vec thisphat = gausspdf(yvec,mu,sig);
-        dtqcube.slice(0).col(j) += thisphat;
-        for (int i=0; i<curtheta.n_elem; i++)
-        {
-          arma::vec pgtemp = (yvec - mu)*gradfdata(i,j,l)/(gval*gval);
-          pgtemp -= gradgdata(i,j,l)/gval;
-          pgtemp += arma::pow(yvec - mu,2)*gradgdata(i,j,l)/(myh*gval*gval*gval);
-          phatgrad.slice(i).col(j) += pgtemp % thisphat;
-        }
-      }
-    }
-    dtqcube.slice(0) = dtqcube.slice(0) / numts;
-    phatgrad = phatgrad / numts;
+    this->phatinitgrad(phatinit, phatgrad, gradfdata, gradgdata);
+    dtqcube.slice(0) = phatinit;
 
-    // propagate this forward in time by (spi-2) steps
+    // propagate states forward in time by (spi-2) steps
     if (spi >= 3)
       for (int i=1; i<=(spi-2); i++)
         dtqcube.slice(i) = myk * prop * dtqcube.slice(i-1);
 
     // now multiply on the left by the Gamma vectors
-    arma::vec muvec = yvec + fy*myh;
-    arma::vec sigvec = gy*myh12;
+    const arma::vec muvec = yvec + fy*myh;
+    const arma::vec sigvec = gy*sqrt(myh);
     arma::cube allgamma = arma::zeros(ylen,numts,(ltvec-1));
-    for (int i=0; i<(ltvec-1); i++)
+    for (int j=0; j<(ltvec-1); j++)
     {
-      for (int j=0; j<numts; j++)
+      for (int l=0; l<numts; l++)
       {
-        allgamma.slice(i).col(j) = myk*gausspdf((*odata)(i+1,j),muvec,sigvec);
-        loglikmat(i,j) = log(arma::dot(allgamma.slice(i).col(j),dtqcube.slice(spi-2).col(i)));
+        allgamma.slice(j).col(l) = myk*gausspdf((*odata)(j+1,l),muvec,sigvec);
+        loglikmat(j,l) = log(arma::dot(allgamma.slice(j).col(l),dtqcube.slice(spi-2).col(j)));
       }
     }
 
     std::cout << loglikmat << '\n';
 
     // initialize the adjoint calculation
-    arma::cube adjcube = arma::zeros(ylen,(ltvec-1),(spi-1));
-    for (int i=0; i<(ltvec-1); i++)
-    {
-      for (int j=0; j<numts; j++)
-      {
-        adjcube.slice(spi-2).col(i) += allgamma.slice(i).col(j) / exp(loglikmat(i,j));
-      }
-    }
+    for (int j=0; j<(ltvec-1); j++)
+      for (int l=0; l<numts; l++)
+        adjcube.slice(spi-2).col(j) += allgamma.slice(j).col(l) / exp(loglikmat(j,l));
 
-    // propagate this backward in time by (spi-2) steps
+    // propagate adjoints backward in time by (spi-2) steps
     arma::sp_mat transprop = prop.t();
     if (spi >= 3)
       for (int i=(spi-2); i>=1; i--)
@@ -431,43 +476,59 @@ int dtq::compGrad(void)
     arma::vec gvecm1 = arma::pow(gy,-1);
     arma::vec gvecm2 = arma::pow(gy,-2);
     arma::vec gvecm3 = arma::pow(gy,-3);
-    arma::vec stashvec = yvec + fy*myh;
 
     // actual gradient calculation
     // proceed element-wise through theta_i
     for (int i=0; i<curtheta.n_elem; i++)
     {
-      // form dK/dtheta_i row by row
-      arma::sp_mat dkdthetatrans(ylen,ylen);
       arma::vec temp1 = gvecm2 % gradfy.col(i);
       arma::vec temp2 = gvecm1 % gradgy.col(i);
       arma::vec temp3 = (1.0/myh)*gvecm3 % gradgy.col(i);
-      for (int ii=0; ii<ylen; ii++)
+      arma::sp_mat::const_iterator start = prop.begin();
+      arma::sp_mat::const_iterator end = prop.end();
+      arma::umat dkdtloc(2, prop.n_nonzero);
+      arma::vec dkdtval(prop.n_nonzero);
+      unsigned int dkdtc = 0;
+      for (arma::sp_mat::const_iterator it = start; it != end; ++it)
       {
-        arma::vec comvec = yvec(ii) - stashvec;
-        dkdthetatrans.col(ii) = myk*( transprop.col(ii) % (comvec % temp1 - temp2 + temp3 % arma::pow(comvec,2)) );
+        dkdtloc(0,dkdtc) = it.row();
+        dkdtloc(1,dkdtc) = it.col();
+        dkdtc++;
       }
-      arma::sp_mat dkdtheta = dkdthetatrans.t();
+#pragma omp parallel for
+      for (unsigned int dkdtcount=0; dkdtcount < prop.n_nonzero; dkdtcount++)
+      {
+        unsigned int orow = dkdtloc(0,dkdtcount);
+        unsigned int ocol = dkdtloc(1,dkdtcount);
+        double comval = yvec(orow) - muvec(ocol);
+        dkdtval(dkdtcount) = myk*(prop.values[dkdtcount])*( comval*temp1(ocol) - temp2(ocol) + temp3(ocol)*comval*comval );
+      }
+      arma::sp_mat dkdtheta(dkdtloc, dkdtval, ylen, ylen, false, true);
+
+      // implement formula (22) from the DSAA paper
+      // need gradient of Gamma{F-1}
       double tally = 0.0;
-        // implement formula (22) from the DSAA paper
-        // need gradient of Gamma{F-1}
-        // arma::vec gammagrad = arma::zeros(ylen);
 #pragma omp parallel for reduction(+:tally)
       for (int j=0; j<(ltvec-1); j++)
       {
         tally += arma::dot(phatgrad.slice(i).col(j),adjcube.slice(0).col(j));
       }
+
 #pragma omp parallel for collapse(2) reduction(+:tally)
       for (int j=0; j<(ltvec-1); j++)
         for (int l=0; l<numts; l++)
         {
           double xi = (*odata)((j+1),l);
-          arma::vec gammagrad = (xi-stashvec) % temp1;
-          gammagrad += arma::pow(xi-stashvec,2) % temp3;
+          arma::vec gammagrad = (xi-muvec) % temp1;
+          gammagrad += arma::pow(xi-muvec,2) % temp3;
           gammagrad -= temp2;
           gammagrad = gammagrad % allgamma.slice(j).col(l);
           tally += arma::dot(gammagrad,dtqcube.slice(spi-2).col(j)) / exp(loglikmat(j,l));
         }
+
+      // we have tested and found that the dot product is better than the
+      // triple matrix product here, i.e., it is worth taking the transpose
+      // arma::mat dkdtheta = dkdthetatrans.t();
 #pragma omp parallel for collapse(2) reduction(+:tally)
       for (int j=0; j<(ltvec-1); j++)
         for (int l=0; l<(spi-2); l++)
@@ -512,14 +573,16 @@ arma::vec myggrad(const double& x, const arma::vec& theta)
 
 int main(void)
 {
+#ifdef _OPENMP
   omp_set_num_threads(48);
+#endif
 
   funcPtr myfptr = &myf;
   funcPtr mygptr = &myg;
   gradPtr myfgptr = &myfgrad;  
   gradPtr myggptr = &myggrad;
 
-  int myspi = 400;
+  int myspi = 100;
   double myh = 1.0/myspi;
   double myk = pow(myh,0.75);
   int mybigm = ceil(M_PI/pow(myk,1.5));
@@ -544,10 +607,12 @@ int main(void)
   status = mydtq.compProp();
   assert(status==0);
 
+/*
   status = mydtq.compLL();
   assert(status==0);
 
   std::cout << mydtq.getLL() << '\n';
+*/
 
   status = mydtq.setGrads( myfgptr, myggptr );
   assert(status==0);
