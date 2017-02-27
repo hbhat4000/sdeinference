@@ -5,17 +5,17 @@ DEPS=
 
 ODIR=obj
 
-_newdtqOBJ=newdtq.o
-newdtqOBJ=$(patsubst %,$(ODIR)/%,$(_newdtqOBJ))
+OBJnewdtq=newdtq.o
+newdtqOBJ=$(patsubst %,$(ODIR)/%,$(OBJnewdtq))
 
-_newdtqinfOBJ=newdtqinf.o
-newdtqinfOBJ=$(patsubst %,$(ODIR)/%,$(_newdtqinfOBJ))
+OBJnewdtqinf=newdtqinf.o
+newdtqinfOBJ=$(patsubst %,$(ODIR)/%,$(OBJnewdtqinf))
 
 LDFLAGS=-L/opt/intel/mkl/lib/intel64
 LIBS=-lmkl_intel_lp64 -lmkl_core -lmkl_gnu_thread -ldl -lpthread -lgomp -larmadillo
 NLOPT=-L/usr/local/lib -lnlopt
 
-$(ODIR)/%.o: %.c $(DEPS)
+$(ODIR)/%.o: %.cpp $(DEPS)
 	$(CXX) -c -o $@ $< $(CXXFLAGS)
 
 newdtq: $(newdtqOBJ)
@@ -27,5 +27,5 @@ newdtqinf: $(newdtqinfOBJ)
 .PHONY: clean
 
 clean:
-	rm -f $(ODIR)/*.o *~ core 
+	rm -f newdtq newdtqinf $(ODIR)/*.o *~ core 
 
