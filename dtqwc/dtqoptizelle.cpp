@@ -690,7 +690,7 @@ struct Myproblem : public Optizelle::ScalarValuedFunction <double,Optizelle::Rm>
       mygptr = &myg;
       myfgptr = &myfgrad;  
       myggptr = &myggrad;
-      myspi = 100;
+      myspi = 40;
       myh = 1.0/myspi;
       myk = pow(myh,0.75);
       mybigm = ceil(M_PI/pow(myk,1.5));
