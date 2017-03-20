@@ -9,39 +9,37 @@ source('dtq_main.R')
 source('Dtheta.R')
 
 h = 0.1
-k = 0.1
+k = 0.01
 M = 20
 deltat = 1
 numsteps = ceiling(deltat/h)
-theta = c(1, 1, 1)
+theta = c(1, 0.5, 1)
 init = xtraj[1,1]
 final = xtraj[1,2]
 
 if(numsteps >= 1)
 {
-  # completelik_front = dtq_complete_front(theta, h, k, M, numsteps, init, final)
-  completelik_back = dtq_complete_back(theta, h, k, M, numsteps, init, final)
+  completelik_front = dtq_complete_front(theta, h, k, M, numsteps, init, final)
+  # completelik_back = dtq_complete_back(theta, h, k, M, numsteps, init, final)
   # print(c(completelik_front, completelik_back))
 }
 
 if(numsteps >= 2)
 {
   # first step should be equal to the last step if 2 steps
-  # firststeplik_front = dtq_firststep_front(theta, h, k, M, numsteps, init, final)
-  firststeplik_back = dtq_firststep_back(theta, h, k, M, numsteps, init, final)
-  print(firststeplik_back / completelik_back)
+  # firststeplik = dtq_firststep(theta, h, k, M, numsteps, init, final)
+  # print(firststeplik / completelik_back)
   
-  # laststeplik_front = dtq_laststep_front(theta, h, k, M, numsteps, init, final)
-  laststeplik_back = dtq_laststep_back(theta, h, k, M, numsteps, init, final)
-  print(laststeplik_back / completelik_back)
+  # laststeplik = dtq_laststep(theta, h, k, M, numsteps, init, final)
+  # print(laststeplik / completelik_back)
 }
 # 
 if(numsteps >= 3)
 {
-  for (j in c(1:numsteps)) {
-    internallik_back = dtq_internal_back(theta, h, k, M, numsteps, init, final, j)
-    print(c(j, internallik_back / completelik_back))
-  }
+  # for (j in c(1:numsteps)) {
+    # internallik = dtq_internal(theta, h, k, M, numsteps, init, final, j)
+    # print(c(j, internallik / completelik_back))
+  # }
 }
   
   
