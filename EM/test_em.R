@@ -2,20 +2,20 @@ rm(list = ls(all = TRUE))
 
 library("matrixcalc")
 
-xtraj = matrix(nrow = 1, ncol = 2)
-xtraj[1,] = seq(from = 2, to = 3, by = 1)
+# xtraj = matrix(nrow = 1, ncol = 2)
+
 # load necessary functions
 source('dtq_main.R')
 source('Dtheta.R')
 
 h = 0.1
 k = 0.01
-M = 20
+M = 50
 deltat = 1
 numsteps = ceiling(deltat/h)
-theta = c(1, 0.5, 1)
-init = xtraj[1,1]
-final = xtraj[1,2]
+theta = c(1, 0.5, 2)
+init = 1
+final = 3
 
 if(numsteps >= 1)
 {
