@@ -10,10 +10,10 @@ source('Dtheta.R')
 
 h = 0.1
 k = 0.01
-M = 20
+M = 10
 deltat = 1
 numsteps = ceiling(deltat/h)
-theta = c(1, 0.5, 1)
+theta = c(1, 1, 1)
 init = xtraj[1,1]
 final = xtraj[1,2]
 

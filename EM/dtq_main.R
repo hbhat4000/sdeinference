@@ -40,8 +40,10 @@ dtq_complete_front <- function(theta, h, k, M, numsteps, init, final) {
   
   # print(approxpdf)
   approxpdf[approxpdf <= 2.2e-16] = 0
-  print(sum(log(approxpdf)))
+  # print(sum(log(approxpdf)))
   
+  savepdf[savepdf <= 2.2e-16] = 0
+  print(savepdf)
   plot(savepdf)
   
   return(sum(log(approxpdf)))
