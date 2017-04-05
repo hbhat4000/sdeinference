@@ -1,9 +1,39 @@
-f <- function(theta, x) {
-  return((theta[1])*(theta[2] - x))
+f <- function(theta, x, returngrad=FALSE) {
+  fval = (theta[1])*(theta[2] - x)
+  if (returngrad==FALSE)
+    return(fval)
+  else
+  {
+    if (class(x)=="numeric")
+    {
+      dfdtheta = matrix(0,nrow=length(x),ncol=length(theta))
+      dfdtheta[,1] = fval/theta[1]
+      dfdtheta[,2] = theta[1]
+      dfdtheta[,3] = 0
+    }
+    else if (class(x)=="matrix")
+    {
+      dfdtheta = array(0,c(dim(x),length(theta)))
+      dfdtheta[,,1] = fval/theta[1]
+      dfdtheta[,,2] = theta[1]
+      dfdtheta[,,3] = 0
+    }
+    return(list(val=fval,grad=dfdtheta))
+  } 
 }
 
-g <- function(theta, x) {
-  return(theta[3])
+g <- function(theta, x, returngrad=FALSE) {
+  gval = theta[3] # warning this will not have the same size as x
+  if (returngrad==FALSE)
+    return(gval)
+  else
+  {
+    dgdtheta = c(0,0,1)
+    #dgdtheta[,1] = 0
+    #dgdtheta[,2] = 0
+    #dgdtheta[,3] = 1
+    return(list(val=gval,grad=dgdtheta))
+  }
 }
 
 integrandmat <- function(x, y, h, f, g, theta) {

@@ -38,12 +38,13 @@ exactlast = hadamard.prod(part1,part2)/exactcomplete
 
 print(k*sum(abs(allout$last - exactlast)))
 
+gridmat = replicate(length(grid), grid)
+part2 = transition_forward(theta,x=gridmat,y=t(gridmat),t=h)
+
 for (j in c(1:(numsteps-2)))
 {
   print(sum(allout$pdf2d[[j]])*k^2)
   part1 = matrix(transition_forward(theta,x=grid,y=init,t=(j*h)),ncol=1)
-  gridmat = replicate(length(grid), grid)
-  part2 = transition_forward(theta,x=gridmat,y=t(gridmat),t=h)
   part3 = matrix(transition_forward(theta,x=final,y=grid,t=(deltat - (j+1)*h)),nrow=1)
   exactinternal = hadamard.prod(t(kronecker(part3,part1)),part2) / exactcomplete
   print(sum(exactinternal)*k^2)
