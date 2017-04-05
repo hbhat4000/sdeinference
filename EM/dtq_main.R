@@ -155,3 +155,45 @@ dtq_laststep <- function(theta, h, k, M, numsteps, init, final) {
   # print(logfinalval)
   return(finalpdf)
 }
+
+# we want this function to return three things:
+# 1) p(z_{i1} | x, \theta^k)
+# 2) p(z_{i,j+1}, z_{ij} | x, \theta^k)
+# 3) p(z_{iF} | x, \theta^k)
+dtq_all <- function(theta, h, k, M, numsteps, init, final) {
+  grid = c((-M):M)*k
+  gridmat = replicate(length(grid), grid)
+  
+  A = integrandmat(gridmat, t(gridmat), h, f, g, theta)
+
+  lambda = as.matrix(integrandmat(grid, init, h, f, g, theta))
+  gamma = k * t(as.matrix(integrandmat(final, grid, h, f, g, theta)))
+  
+  # the list index is 1 + the power of K that we have multiplied by
+  lambdalist = list(NULL)
+  lambdalist[[1]] = lambda
+  gammalist = list(NULL)
+  gammalist[[1]] = gamma
+  
+  # numsteps-2 = F-1, which is the highest power of K that we have
+  for (j in c(1:(numsteps-2)))
+  {
+    lambdalist[[j+1]] = (k*A) %*% lambdalist[[j]]
+    gammalist[[j+1]] = gammalist[[j]] %*% (k*A)
+  }
+  
+  # compute the complete likelihood, p(x_{i+1} | x_i, \theta)
+  complete = as.numeric(gammalist[[1]] %*% lambdalist[[numsteps-1]])
+  
+  # compute first and last 1d pdf's
+  first = (1/k)*hadamard.prod(t(gammalist[[numsteps-1]]),lambdalist[[1]])/complete
+  last = (1/k)*hadamard.prod(t(gammalist[[1]]),lambdalist[[numsteps-1]])/complete
+  
+  # compute all intermediate 2d pdf's
+  pdf2dlist = list(NULL)
+  for (j in c(1:(numsteps-2))) 
+  {
+    pdf2dlist[[j]] = hadamard.prod(t(kronecker(gammalist[[(numsteps-1-j)]],lambdalist[[j]])),A)/(k*complete)
+  }    
+  return(list(complete=complete,first=first,last=last,pdf2d=pdf2dlist))
+}
