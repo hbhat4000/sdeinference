@@ -16,37 +16,38 @@ dtq_complete_front <- function(theta, h, k, M, numsteps, init, final) {
   gridmat = replicate(length(grid), grid)
   
   A = integrandmat(gridmat, t(gridmat), h, f, g, theta)
-  savepdf = numeric(numsteps - 1)
+  savepdf = matrix(0,ncol=(numsteps-1),nrow=(2*M+1))
   
   # \tau_{m}
   if(numsteps >= 1) {
-    approxpdf = k * (as.matrix(integrandmat(grid, init, h, f, g, theta)))
-    savepdf[1] = approxpdf[M + 1]
+    # this is actually lambda, which has no k
+    approxpdf = (as.matrix(integrandmat(grid, init, h, f, g, theta)))
+    savepdf[,1] = approxpdf
   }
   
   # A^{n-2} * \tau_{m}
+  # note that k * A = K in the notes
   if(numsteps >= 3) {
     for (i in c(2:(numsteps-1))) {
       approxpdf = k * (A %*% approxpdf)
-      savepdf[i] = approxpdf[M + 1]
+      savepdf[,i] = approxpdf
     }
   }
   
   # \tau^T_{m+1} * A^{n-2} * \tau_{m}
+  gamma = k * t(as.matrix(integrandmat(final, grid, h, f, g, theta)))
   if (numsteps >= 2) {
-    approxpdf = k * t(as.matrix(integrandmat(final, grid, h, f, g, theta))) %*% approxpdf
-    savepdf[numsteps] = approxpdf[M + 1]  
+    approxpdf = gamma %*% approxpdf
   }
   
-  # print(approxpdf)
-  approxpdf[approxpdf <= 2.2e-16] = 0
-  print(sum(log(approxpdf)))
-  savepdf[savepdf <= 2.2e-16] = 0
+  # approxpdf[approxpdf <= 2.2e-16] = 0
+  #print(sum(log(approxpdf)))
+  #savepdf[savepdf <= 2.2e-16] = 0
   
-  print(savepdf)
-  plot(savepdf)
+  #print(savepdf)
+  #plot(savepdf)
   
-  return(sum(log(approxpdf)))
+  return(list(lik=as.numeric(approxpdf),pdf=savepdf))
 }
 
 # back propagation from x_{i} to x_{i+1}
@@ -57,22 +58,25 @@ dtq_complete_back <- function(theta, h, k, M, numsteps, init, final) {
   A = integrandmat(gridmat, t(gridmat), h, f, g, theta)
   
   # \tau^T_{m+1}
+  # this is actually gamma
   approxpdf = k * t(as.matrix(integrandmat(final, grid, h, f, g, theta)))
   
   # \tau^T_{m+1} * A^{n-2}
+  # again, k * A corresponds to K in the notes
   for (i in c(2:(numsteps-1)))
     approxpdf = k * (approxpdf %*% A)
   
   # \tau^T_{m+1} * A^{n-2} * \tau_{m}
-  approxpdf = k * approxpdf %*% (as.matrix(integrandmat(grid, init, h, f, g, theta)))
+  # final multiplication by lambda, note that lambda has no k
+  approxpdf = approxpdf %*% (as.matrix(integrandmat(grid, init, h, f, g, theta)))
   
-  approxpdf[approxpdf <= 2.2e-16] = 0
-  print(sum(log(approxpdf)))
-  return(sum(log(approxpdf)))
+  # approxpdf[approxpdf <= 2.2e-16] = 0
+  return(as.numeric(approxpdf))
 }
 
 # one step Gaussian from x_{i} to z_{i1}: lambda = p(z_{i1} | x_{i})
 # back propagation from x_{i+1} to z_{i1}: gamma = p(x_{i+1} | z_{i1})
+# note: this function returns a pdf
 dtq_firststep <- function(theta, h, k, M, numsteps, init, final) {
   grid = c((-M):M)*k
   gridmat = replicate(length(grid), grid)
@@ -83,50 +87,57 @@ dtq_firststep <- function(theta, h, k, M, numsteps, init, final) {
   lambda = as.matrix(integrandmat(grid, init, h, f, g, theta))
   
   # \gamma_i
-  gamma = (1/k) * t(as.matrix(integrandmat(final, grid, h, f, g, theta)))
+  gamma = k * t(as.matrix(integrandmat(final, grid, h, f, g, theta)))
   
   # (1/k) \gamma_i A^{F-1}
-  for (i in c(1:numsteps-1))
+  # numsteps = F+1, so F-1 = numsteps-2
+  for (i in c(1:(numsteps-2)))
     gamma = k * (gamma %*% A)
   
-  finalval = hadamard.prod(t(gamma), lambda)
-  logfinalval = sum(log(finalval))
+  finalpdf = (1/k)*hadamard.prod(t(gamma), lambda)
+  logfinalpdf = log(finalpdf)
   # print(logfinalval)
   
-  return(logfinalval)
+  return(finalpdf)
 }
 
 # front propagation from x_{i} to z_{ij}: lambda = p(z_{ij} | x_{i})
 # one step Gaussian from z_{ij} to z_{i,j+1}: gamma = p(z_{i,j+1} | z_{ij})
 # back propagation from x_{i+1} to z_{i,j+1}: part3 = p(x_{i+1} | z_{i,j+1})
+# note: this function returns a two-dimensional pdf as a matrix
 dtq_internal <- function(theta, h, k, M, numsteps, init, final, j) {
   grid = c((-M):M)*k
   gridmat = replicate(length(grid), grid)
   
   A = integrandmat(gridmat, t(gridmat), h, f, g, theta)
-  modifiedA = (1/k) * A
+  # modifiedA = (1/k) * A
 
   lambda = as.matrix(integrandmat(grid, init, h, f, g, theta))
-  gamma = (1/k) * t(as.matrix(integrandmat(final, grid, h, f, g, theta)))
+  gamma = k * t(as.matrix(integrandmat(final, grid, h, f, g, theta)))
 
-  for (i in c(1:j-1)) {
-  	lambda = k * (A %*% lambda)
+  if (j >= 2)
+  {
+    for (i in c(1:(j-1))) {
+      lambda = k * (A %*% lambda)
+    }
   }
-
-  for (i in c(1:numsteps-(j+1))) {
-  	gamma = k * (gamma %*% A)
+    
+  # numsteps = F+1, so F = numsteps-1
+  if (j <= (numsteps-3))
+  {
+    for (i in c(1:(numsteps-j-2))) {
+      gamma = k * (gamma %*% A)
+    }
   }
-
-  kronpdt = kronecker(gamma, lambda)
-  
-  finalval = hadamard.prod(kronpdt, modifiedA)
-  logfinalval = sum(log(finalval))
-  # print(c(j,logfinalval))
-  return(logfinalval)
+    
+  kronpdt = t(kronecker(gamma, lambda))
+  finalpdf2 = (1/k)*hadamard.prod(kronpdt, A)
+  return(finalpdf2)
 }
 
 # front propagation from x_{i} to z_{iF}: lambda = p(z_{iF} | x_{i})
 # one step Gaussian back from x_{i+1} to z_{iF}: gamma = p(x_{i+1} | z_{iF})
+# note: this function returns a pdf
 dtq_laststep <- function(theta, h, k, M, numsteps, init, final) {
   grid = c((-M):M)*k
   gridmat = replicate(length(grid), grid)
@@ -134,13 +145,13 @@ dtq_laststep <- function(theta, h, k, M, numsteps, init, final) {
   A = integrandmat(gridmat, t(gridmat), h, f, g, theta)
   
   lambda = as.matrix(integrandmat(grid, init, h, f, g, theta))
-  for(i in c(1:numsteps-1))
+  for(i in c(1:(numsteps-2)))
     lambda = k * (A %*% lambda)
   
-  gamma = (1/k) * (as.matrix(integrandmat(final, grid, h, f, g, theta)))
+  gamma = k * (as.matrix(integrandmat(final, grid, h, f, g, theta)))
 
-  finalval = hadamard.prod(gamma, lambda)
-  logfinalval = sum(log(finalval))
+  finalpdf = (1/k)*hadamard.prod(gamma, lambda)
+  logfinalpdf = log(finalpdf)
   # print(logfinalval)
-  return(logfinalval)
+  return(finalpdf)
 }
