@@ -59,13 +59,12 @@ logG <- function(x,y,theta,f,g,h)
 }
 
 # goal: compute the Q function and its gradient w.r.t. theta
-qfun <- function(theta, thetak, f, g, h, k, M, numsteps, x)
+qfun <- function(theta, allout, f, g, h, k, M, numsteps, x)
 {
   grid = c((-M):M)*k
   gridmat = replicate(length(grid), grid)
   init = x[1]
   final = x[2]
-  allout = dtq_all(thetak, h, k, M, numsteps, init, final)
   q = 0
   n = length(theta)
   gradq = numeric(length=n)
@@ -94,12 +93,14 @@ qfun <- function(theta, thetak, f, g, h, k, M, numsteps, x)
     for (i in c(1:n))
       gradq[i] = gradq[i] + sum(part3$gradlg[,,i] * allout$pdf2d[[j]])*k^2
   }
-  return(list(objective=q,gradient=gradq))
+  return(list(objective=-q,gradient=-gradq))
 }
+
+allout = dtq_all(theta, h, k, M, numsteps, init, final)
 
 simpqfun <- function(theta)
 {
-  return(qfun(theta, thetak=theta0, f, g, h, k, M, numsteps, x=c(init,final)))
+  return(qfun(theta, allout=allout, f, g, h, k, M, numsteps, x=c(init,final)))
 }
 
 library('nloptr')
