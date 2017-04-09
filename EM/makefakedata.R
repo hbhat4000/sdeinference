@@ -1,10 +1,10 @@
 rm(list = ls(all = TRUE))
-set.seed(123)
-thetavec = c(1, 1, 1)
+set.seed(1)
+thetavec = c(1, 1, 0.5)
 
 h = 0.0001
-littlet = 0.1
-bigt = 1
+littlet = 1
+bigt = 20
 
 nsteps = ceiling(bigt/h)
 nsaves = ceiling(bigt/littlet)
@@ -15,7 +15,7 @@ h12 = sqrt(h)
 xtraj = matrix(0, nrow = 1, ncol = (nsaves + 1))
 
 # initial condition centered at origin so both -ve and +ve initial conditions generated
-xtraj[,1] = 2
+xtraj[,1] = 1
 
 for (i in c(1:nsaves))
 {
@@ -31,6 +31,6 @@ for (i in c(1:nsaves))
 }
 
 tvec = seq(from = 0, to = bigt, by = littlet)
-plot(tvec, xtraj)
+plot(tvec, xtraj, 'o')
 xtraj = rbind(tvec, xtraj)
-# save(xtraj, file = 'fakedata.RData')
+save(xtraj, file = 'fakedata.RData')
