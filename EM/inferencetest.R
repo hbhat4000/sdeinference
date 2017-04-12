@@ -103,7 +103,7 @@ simpqfun <- function(theta)
   return(qfun(theta, allout=allout, f, g, h, k, M, numsteps, x=c(init,final)))
 }
 
-library('nloptr')
-res = nloptr(x0=theta,eval_f=simpqfun,opts = list("algorithm"="NLOPT_LD_LBFGS", "check_derivatives"=TRUE))
+#library('nloptr')
+#res = nloptr(x0=theta,eval_f=simpqfun,opts = list("algorithm"="NLOPT_LD_LBFGS", "check_derivatives"=TRUE))
 
 

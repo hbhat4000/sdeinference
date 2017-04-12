@@ -79,7 +79,6 @@ def dtqall(theta, h, k, M, numsteps, init, final):
     return complete, first, last, pdf2dlist
 
 
-
 # test run
 # k = 0.01
 # M = 800
