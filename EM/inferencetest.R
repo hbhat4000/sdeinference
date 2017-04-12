@@ -6,15 +6,22 @@ library("matrixcalc")
 source('dtq_main.R')
 source('Dtheta.R')
 
+# tvec, xtraj
+load('fakedata.RData')
+xtraj = xtraj[1:2, 1:10]
+xlen = length(xtraj[2,])
+
 k = 0.05
 M = 160
 deltat = 1
-numsteps = 20
-h = deltat/numsteps
-theta = c(1, 0, 2)
-theta0 = theta
-init = 1
-final = 3
+h = 0.1
+numsteps = deltat / h
+# numsteps = 20
+# h = deltat/numsteps
+theta = c(2, 1, 0.5)
+theta0 = c(1, 1, 1)
+# init = 1
+# final = 3
 
 # allout = dtq_all(theta, h, k, M, numsteps, init, final)
 
@@ -96,14 +103,39 @@ qfun <- function(theta, allout, f, g, h, k, M, numsteps, x)
   return(list(objective=-q,gradient=-gradq))
 }
 
-allout = dtq_all(theta, h, k, M, numsteps, init, final)
-
-simpqfun <- function(theta)
+simpqfun <- function(theta, thistheta)
 {
-  return(qfun(theta, allout=allout, f, g, h, k, M, numsteps, x=c(init,final)))
+  theta0 = thistheta
+  obj = 0
+  grad = 0
+  for (i in c(1:(xlen - 1)))
+  {
+    init = xtraj[2,i]
+    final = xtraj[2, i+1]
+    
+    allout = dtq_all(theta0, h, k, M, numsteps, init, final)
+    qinterval = qfun(theta, allout=allout, f, g, h, k, M, numsteps, x=c(init,final))
+    obj = obj + qinterval$objective
+    grad = grad + qinterval$gradient
+    qinterval = list(objective = obj, gradient = grad)
+  }
+  return (qinterval)
 }
 
-#library('nloptr')
-#res = nloptr(x0=theta,eval_f=simpqfun,opts = list("algorithm"="NLOPT_LD_LBFGS", "check_derivatives"=TRUE))
+library('nloptr')
 
+mylb = c(0, 0, 0.01)
+myub = c(10, 10, 2)
+
+# Q: what value of \theta should each outer maximization start from?
+# currently, \theta parameter always gets initialized to c(2, 1, 0.5)
+for(i in c(1:5)) 
+{
+  print(c(theta, theta0))
+  # theta = theta0
+  res = nloptr(x0 = theta, eval_f = simpqfun, opts = list("algorithm"="NLOPT_LD_LBFGS", "print_level" = 3, "check_derivatives"=TRUE, "xtol_abs" = 1e-8), lb = mylb, ub = myub, thistheta = theta0)
+  
+  # \theta^{k+1} = \arg \max_{\theta} Q(\theta | \theta^{k})
+  theta0 = res$solution
+}
 
