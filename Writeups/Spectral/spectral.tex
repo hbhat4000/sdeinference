@@ -1,0 +1,45 @@
+\documentclass[12pt]{article}
+\usepackage[margin=1.25in]{geometry}
+\usepackage{amsmath,amssymb,latexsym}
+
+\begin{document}
+\begin{center}
+Spectral DTQ Method, May 2017
+\end{center}
+We start with the SDE in $\mathbb{R}^N$:
+$$
+dX_t = f(X_t) dt + g dW_t
+$$
+Here $g$ is an $N \times N$ invertible matrix.
+Let
+$$
+\phi(y) = y + f(y) h.
+$$
+Assuming that $f$ is Lipschitz we see that $\phi$ is invertible for sufficiently small $h$; this follows from
+$$
+D \phi(y) = I + Df(y) h.
+$$
+Discretizing the SDE in time, we obtain
+$$
+X_{n+1} = X_n + f(X_n) h + g h^{1/2} Z_{n+1}.
+$$
+Here $Z_{n+1}$ is a sequence of independent multivariate Gaussians, each
+with mean vector $0$ and covariance matrix equal to the identity matrix $I$.
+Hence $X_{n+1}$ given $X_n = y$ has multivariate Gaussian density with mean
+vector $\phi(y)$ and covariance matrix $h g g^T$.
+Now moving from sample paths to densities, we have
+$$
+\widetilde{p}(x,t_{n+1}) = \int_{y \in \mathbb{R}^N} G(x - \phi(y);h g g^T) \widetilde{p}(y,t_n) \, dy.
+$$
+Let
+$$
+G(x - \phi(y);h g g^T) = \frac{1}{\sqrt{ (2 \pi h)^N |g|^2 }} \exp \left( -\frac{1}{2h} (x - \phi(y))^T (g g^T)^{-1} (x - \phi(y)) \right).
+$$
+Now we let $z = \phi(y)$ so that $dz = D\phi(y) \, dy$.  Then
+$$
+\widetilde{p}(x,t_{n+1}) = \int_{z \in \mathbb{R}^N} G(x - z; h g g^T) \underbrace{\widetilde{p}(\phi^{-1}(z),t_n) \, [D\phi(\phi^{-1}(z))]^{-1}}_{\psi_n(z)} \, dz.
+$$
+We now have a convolution! 
+
+\end{document}
+
