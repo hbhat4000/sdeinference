@@ -1,0 +1,11 @@
+At the command line, execute the following:
+
+make dtqou10sweep
+./dtqou10sweep > dtqou10.out
+Rscript plotresultsOU10.R
+
+make dtqou20sweep
+./dtqou20sweep > dtqou20.out
+Rscript plotresultsOU20.R
+
+

@@ -1,0 +1,5 @@
+Follow these two steps at the command line:
+
+Rscript cfbistab.R
+Rscript plotbatchresults.R
+

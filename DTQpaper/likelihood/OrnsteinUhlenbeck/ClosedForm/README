@@ -1,0 +1,5 @@
+Follow these three steps at the command line:
+
+Rscript comparisonOU.R
+Rscript plotresultsOUAS.R
+Rscript plotresultsOUexact.R
