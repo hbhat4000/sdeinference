@@ -1,9 +1,5 @@
-1) use Make to generate the executable "dtqbistabsweep"
-2) at the prompt, execute
+Follow these three steps at the command line:
 
+make dtqbistabsweep
 ./dtqbistabsweep > dtqbistab.out
-
-3) then run the R script to generate the plot
-
 Rscript plotresults.R
-

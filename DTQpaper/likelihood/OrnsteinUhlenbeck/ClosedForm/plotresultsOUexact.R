@@ -33,6 +33,6 @@ maxlllab = paste("(",format(test$theta2,digits=3),", ",format(test$theta3,digits
 v = v + annotate("text",x=test$theta2,y=test$theta3+0.02,label=maxlllab)
 v = v + xlab(TeX("$\\theta_2$"))
 v = v + ylab(TeX("$\\theta_3$"))
-ggsave(filename="OUAS.pdf",plot=v,units="in",width=4,height=3)
-ggsave(filename="OUAS.eps",plot=v,units="in",width=4,height=3)
+ggsave(filename="OUexact.pdf",plot=v,units="in",width=4,height=3)
+ggsave(filename="OUexact.eps",plot=v,units="in",width=4,height=3)
 

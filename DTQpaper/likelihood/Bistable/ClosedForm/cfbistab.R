@@ -431,8 +431,8 @@ pp<-c(1,8,0.25,3.0)
 delta<-0.1
 
 set.model(hsb.model)
-n0 = 2
-n1 = 2
+n0 = 50
+n1 = 50
 theta0grid = seq(from=-1,to=4,length.out=n0)
 theta1grid = seq(from=5,to=12.5,length.out=n1)
 

@@ -3,7 +3,7 @@ rm(list=ls(all=TRUE))
 library(ggplot2)
 library(latex2exp)
 
-load('~/OUASzoom4_3.RData')
+load('./OUAS4_3.RData')
 n0 = 50
 n1 = 50
 theta0grid = seq(from=1,to=7,length.out=n0)
@@ -35,9 +35,4 @@ v = v + xlab(TeX("$\\theta_2$"))
 v = v + ylab(TeX("$\\theta_3$"))
 ggsave(filename="OUAS.pdf",plot=v,units="in",width=4,height=3)
 ggsave(filename="OUAS.eps",plot=v,units="in",width=4,height=3)
-print(v)
 
-# need this for R's inbuilt contour
-# xvec = unique(test[,1])
-# yvec = test[1:10,2]
-# z = t(matrix(test[,3],nrow=10,ncol=10))
