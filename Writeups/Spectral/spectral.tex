@@ -33,13 +33,37 @@ $$
 $$
 Let
 $$
-G(x - \phi(y);h g g^T) = \frac{1}{\sqrt{ (2 \pi h)^N |g|^2 }} \exp \left( -\frac{1}{2h} (x - \phi(y))^T (g g^T)^{-1} (x - \phi(y)) \right).
+G(w;h g g^T) = \frac{1}{\sqrt{ (2 \pi h)^N |g|^2 }} \exp \left( -\frac{1}{2h} w^T (g g^T)^{-1} w \right).
 $$
-Now we let $z = \phi(y)$ so that $dz = D\phi(y) \, dy$.  Then
+Now we let $z = \phi(y)$ so that $dz = \det D\phi(y) \, dy$.  Then
 $$
-\widetilde{p}(x,t_{n+1}) = \int_{z \in \mathbb{R}^N} G(x - z; h g g^T) \underbrace{\widetilde{p}(\phi^{-1}(z),t_n) \, [D\phi(\phi^{-1}(z))]^{-1}}_{\psi_n(z)} \, dz.
+\widetilde{p}(x,t_{n+1}) = \int_{z \in \mathbb{R}^N} G(x - z; h g g^T) \underbrace{\widetilde{p}(\phi^{-1}(z),t_n) \, \det [D\phi(\phi^{-1}(z))]^{-1}}_{\psi_n(z)} \, dz.
 $$
-We now have a convolution! 
+Let $\{q_m\}$ be a set of collocation points, and let $K$ be a kernel function.  We expand:
+$$
+\widetilde{p}(y, t_n) = \sum_m \alpha_m^n K(\phi(y) - q_m) \det [D\phi(y)] 
+$$
+Then
+$$
+\widetilde{p}(x, t_{n+1}) = \sum_m \alpha_m^n \int_{z \in \mathbb{R}^N} G(x - z; h g g^T) K(z - q_m) \, dz.
+$$
+The point of all this manipulation is to obtain a convolution on the right-hand side.  Now take the Fourier transform of both sides to obtain
+$$
+\widehat{\widetilde{p}}(k, t_{n+1}) = \sum_m \alpha_m^n \widehat{G}(k,hgg^T) \widehat{K}(k) e^{-2 \pi i q_m k}.
+$$
+The point is that for a suitable choice of kernel $K$, we should be able to compute $\widehat{K}$ by hand.  We can of course compute $\widehat{G}$ by hand.  Hence the entire right-hand side can be determined without any numerical approximation.
+
+Of course, we then use the inverse Fourier transform to compute
+$$
+\widetilde{p}(x, t_{n+1}) = \int_{k \in \mathbb{R}^N} e^{2 \pi i k x} \widehat{\widetilde{p}}(k, t_{n+1}) \, dk.
+$$
+Next, we use the collocation relationship to solve for $\alpha_m^{n+1}$:
+$$
+\widetilde{p}(x, t_{n+1}) = \sum_m \alpha_m^{n+1} K(\phi(x) - q_m) \det [D\phi(x)] 
+$$
+Namely, by requiring this equation to hold at $m$ distinct points $x$, we obtain a system of $m$ equations in $m$ unknowns.  We can write this as a matrix-vector system and then solve for $\alpha^{n+1}$.
 
 \end{document}
+
+
 
