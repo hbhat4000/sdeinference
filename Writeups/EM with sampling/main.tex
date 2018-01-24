@@ -4,52 +4,52 @@
 \begin{document}
 
 \section{EM with stochastic sampling}
-\subsection{The 1D problem}
-The governing equation for the 1D problem can be represented as:
+Note that while the following derivation is in $\mathbb{R}^1$, everything can be generalized to $\mathbb{R}^d$.  The governing equation for the problem in $\mathbb{R}^1$ is:
 \begin{equation} \label{eqn:sde}
 \dot{x} = f(x; \beta)
 \end{equation}
-
-Considering a parameteric model for the system, $f(x)$ can be represented as an additive expression of a class of basis functions:
+Consider an additive model for $f(x)$:
 \begin{equation} \label{eqn:parameteric}
 f(x) = \sum_{i=1}^{N} \beta_i \phi_i (x)
 \end{equation} 
-
 The data is given in the form of a time series, $\mathbf{x}$ at discrete time points. For simplicity, let us assume the observations are collected at equispaced times, $jh$ for $0 \leq j \leq J$. Thus the observed data can be represented as $\mathbf{x} = x_0, x_1, \cdots, x_J$. 
 
-We start by introducing data at intermediate time points. In between 2 observed data points, $x_i$ and $x_{i+1}$, we introduce $F$ sampled values, $z_{i1}, z_{i2}, \cdots, z_{iF}$. The sampled values are created using a diffusion bridge. The $i{th}$ diffusion bridge sample is depends on the observed data, $x$ and parameter $\theta$ of function $f(x; \theta)$.
+We start by introducing data at intermediate time points. In between 2 observed data points, $x_i$ and $x_{i+1}$, we introduce $F$ sampled values, $z_{i1}, z_{i2}, \cdots, z_{iF}$. The sampled values are created using a diffusion bridge. The $i^\text{th}$ diffusion bridge sample depends on the observed data, $x$ and current estimate of $\beta$, which we call $\beta^{(k)}$:
 \begin{equation}
 z^{(i)} \sim z \, | \, x, \beta^{(k)}
 \end{equation}
-
-The observed data and sampled data can be combined together, where $M = J + F*J$
+The observed data and sampled data can be combined together, where $M = J + F J$
 \begin{equation}
 x_1, z_{1,1}, \cdots, z_{1,F}, x_2, z_{2,1}, \cdots, z_{2,F}, x_3, \cdots, x_J \rightarrow
 y_1^{(i)}, y_2^{(i)}, \cdots, y_M^{(i)}
 \end{equation}
+The Expectation Maximization algorithm consists of two steps, computing the expected log likelihood function, $Q$ and maximizing this function with respect to the parameters, $\beta$. Using the complete data, $y$, allows us to write the expected log likelihood as:
+$$
+Q(\beta, \beta^{(k)}) = \sum_{y^{(i)}} \text{complete log likelihood} $$
+$$
+Q = -\sum_{i} \sum_{j} \frac{(y_{j+1}^{(i)} - y_j^{(i)} -f(y_j^{(i)})h)^2}{2 \sigma^2 h}
+$$
+The above is the E step, and relies upon recent advances in sampling from diffusion bridges.  Though the above derivation is in $\mathbb{R}^1$, there are now open-source codes to reliably sample from diffusion bridges in $\mathbb{R}^d$.
 
-The Expectation-Maximization algorithm consists of two steps, computing the expected log likelihood function, $Q$ and maximizing this function with respect to the parameters, $\beta_i$. Using the complete data, $y$ means the expected log likelihood is the summation of the complete log likelihood over all $y_i$.
+For the $M$ step of the Expectation-Maximization algorithm, the complete log likelihood, $Q(\beta,\beta^{(k)})$ is maximized with respect to $\beta$:
 $$
-Q = \sum_{y^{(i)}} \text{complete log likelihood} $$
+\max_{\beta} \, -\frac{1}{2 \sigma^2 h} \sum_{i} \sum_{j} (y_{j+1}^{(i)} - y_j^{(i)} - h \sum_{k=1}^{M} \beta_k \phi_k(y_j^{(i)}))^2
 $$
-Q = \sum_{i} \sum_{j} \frac{(y_{j+1}^{(i)} - y_j^{(i)} -f(y_j^{(i)})h)^2}{2 \sigma^2 h}
+This is a least squares problem, i.e., a simple linear regression problem, but we include the details for the sake of completeness.  Differentiating with respect to each component of parameter, $\beta_{\ell}$ and setting the value to zero gives the maximum value, thus providing a direct way to evaluate the $M$ step:
 $$
-
-For the $M$ step of the Expectation-Maximization algorithm, the complete log likelihood, $Q$ is minimized with respect to the paramteres $\beta$
-$$
-\min_{\beta} \, \frac{1}{2 \sigma^2 h} \sum_{i} \sum_{j} (y_{j+1}^{(i)} - y_j^{(i)} - h \sum_{k=1}^{M} \beta_k \phi_k(y_j^{(i)}))^2
-$$
-Differentiating with respect to each component of parameter, $\beta_{\ell}$ and setting the value to zero gives the maximum value, thus providing a direct way to evaluate the $M$ step
-$$
-\frac{\partial (\cdot)}{\partial \beta_{\ell}} = \, \frac{1}{2 \sigma^2 h} \sum_{i} \sum_{j} (y_{j+1}^{(i)} - y_j^{(i)} - h \sum_{k=1}^{M} \beta_k \phi_k(y_j^{(i)})) * h \phi_{\ell}(y_j^{(i)}) = 0
+\frac{\partial (\cdot)}{\partial \beta_{\ell}} = \, -\frac{1}{2 \sigma^2 h} \sum_{i} \sum_{j} (y_{j+1}^{(i)} - y_j^{(i)} - h \sum_{k=1}^{M} \beta_k \phi_k(y_j^{(i)})) \cdot h \phi_{\ell}(y_j^{(i)}) = 0
 $$
 Rearranging the terms gives
 $$
 \sum_{i} \sum_{j} (\frac{y_{j+1}^{(i)} - y_j^{(i)}}{h}) \phi_{\ell}(y_{j}^{(i)}) = \sum_{k} \beta_k \phi_k(y_j^{(i)}) \phi_{\ell} (y_j^{(i)})
 $$
+This system can be written as $r = A \cdot \beta$ where $r$ and $A$ are known. We solve for $\beta$ via numerical linear algebra.
 
-This system can be written as $r = A * b$ matrix solution. The resulting value of $\phi$ is used in the next iteration of the EM algorithm as the iterate is chosen as:
+The resulting value of $\beta$ is used in the next iteration of the EM algorithm:
 $$
 \beta^{(k+1)} = \arg \max_{\beta} Q(\beta, \beta^{(k)})
 $$
+We then repeat the E and M steps as described above.  The algorithm is guaranteed to monotonically increase both the complete and incomplete log likelihoods.
+
+For the general case in $\mathbb{R}^d$, the model consists of a vector field $f: \mathbb{R}^d \to \mathbb{R}^d$.  Each component of this vector field can be developed in additive model form as above.  Hence we will obtain $d$ coefficient vectors $\beta$.  With this modification, the analysis proceeds as above.
 \end{document}

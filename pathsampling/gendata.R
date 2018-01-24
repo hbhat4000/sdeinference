@@ -15,13 +15,13 @@ library('orthopolynom')
 
 # use orthogonal polynomials
 # set number of degrees of freedom (numdof = max degree + 1)
-numdof = 3
+numdof = 4
 
 # sample frozen set of coefficients ~ U(-1,1)
 # set.seed(123)
 # frozencoeff = 2*runif(n=numdof) - 1
 # frozencoeff = frozencoeff/10
-frozencoeff = c(1,2,-1)
+frozencoeff = c(1,2,-1,-.5)
 
 # suppose diffusion coeff is known
 g = 1/2
@@ -35,9 +35,9 @@ frozendrift <- function(x)
 }
 
 # create trajectory
-ic = -4
-ft = 100.0
-numsteps = 250000  # total number of "fine" steps to take
+ic = 1
+ft = 10.0
+numsteps = 25000  # total number of "fine" steps to take
 savesteps = 100  # total number of times to save the solution
 traj = numeric(length=savesteps)
 tvec = numeric(length=savesteps)
@@ -59,6 +59,6 @@ traj = c(ic,traj)
 tvec = c(0,tvec)
 
 # save the data
-save(tvec,traj,file='~/nem2.RData')
+save(tvec,traj,file='~/Documents/sdeinference/pathsampling/nem1.RData')
 
 
