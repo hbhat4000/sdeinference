@@ -3,17 +3,22 @@ rm(list=ls(all=TRUE))
 
 # load required packages
 library('orthopolynom')
-# library('Sim.DiffProc')
+library('Sim.DiffProc')
 library('sde')
 
 # load data
-load('./nem.RData')
+load('nem1.RData')
+traj1 = traj
+load('nem2.RData')
+traj2 = traj
+traj = cbind(traj1, traj2)
 numtraj = ncol(traj)
+
 n = length(tvec)
 dt = tvec[2]-tvec[1]
 zoomfac = 10
 h = dt/zoomfac
-bign = (n-1)*zoomfac + 1
+bign = (n-1)*(zoomfac/dt) + 1
 
 # steps required to get this code to work
 # 1) create an artificial drift function and a trajectory
@@ -38,9 +43,9 @@ g = 1/2
 
 # set up main EM loop
 # set EM exit tolerance, initial guess for theta
-mytol = 1e-3
+mytol = 1
 # theta = rnorm(n=numdof)
-theta = c(1,2,-1,0)
+theta = c(1,3,0,-1)
 done = 0
 numpaths = 10
 sigmafn = expression(g)
@@ -53,8 +58,9 @@ while (done==0)
   print(numiter)
   
   # from the current theta vector, construct the drift fn as an expression
-  driftfn = normalized.p.list[[1]]*theta[1]
-  for (i in c(2:numdof))
+  # driftfn = normalized.p.list[[1]]*theta[1]
+  driftfn = 0
+  for (i in c(1:numdof))
     driftfn <- driftfn + normalized.p.list[[i]]*theta[i]
   
   # convert the polynomial to a legit R expression
@@ -77,15 +83,18 @@ while (done==0)
         # keeptrying = TRUE
         # while (keeptrying)
         # {
-        #   rawtest = tryCatch(bridgesde1d(x0=traj[i,j],y=traj[i+1,j],t0=0,T=dt,M=1,method='milstein',
+        #   rawtest = tryCatch(bridgesde1d(x0=traj[i,j],y=traj[i+1,j],t0=0,T=dt,M=numpaths,method='milstein',
         #                      N=zoomfac,drift=driftfn,diffusion=sigmafn),error=function(e) {})
         #   if ((!is.null(rawtest$C)) && (!is.na(rawtest$C)))
         #     if (rawtest$C==1)
         #       keeptrying = FALSE
         # }
         # test = as.numeric(rawtest$X)
-        test = as.numeric(DBridge(x=traj[i,j],y=traj[i+1,j],t0=0,T=dt,
-                          delta=h,drift=driftfn,sigma=sigmafn,sigma.x=sigmaxfn))
+        rawtest = bridgesde1d(x0=traj[i,j],y=traj[i+1,j],t0=0,T=dt,M=100,method='milstein',
+                                                N=zoomfac,drift=driftfn,diffusion=sigmafn)
+        test = as.numeric(rawtest$X)
+        # test = as.numeric(DBridge(x=traj[i,j],y=traj[i+1,j],t0=0,T=dt,
+                          # delta=h,drift=driftfn,sigma=sigmafn,sigma.x=sigmaxfn))
         lt = length(test)
         if (i < (n-1))
         {
@@ -111,8 +120,8 @@ while (done==0)
   
   # M-step
   newtheta = solve(mmat, rvec)
-
-  check = sum(abs(newtheta - theta))
+  
+  check = sum(abs(newtheta - theta)) / sum(abs(theta))
   if (check < mytol)
   {
     print(check)

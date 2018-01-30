@@ -35,7 +35,7 @@ frozendrift <- function(x)
 }
 
 # create trajectory
-ic = 1
+ic = 0
 ft = 10.0
 numsteps = 25000  # total number of "fine" steps to take
 savesteps = 100  # total number of times to save the solution
@@ -59,6 +59,6 @@ traj = c(ic,traj)
 tvec = c(0,tvec)
 
 # save the data
-save(tvec,traj,file='~/Documents/sdeinference/pathsampling/nem1.RData')
+save(tvec,traj,file='nem5.RData')
 
 
