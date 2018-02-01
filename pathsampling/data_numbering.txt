@@ -1,5 +1,0 @@
-nem1.RData -> ic = 1
-nem2.RData -> ic = 2
-nem3.RData -> ic = -1
-nem4.RData -> ic = -2
-nem5.RData -> ic = 0

@@ -1,55 +1,103 @@
 \documentclass[12pt]{article}
 \usepackage{amsmath, amssymb, latexsym, fullpage, caption, subcaption, scrextend, float, url, amsmath, amsthm, verbatim, amsfonts, amscd, graphicx, bm, algorithm, algpseudocode, pifont}
-\title{EM with stochastic sampling}
+\newcommand{\btheta}{\ensuremath{\boldsymbol{\theta}}}
+\newcommand{\opdiag}{\ensuremath{\operatorname{diag}}}
+\newcommand{\bx}{\ensuremath{\mathbf{x}}}
+\newcommand{\bz}{\ensuremath{\mathbf{z}}}
+
 \begin{document}
-
-\section{EM with stochastic sampling}
-Note that while the following derivation is in $\mathbb{R}^1$, everything can be generalized to $\mathbb{R}^d$.  The governing equation for the problem in $\mathbb{R}^1$ is:
+\begin{center}
+\textbf{Expectation Maximization (EM) with Bridge Sampling}
+\end{center}
+The governing equation for the problem in $\mathbb{R}^d$ is:
 \begin{equation} \label{eqn:sde}
-\dot{x} = f(x; \beta)
+dX(t) = f(X(t)) dt + \Gamma dW_t
 \end{equation}
-Consider an additive model for $f(x)$:
+with $\Gamma$ equal to a constant diagonal matrix and $W_t$ denoting Brownian motion in $\mathbb{R}^d$.  Consider an additive model for $f(x)$:
 \begin{equation} \label{eqn:parameteric}
-f(x) = \sum_{i=1}^{N} \beta_i \phi_i (x)
+f(x) = \sum_{k=1}^{M} \beta_k \phi_k (x)
 \end{equation} 
-The data is given in the form of a time series, $\mathbf{x}$ at discrete time points. For simplicity, let us assume the observations are collected at equispaced times, $jh$ for $0 \leq j \leq J$. Thus the observed data can be represented as $\mathbf{x} = x_0, x_1, \cdots, x_J$. 
+Here $\{\phi_i\}$ is some family of functions we prescribe, e.g., tensor products of orthogonal polynomials.  Each $\phi_i : \mathbb{R}^d \to \mathbb{R}$ should be fairly easy to compute.
 
-We start by introducing data at intermediate time points. In between 2 observed data points, $x_i$ and $x_{i+1}$, we introduce $F$ sampled values, $z_{i1}, z_{i2}, \cdots, z_{iF}$. The sampled values are created using a diffusion bridge. The $i^\text{th}$ diffusion bridge sample depends on the observed data, $x$ and current estimate of $\beta$, which we call $\beta^{(k)}$:
-\begin{equation}
-z^{(i)} \sim z \, | \, x, \beta^{(k)}
+We assume that $\Gamma = \opdiag \gamma$ and that there exists $\delta > 0$ such that $\gamma_i \geq \delta$ for all $i \in \{1, \ldots, d\}$.  Under this condition, (\ref{eqn:sde}) should have a smooth density.
+
+Suppose we have data in the form of a time series, $\mathbf{x}$, considered to be direct observations of $X(t)$ at discrete time points.  For simplicity, let us assume the observations are collected at equispaced times, $j \Delta t$ for $0 \leq j \leq L$. Thus the observed data is $\mathbf{x} = x_0, x_1, \cdots, x_L$.  Each $x_j \in \mathbb{R}^d$.
+
+\textbf{Our goal is to use the data to estimate the functional form of $f$ and the constant vector $\gamma$.}
+
+To achieve this goal, we propose to use EM.  Here we regard $\mathbf{x}$ as the incomplete data.  The missing data $\mathbf{z}$ is thought of as data collected at a time scale $h \ll \Delta t$ that is fine enough such that the transition density of (\ref{eqn:sde}) is approximately Gaussian.  That is, if we discretize (\ref{eqn:sde}) in time via Euler-Maruyama method, we obtain
+\begin{equation} \label{eqn:euler}
+\widetilde{X}_{n+1} = \widetilde{X}_n + f(\widetilde{X}_n; \beta) h + \gamma h^{1/2} Z_{n+1}
 \end{equation}
-The observed data and sampled data can be combined together, where $M = J + F J$
+where $Z_{n+1}$ is a standard normal, independent of $X_n$.  Note that $\widetilde{X}_{n+1} | \widetilde{X}_n = v$ is multivariate Gaussian with mean vector $v + f(v) h$ and covariance matrix $h \Gamma^2$.  Specifically, the density is
+$$
+\left( \prod_{i=1}^d \frac{1}{\sqrt{2 \pi h \gamma_i^2}} \right)
+\exp \left( -\frac{1}{2h} (x - v - h \sum_{k=1}^M \beta_k \phi_k(v))^T \Gamma^{-2} (x - v - h \sum_{\ell=1}^M \beta_\ell \phi_\ell(v)) \right).
+$$
+As $h$ decreases, this Gaussian will better approximate the transition density
+$$
+X((n+1)h) | X(nh) = v,
+$$
+where $X(t)$ refers to the solution of (\ref{eqn:sde}), not its time-discretization.
+
+\paragraph{EM.} The EM algorithm consists of two steps, computing the expectation of the log likelihood function (on the completed data) and then maximizing it with respect to the parameters $\btheta = (\beta, \gamma)$. 
+\begin{enumerate}
+\item Start with an initial guess for the parameters, $\btheta^{(0)}$.
+\item For the expectation (or E) step,
 \begin{equation}
-x_1, z_{1,1}, \cdots, z_{1,F}, x_2, z_{2,1}, \cdots, z_{2,F}, x_3, \cdots, x_J \rightarrow
-y_1^{(i)}, y_2^{(i)}, \cdots, y_M^{(i)}
+\label{eqn:expectation}
+Q(\btheta, \btheta^{(k)}) = \mathbb{E}_{\bz \mid \bx, \btheta^{(k)}} [\log p(\bx, \bz \mid \btheta)]
 \end{equation}
-The Expectation Maximization algorithm consists of two steps, computing the expected log likelihood function, $Q$ and maximizing this function with respect to the parameters, $\beta$. Using the complete data, $y$, allows us to write the expected log likelihood as:
-$$
-Q(\beta, \beta^{(k)}) = \sum_{y^{(i)}} \text{complete log likelihood} $$
-$$
-Q = -\sum_{i} \sum_{j} \frac{(y_{j+1}^{(i)} - y_j^{(i)} -f(y_j^{(i)})h)^2}{2 \sigma^2 h}
-$$
-The above is the E step, and relies upon recent advances in sampling from diffusion bridges.  Though the above derivation is in $\mathbb{R}^1$, there are now open-source codes to reliably sample from diffusion bridges in $\mathbb{R}^d$.
+Our plan is to evaluate this expectation via bridge sampling.  That is, we will sample from diffusion bridges $\bz \mid \bx, \btheta^{(k)}$.  Then $(\bx, \bz)$ will be a combination of the original data together with sample paths.
+\item For the maximization (or M) step, we start with the current iterate and a dummy variable $\btheta$ and define
+\begin{equation}
+\label{eqn:maximization}
+\btheta^{(k+1)} = \arg \max_{\btheta} Q(\btheta, \btheta^{(k)})
+\end{equation}
+It will turn out that we can maximize this quantity without numerical optimization.  All we will need to do is solve a least-squares problem.
+\item Iterate Step 2 and 3 until convergence.
+\end{enumerate}
 
-For the $M$ step of the Expectation-Maximization algorithm, the complete log likelihood, $Q(\beta,\beta^{(k)})$ is maximized with respect to $\beta$:
-$$
-\max_{\beta} \, -\frac{1}{2 \sigma^2 h} \sum_{i} \sum_{j} (y_{j+1}^{(i)} - y_j^{(i)} - h \sum_{k=1}^{M} \beta_k \phi_k(y_j^{(i)}))^2
-$$
-This is a least squares problem, i.e., a simple linear regression problem, but we include the details for the sake of completeness.  Differentiating with respect to each component of parameter, $\beta_{\ell}$ and setting the value to zero gives the maximum value, thus providing a direct way to evaluate the $M$ step:
-$$
-\frac{\partial (\cdot)}{\partial \beta_{\ell}} = \, -\frac{1}{2 \sigma^2 h} \sum_{i} \sum_{j} (y_{j+1}^{(i)} - y_j^{(i)} - h \sum_{k=1}^{M} \beta_k \phi_k(y_j^{(i)})) \cdot h \phi_{\ell}(y_j^{(i)}) = 0
-$$
-Rearranging the terms gives
-$$
-\sum_{i} \sum_{j} (\frac{y_{j+1}^{(i)} - y_j^{(i)}}{h}) \phi_{\ell}(y_{j}^{(i)}) = \sum_{k} \beta_k \phi_k(y_j^{(i)}) \phi_{\ell} (y_j^{(i)})
-$$
-This system can be written as $r = A \cdot \beta$ where $r$ and $A$ are known. We solve for $\beta$ via numerical linear algebra.
+\paragraph{Details.} With a fixed parameter vector $\btheta^{(k)}$, the SDE (\ref{eqn:sde}) is specified completely, i.e., the drift and diffusion terms have no further unknowns.  For this SDE, we assume a diffusion bridge sampler is available.  We take $F$ diffusion bridge steps to march from $x_i$ to $x_{i+1}$; the time step will be $h = (\Delta t)/F$.  We can think of this process as inserting $F-1$ \emph{new} samples, $\{z_{i,j}\}_{j=1}^{F-1}$ between $x_i$ and $x_{i+1}$.  
 
-The resulting value of $\beta$ is used in the next iteration of the EM algorithm:
+Let $\mathbf{z}^{(r)}$ denote the $r^\text{th}$ diffusion bridge sample path:
+\begin{equation}
+z^{(r)} \sim z \, | \, x, \beta^{(k)}
+\end{equation}
+The observed and sampled data can be interleaved together to create a time series (completed data)
 $$
-\beta^{(k+1)} = \arg \max_{\beta} Q(\beta, \beta^{(k)})
+\mathbf{y}^{(r)} = \{y_j^{(r)}\}_{j=1}^N
 $$
-We then repeat the E and M steps as described above.  The algorithm is guaranteed to monotonically increase both the complete and incomplete log likelihoods.
+of length $N = LF + 1$.  Suppose we form $R$ such time series.  The expected log likelihood can then be approximated by
+\begin{align*}
+Q(\btheta, \btheta^{(k)}) &= \mathbb{E}_{\bz \mid \bx, \btheta^{(k)}} [\log p(\bx, \bz \mid \btheta)] \\
+ &\approx \frac{1}{R} \sum_{r=1}^R \biggl[ \sum_{j=1}^N \left[ \sum_{i=1}^d -\frac{1}{2} \log (2 \pi h \gamma_i^2) \right] \\
+ &\qquad -\frac{1}{2h} (y_j^{(r)} - y_{j-1}^{(r)} - h \sum_{k=1}^M \beta_k \phi_k(y_{j-1}^{(r)}))^T \Gamma^{-2} (y_j^{(r)} - y_{j-1}^{(r)} - h \sum_{\ell=1}^M \beta_\ell \phi_\ell(y_{j-1}^{(r)}) ) \biggr] 
+\end{align*}
 
-For the general case in $\mathbb{R}^d$, the model consists of a vector field $f: \mathbb{R}^d \to \mathbb{R}^d$.  Each component of this vector field can be developed in additive model form as above.  Hence we will obtain $d$ coefficient vectors $\beta$.  With this modification, the analysis proceeds as above.
+To maximize $Q$ over $\btheta$, we first assume $\Gamma = \opdiag \gamma$ is known and maximize over $\beta$.  This is a least squares problem.  The solution is given by forming the matrix
+$$
+\mathcal{M}_{k,\ell} = \frac{1}{R} \sum_{r=1}^{R} \sum_{j=1}^N h \phi_k^T (y_{j-1}^{(r)}) \Gamma^{-2} \phi_\ell^T (y_{j-1}^{(r)})
+$$
+and the vector
+$$
+\rho_k = \frac{1}{R} \sum_{r=1}^{R} \sum_{j=1}^N \phi_k^T (y_{j-1}^{(r)}) \Gamma^{-2} (y_j^{(r)} - y_{j-1}^{(r)}).
+$$
+We then solve the system
+$$
+M \beta = \rho
+$$
+for $\beta$.  Now that we have $\beta$, we maximize $Q$ over $\gamma$.  The solution can be obtained in closed form:
+$$
+\gamma_i^2 = \frac{1}{R N h} \sum_{r=1}^{R} \sum_{j=1}^N (( y_j^{(r)} - y_{j-1}^{(r)} - h \sum_{\ell=1}^M \beta_\ell \phi_\ell (y_{j-1}^{(r)}) ) \cdot e_i )^2
+$$
+where $e_i$ is the $i^\text{th}$ canonical basis vector in $\mathbb{R}^d$.
+
+\paragraph{Remarks}
+\begin{enumerate}
+\item In $d=1$ dimension, when $\Gamma$ is fixed and known, the procedure appears to work well even with $R=10$ sample paths.  This is for a problem where we generate data from a known model and then try to recover the $\beta$ coefficients.
+\item It is of interest to prove that the alternating $\beta, \Gamma$ maximization approach increases the $Q$ function.  As long as the $Q$ function increases from one iteration to the next, up to the sampling error (which should decay like $R^{-1/2}$), the EM algorithm should converge monotonically.  That is, both the completed log likelihood and the log likelihood of the original data $\mathbf{x}$ should converge monotonically.  The EM algorithm should yield a local maximizer.
+\item If the alternating $\beta, \Gamma$ maximization approach does not work, we could instead take a few gradient descent steps on the negative log likelihood.  The gradients are simple to compute.
+\end{enumerate}
+
 \end{document}
