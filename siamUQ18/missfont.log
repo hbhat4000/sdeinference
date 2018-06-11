@@ -1,0 +1,16 @@
+mktexpk --mfmode ljfour --bdpi 8000 --mag 1+3520/(2*4000) --dpi 11520 zgmr8r
+mktexpk --mfmode ljfour --bdpi 8000 --mag 1+760/(2*4000) --dpi 8760 zgmr8r
+mktexpk --mfmode ljfour --bdpi 8000 --mag 0+6400/(2*4000) --dpi 6400 zgmr8r
+mktexpk --mfmode ljfour --bdpi 8000 --mag 0+4800/(2*4000) --dpi 4800 zgmr8r
+mktexpk --mfmode ljfour --bdpi 8000 --mag 1+1600/(2*4000) --dpi 9600 zgmr8r
+mktexpk --mfmode ljfour --bdpi 8000 --mag 1+760/(2*4000) --dpi 8760 zgmb8r
+mktexpk --mfmode ljfour --bdpi 8000 --mag 1+760/(2*4000) --dpi 8760 zgmri8r
+mktexpk --mfmode ljfour --bdpi 8000 --mag 1+760/(2*4000) --dpi 8760 newG8-Reg-swq
+mktexpk --mfmode ljfour --bdpi 8000 --mag 1+3520/(2*4000) --dpi 11520 zgmr8r
+mktexpk --mfmode ljfour --bdpi 8000 --mag 1+760/(2*4000) --dpi 8760 zgmr8r
+mktexpk --mfmode ljfour --bdpi 8000 --mag 0+6400/(2*4000) --dpi 6400 zgmr8r
+mktexpk --mfmode ljfour --bdpi 8000 --mag 0+4800/(2*4000) --dpi 4800 zgmr8r
+mktexpk --mfmode ljfour --bdpi 8000 --mag 1+1600/(2*4000) --dpi 9600 zgmr8r
+mktexpk --mfmode ljfour --bdpi 8000 --mag 1+760/(2*4000) --dpi 8760 zgmb8r
+mktexpk --mfmode ljfour --bdpi 8000 --mag 1+760/(2*4000) --dpi 8760 zgmri8r
+mktexpk --mfmode ljfour --bdpi 8000 --mag 1+760/(2*4000) --dpi 8760 newG8-Reg-swq
