@@ -1,0 +1,52 @@
+\documentclass[12pt,landscape]{article}
+\usepackage{amssymb,amsmath,latexsym}
+\usepackage{xcolor}
+\usepackage{tikz}
+\usepackage{graphicx}
+\usepackage{fullpage}
+\makeatletter
+\def\bbordermatrix#1{\begingroup \m@th
+  \@tempdima 4.75\p@
+  \setbox\z@\vbox{%
+    \def\cr{\crcr\noalign{\kern2\p@\global\let\cr\endline}}%
+    \ialign{$##$\hfil\kern2\p@\kern\@tempdima&\thinspace\hfil$##$\hfil
+      &&\quad\hfil$##$\hfil\crcr
+      \omit\strut\hfil\crcr\noalign{\kern-\baselineskip}%
+      #1\crcr\omit\strut\cr}}%
+  \setbox\tw@\vbox{\unvcopy\z@\global\setbox\@ne\lastbox}%
+  \setbox\tw@\hbox{\unhbox\@ne\unskip\global\setbox\@ne\lastbox}%
+  \setbox\tw@\hbox{$\kern\wd\@ne\kern-\@tempdima\left[\kern-\wd\@ne
+    \global\setbox\@ne\vbox{\box\@ne\kern2\p@}%
+    \vcenter{\kern-\ht\@ne\unvbox\z@\kern-\baselineskip}\,\right]$}%
+  \null\;\vbox{\kern\ht\@ne\box\tw@}\endgroup}
+\makeatother
+
+\newcommand{\emptybox}[2][\textwidth]{%
+  \begingroup
+  \setlength{\fboxsep}{-\fboxrule}%
+  \noindent\makebox[#1]{\rule{0pt}{#2}}%
+  \endgroup
+}
+
+\newcommand{\myrot}[1]{\text{\rotatebox{90}{\ensuremath{#1}}}}
+
+\begin{document}
+$$
+\underbrace{\bbordermatrix{\hspace{-1em} & \dot{x}_1 & \dot{x}_2 & \dot{x}_3 \cr
+  \hspace{-1em} & \fcolorbox{blue}{blue!100}{\makebox[2pt][c]{ \emptybox[2pt]{200pt} }} & \fcolorbox{red}{red!100}{\makebox[2pt][c]{ \emptybox[2pt]{200pt} }} & \fcolorbox{green}{green!100}{\makebox[2pt][c]{ \emptybox[2pt]{200pt} }}}}_{\dot{x}}
+ = 
+ \underbrace{\bbordermatrix{\hspace{-1em} & 1 & \myrot{H_1(x_1)} & \myrot{H_1(x_2)} & \myrot{H_1(x_3)} & \myrot{H_1(x_1) H_1(x_2)} & \myrot{H_2(x_1)} & \myrot{H_1(x_1) H_1(x_3)} & \cdots & \myrot{H_2(x_3)} \cr
+ \hspace{-1em} & \fcolorbox{gray}{gray!40}{\makebox[2pt][c]{ \emptybox[2pt]{200pt} }}
+ & \fcolorbox{gray}{gray!40}{\makebox[2pt][c]{ \emptybox[2pt]{200pt} }} 
+ & \fcolorbox{gray}{gray!40}{\makebox[2pt][c]{ \emptybox[2pt]{200pt} }} 
+ & \fcolorbox{gray}{gray!40}{\makebox[2pt][c]{ \emptybox[2pt]{200pt} }} 
+ & \fcolorbox{gray}{gray!40}{\makebox[2pt][c]{ \emptybox[2pt]{200pt} }} 
+ & \fcolorbox{gray}{gray!40}{\makebox[2pt][c]{ \emptybox[2pt]{200pt} }} 
+ & \fcolorbox{gray}{gray!40}{\makebox[2pt][c]{ \emptybox[2pt]{200pt} }} 
+ & \raisebox{97pt}{$\cdots$}
+ & \fcolorbox{gray}{gray!40}{\makebox[2pt][c]{ \emptybox[2pt]{200pt} }} 
+  }}_{\phi(x)}
+  \underbrace{\bbordermatrix{\hspace{-1em} & \beta^1 & \beta^2 & \beta^3 \cr
+  \hspace{-1em} & \fcolorbox{blue}{blue!40}{\makebox[2pt][c]{ \emptybox[2pt]{125pt} }} & \fcolorbox{red}{red!40}{\makebox[2pt][c]{ \emptybox[2pt]{125pt} }} & \fcolorbox{green}{green!40}{\makebox[2pt][c]{ \emptybox{125pt} }}}}_{\beta} + \varepsilon
+$$
+\end{document}
