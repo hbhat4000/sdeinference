@@ -1,0 +1,101 @@
+\documentclass[a4paper,11pt]{article}
+
+\usepackage[left=2.5cm,right=2.5cm,top=3cm,bottom=3cm,pdftex]{geometry}
+\usepackage{amssymb, amsmath, url, natbib, float, subcaption, listings,mathtools}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[pdftex]{graphicx}
+\pdfcompresslevel=9 
+\DeclareGraphicsExtensions{.png, .pdf, .jpg}
+\usepackage[pdftex, colorlinks, linkcolor=blue, urlcolor=blue, citecolor=blue, pagecolor=blue, breaklinks=true]{hyperref}
+
+\begin{document}
+\pagestyle{empty}
+\title{Comparison}
+\begin{center}
+\Large\textbf{CRAN packages comparison} \\[11pt]
+\normalsize
+\end{center}
+
+\section{DiffusionRgqd}
+Uses the cumulant truncation procedure developed by Varughese (2013), whereby the transition density can be approximated over arbitrarily large transition horizons for a suitably general class of non-linear diffusion models.
+
+Generalized quadratic diffusions (GQD) are the specific class of SDEs with quadratic drift and diffusion terms:
+
+\begin{align*}
+d X_t & = \mu(X_t, t)dt + \sigma(X_t, t)dW_t, \: \text{where} \\
+\mu(X_t, t) & = G_0(t) + G_1(t) X_t + G_2(t) X_t^2, \: \text{and} \\
+\sigma (X_t, t) & = Q_0(t) + Q_1(t) X_t + Q_2(t) X_t^2
+\end{align*}
+
+For purposes of inference the drift and diffusion terms - and consequently the transitional density - are assumed to be dependent on a vector of parameters, $\theta$. For example, an Ornstein-Uhlenbeck model with SDE:
+
+\begin{equation}
+d X_t = \theta_1 (\theta_2 - X_t) + \sqrt{\theta_3^2} dW_t
+\end{equation}
+
+\begin{lstlisting}[language=R]
+G0=function(t){theta[1]*theta[2]}
+G1=function(t){-theta[1]}
+Q0=function(t){theta[3]*theta[3]}
+\end{lstlisting}
+
+For a constant drift, diffusion SDE, with given initial condition $X_s$:
+\begin{equation}
+dX_t = \mu dt + \sigma dW_t
+\end{equation}
+The distribution at time $t$ of the process $X_t$ is $\mathcal{N}(X_t, X_s + \mu(t-s), \sigma^2(t-s))$
+
+\begin{lstlisting}
+Xs <- 0                 # Initial state
+Xt <- seq(-3/2,3/2,1/50)# Possible future states
+s  <- 0                 # Starting time
+t  <- 1                 # Final time
+mu    <- 0.5            # Drift parameter
+sigma <- 0.25           # Diffusion coefficient
+
+library(DiffusionRgqd) 
+# Remove any existing coefficients:
+GQD.remove()
+
+# Define the model coefficients:
+G0 <- function(t){mu}
+Q0 <- function(t){sigma^2}
+
+# Calculate the transitional density:
+BM <- GQD.density(Xs,Xt,s,t)
+\end{lstlisting}
+
+
+\section{pomp: statistical inference for partially-observed Markov processes}
+\section{Robfilter}
+\section{Sim.DiffProc Package - FitSDE}
+\section{HPloglik}
+\section{abctools}
+
+\end{document}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

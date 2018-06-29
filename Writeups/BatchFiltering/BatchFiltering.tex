@@ -1,0 +1,271 @@
+\documentclass[a4paper,11pt]{article}
+\usepackage[left=2.5cm,right=2.5cm,top=3cm,bottom=3cm,pdftex]{geometry}
+\usepackage{amssymb, amsmath, url, natbib, float, subcaption, listings,mathtools}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\renewcommand{\topfraction}{0.9}
+\lstset{basicstyle=\scriptsize\tt,}
+\usepackage[pdftex]{graphicx}
+\pdfcompresslevel=9
+\DeclareGraphicsExtensions{.png, .pdf, .jpg}
+\usepackage[pdftex, colorlinks, linkcolor=blue, urlcolor=blue, citecolor=blue,
+pagecolor=blue, breaklinks=true]{hyperref}
+
+\usepackage{tikz}
+\newcommand\encircle[1]{%
+\tikz[baseline=(X.base)]
+\node (X) [draw, shape=circle, inner sep=0] {\strut #1};}
+
+\begin{document}
+\pagestyle{empty}
+\title{Filtering and optimization}
+\section{Filtering introduction}
+
+We consider the stochastic differential equation model:
+
+\begin{align*}
+d X_t & = f(X_t; \theta) dt + g(X_t ; \theta) dW_t \\
+Y_t & = X_t + \epsilon_t
+\end{align*}
+
+The first equation is a stochastic differential equation with drift function $f(X_t; \theta)$, diffusion function $g(X_t; \theta)$ and Brownian motion $W_t$. We consider $X_t$ as the latent variable and $Y_t$ as the observed variable, where there's another
+
+observation noise $\epsilon_t$. The observation noise is assumed to be distributed normally with mean 0, variance
+
+$\sigma^2_{\epsilon}$. \\
+
+The aim of filtering in general is to estimate the posterior density of the state variables given the observed variables. Particle filtering tries to estimate sequentially the value of $x_k$ given the observed values $y_0, \cdots, y_k$, $k \leq L$ (the length of the time series). The particle filter provides an approximation to the posterior density $p(x_k | y_0, \cdots, y_k)$, in contrast to MCMC which computes the full posterior $p(x_0, \cdots, x_k | y_0, \cdots, y_k)$. The nonlinear filtering equation follows a recursive updation - prediction step, $p(x_k | y_0, \cdots, y_{k-1}) \to p(x_k | y_0, \cdots, y_{k}) \to p(x_{k+1} | y_0, \cdots, y_{k})$. The particle filter is an approximation to the full posterior computation but can be very accurate given enough data points.\\
+
+Our aim is to infer the posterior distribution $p(\vec{x}, \theta, \sigma^2_{\epsilon} | \vec{y})$, which is proportional to the likelihood function and the prior
+
+\begin{align*}
+p(\vec{x}, \theta, \sigma^2_{\epsilon} | \vec{y}) \propto p(\vec{y} | \vec{x}, \theta, \sigma^2_{\epsilon}) p(\vec{x}, \theta, \sigma^2_{\epsilon})
+\end{align*}
+
+$\vec{x}$ is the vector of latent system variables and $\vec{y}$ is the vector of observed variables. Since $y_t$ depends on $x_t$ and $\epsilon_t$, it is independent of $\theta$ and other latent or observed variables. The likelihood function can be rewritten as,
+
+\begin{align*}
+p(\vec{y} | \vec{x}, \theta, \sigma^2_{\epsilon}) = \prod_{j=0}^L p(y_{t_{j}} | x_j, \sigma^2_{\epsilon}) = \prod_{j=0}^{L} \frac{1} {\sqrt{2 \pi \sigma^2_{\epsilon}}} e^{- \frac{(y_{t_{j}} - x_j)^2}{2 \sigma^2_{\epsilon}}}
+\end{align*}
+
+The prior on the other hand can be reduced to multiplicative factors of the priors of the parameters,
+\begin{align*}
+p(\vec{x}, \theta, \sigma^2_{\epsilon}) = p(\vec{x} | \theta) p(\theta) p(\sigma^2_{\epsilon})
+\end{align*}
+
+Till now, the first term of the prior, $p(\vec{x} | \theta)$ used to be the likelihood function we would calculate using the DTQ method, by applying quadrature. The final posterior can now be written as,
+
+\begin{align*}
+p(\vec{x}, \theta, \sigma^2_{\epsilon} | \vec{y}) \propto \bigg[\prod_{j=0}^L p(y_{t_{j}} | x_j, \sigma^2_{\epsilon}) \bigg] p(\vec{x} | \theta) p(\theta) p(\sigma^2_{\epsilon})
+\end{align*}
+
+Since we need the gradients of the posterior for optimization, it's easier to take the logarithm on both sides and take derivatives of the summation terms
+
+\begin{align*}
+\log p(\vec{x}, \theta, \sigma^2_{\epsilon} | \vec{y}) & \propto \log \bigg[\prod_{j=0}^L p(y_{t_{j}} | x_j, \sigma^2_{\epsilon}) \bigg] + \log p(\vec{x} | \theta) + \log p(\theta) + \log p(\sigma^2_{\epsilon}) \\
+& \propto \underbrace{\bigg[\sum_{j=0}^L \log p(y_{t_{j}} | x_j, \sigma^2_{\epsilon}) \bigg]}_{\encircle{1}} + \underbrace{\bigg[\sum_{j=0}^L \log p(x_{j+1} | x_j, \theta) \bigg]}_{\encircle{2} \text{: computed by DTQ}} + \underbrace{\log p(x_0)}_{\encircle{3}} + \underbrace{\log p(\theta)}_{\encircle{4}} + \underbrace{\log p(\sigma^2_{\epsilon})}_{\encircle{5}}
+\end{align*}
+
+The time series is of length $L$, where an current data point is $i$. So while in the process of optimizing the objective function, we go one - by - one from $0 \leq i \leq L$. The current data point is $t_{i}$ with the observed data $Y_{t_{i}}$, the estimated data $x_{i}$ and the estimation to be made as $x_{i+1}$. So we are in the interval $[t_{i}, t_{i+1}]$ where the parameters estimated at $t_{i}$ in the previous iterations are the initial conditions for this iteration. \\
+
+The terms bracketed above are as follows:
+\begin{enumerate}
+\item The log likelihood function is a gaussian with mean $x_j$ and variance $\sigma^2_{\epsilon}$ because of the noise relation, $Y_t = X_t + {\epsilon}_t$. This term is independent of previous observations, previous estimated timeseries values and the parameters of the SDE. In this computation, $y_{t_{j}}$, $x_{j}$ are known and the previously estimated values of $\theta, \sigma^2_{\epsilon}$ are considered the initial guesses for this iteration of the optimizer.
+
+\begin{align*}
+\encircle{1} = & \sum_{j=0}^{i} \log p(y_{t_{j}} | x_j, \sigma^2_{\epsilon}) = \sum_{j=0}^{i} \log \frac{1}{\sqrt{2 \pi \sigma^2_{\epsilon}}} + \sum_{j=0}^{i} \bigg( -\frac{(y_{t_{j}} - x_j)^2}{2 \sigma^2_{\epsilon}}\bigg), \forall i \mid 0 \leq i \leq L \\
+\frac{\partial \encircle{1}}{\partial x_{i}} = & \frac{(y_{t_{i}} - x_{i})}{\sigma^2_{\epsilon}}, \frac{\partial \encircle{1}}{\partial \sigma^2_{\epsilon}} = \sum_{j=0}^{j'} \bigg[ \frac{1}{\sigma^2_{\epsilon}} \log \frac{1}{\sqrt{2 \pi \sigma^2_{\epsilon}}} - \frac{(y_{t_j} - x_j)^2}{2\sigma^4_{\epsilon}} \bigg], \forall j' \mid 0 \leq j' \leq L
+\end{align*}
+
+\item The second term is the one computed by the DTQ method. This is the bottleneck computation because it can not be written down explicitly in the general case. In the DTQ method, we use the Euler - Maruyama approximation to the SDE and apply a quadrature over the interval so that it can do the computation more accurately even in the case of long non - equispaced intervals. In the DTQ method, if we have $n$ intermediate spatial grid points in the interval $[t_{j'}, t_{j'+1}]$, the following steps are involved
+
+\begin{enumerate}
+\item $1^{st}$ step is exact and involves going from the delta distribution at $x_{j'}$ to the normal distribution centered around $x_{j'}$. This is represented as the column vector $\vec{g}(x_{j'})$.
+\item Starting from the initial grid along $x_{j'}$ we need to propagate the computations along the spatial grids. There are $n - 2$ repeated matrix multiplications for forward progression in time represented as $A^{n - 2}$. The matrix $A$ remains the same irrespective of the interval.
+\item To avoid interpolation on the grid that we created, the last step involves multiplication by the vector which represents the grid along the final spatial point, $\vec{\Gamma}(x_{j'+1})$
+\end{enumerate}
+
+For computing the likelihood $p(\vec{x} \mid \theta)$, we use the Markov property satisfied by the Euler-Maruyama approximation of the SDE $x$
+
+\begin{align*}
+& p(x_{j'}, t_{n+1}) = \int_{y} G(x_{j'}, y) p(y, t_n) dy \\
+& \vec{\Gamma}(x_2) = (G(x_2, -Mk), G(x_2, (-M+1)k ), \cdots, G(x_2, Mk)) \\
+& \frac{\partial \vec{\Gamma}}{\partial x_2} = \bigg( \frac{\partial G}{\partial x_2}(x_2, -Mk), \frac{\partial G}{\partial x_2}(x_2, (-M+1)k), \cdots, \frac{\partial G}{\partial x_2}(x_2, Mk) \bigg)
+\end{align*}
+
+The grid is $(-Mk, (-M+1)k, \cdots, (M-1)k, Mk)$ In the above explanation, $G(a,b)$ is described as,
+
+\begin{align*}
+G(a,b) = \frac{1}{\sqrt{2 \pi g^2(b; \theta) h}} \exp \bigg( - \frac{(a - b - f(b; \theta)h)^2}{2 g^2(b; \theta)h} \bigg)
+\end{align*}
+
+So considering one of the grid points, $ik, -M \leq i \leq M$, we get,
+
+\begin{align*}
+G(x_2, ik) & = \frac{1}{\sqrt{2 \pi g^2(ik; \theta) h}} \exp \bigg( - \frac{(x_2 - b - f(ik; \theta)h)^2}{2 g^2(ik; \theta)h} \bigg), \forall i \\
+\frac{\partial G}{\partial x_2}(x_2, ik) & = -\frac{(x_2 - ik - f(ik; \theta)h)}{g^2(ik; \theta)h} G(x_2, ik), \forall i \\
+\implies \frac{\partial \encircle{2}}{\partial x_i} & = \sum_{j=1}^{L} \bigg( \cdots, -\frac{(x_j - ik - f(ik; \theta)h)}{g^2(ik; \theta)h}, \cdots \bigg) +
+\end{align*}
+\end{enumerate}
+
+Let's simplify each of the terms before we take the derivatives
+
+\begin{align*}
+\encircle{2a} = & p(x_{j+1} | x_j, \theta) = \vec{\Gamma}(x_{j+1}) . A^{n - 2}. \vec{g}(x_{j}) \\
+\frac{\partial \encircle{2a}}{\partial x_i} = & \frac{\partial \vec{\Gamma}}{\partial x_i}(x_i) . A^{n- 2}. \vec{g}(x_{i-1})\\
+\frac{\partial \encircle{2}}{\partial x_i} = & \sum_{j=1}^{L} \frac{\frac{\partial \vec{\Gamma}}{\partial x_i}(x_i) . A^{n-2}. \vec{g}(x_{i-1})}{\vec{\Gamma}(x_{i}) . A^{n-2}. \vec{g}(x_{i-1})}\\
+= & \sum_{j=1}^{L} \frac{1}{\vec{\Gamma}(x_i)} \frac{\partial \vec{\Gamma}}{\partial x_i}(x_i) \\
+\frac{\partial \encircle{2}}{\partial \theta} = & \text{computed in DTQ code}
+\end{align*}
+
+We need to find the derivatives of the 4 circled terms above, with respect to 3 parameters, $\{ x_i, \{ \theta_1, \theta_2, \theta_3 \}, \sigma^2_{\epsilon} \}$
+
+\begin{table}[H]
+\centering
+\caption{Derivatives}
+\label{allderivs}
+\begin{tabular}{|l|l|l|l|l|l|}
+\hline
+$\frac{\partial}{\partial}$ & \encircle{1} & \encircle{2} & \encircle{3} & \encircle{4} & \encircle{5} \\ \hline
+$x_i$ & $\checkmark$ & $\checkmark$ & & 0 & 0 \\ \hline
+$\{ \theta_1, \theta_2, \theta_3 \}$ & 0 & $\checkmark$ & 0 & & 0 \\ \hline
+$\sigma^2_{\epsilon}$ & $\checkmark$ & 0 & 0 & 0 & \\ \hline
+\end{tabular}
+\end{table}
+
+The priors used for the parameters $\{ x, \{ \theta_1, \theta_2, \theta_3 \}, \sigma^2_{\epsilon} \}$ are as follows:
+\begin{align*}
+\log p(x_0) & = \log \mathcal{N}(x = x_0, \mu = y_0, \sigma^2 = \sigma^2_{\epsilon})\\
+\log p(\theta) & = \log \mathcal{N}(x = \theta_1, \mu = 0.5, \sigma^2 = 1) + \log \mathcal{N}(x = \theta_2, \mu = 2, \sigma^2 = 10)\\
+\log p(\sigma^2_{\epsilon}) & = \log (\text{Exp}(\lambda = 1)) = \log (\lambda) -\lambda \sigma^2_{\epsilon}
+\end{align*}
+
+For a general log Normal pdf,
+\begin{align*}
+f(x, \mu, \sigma^2) & = \log \bigg[ \frac{1}{\sqrt{2 \pi \sigma^2}} \exp \bigg( - \frac{(x - \mu)^2}{2 \sigma^2} \bigg) \bigg] = - \log(\sqrt{2 \pi \sigma^2}) - \frac{(x - \mu)^2}{2 \sigma^2} \\
+\frac{\partial f(x, \mu, \sigma^2)}{\partial x} & = - \frac{(x - \mu)}{\sigma^2}
+\end{align*}
+
+So the derivatives of the priors with respect to the parameters are,
+\begin{align*}
+\frac{\partial \log p(x_0)}{\partial x_0} = & - \frac{(x_0 - y_0)}{2 \sigma^2_{\epsilon}} \\
+\frac{\partial \log p(\theta)}{\partial \theta_1} = & -(\theta_1 - 0.5), \frac{\partial \log p(\theta)}{\partial \theta_2} = -\frac{(\theta_2 -2)}{100}, \frac{\partial \log p(\theta)}{\partial \theta_3} = 0\\
+\frac{\partial \log p(\sigma^2_{\epsilon})}{\partial \sigma_{\epsilon}^2} = & -\lambda &
+\end{align*}
+
+\section{Implementation}
+
+In this paper we try to solve the inference problem for a time series. The time series is generated by a stochastic differential equation with drift function $f(X; \theta)$ and diffusion function $g(X; \theta)$. The observations obtained from this time series are noisy. Our goal is to not only infer the values of $\theta$ and the distribution of noise, but we also want to find the estimated time series. We consider the parameters of the SDE ($\theta$), the parameters of the noise ($\sigma^2_{\epsilon}$) and the estimated time series, as the parameters of the model. We want to get a MAP estimate of the log posterior of the parameters given the observed time series, $p(\vec{X}, \theta, \sigma^2_{\epsilon})$ for a given time series $\{ \vec{t}, \vec{Y} \}$ where $\vec{Y}$ are the observations on the times given by $\vec{t}$. \\ One methodology to approach the problem (as investigated in the BigMine 16 paper) is to consider the time series as a parameter and infer the distribution of the estimated states using Metropolis algorithm. In this paper we try to find an approximate value by solving for the optimal $\theta$ and $\sigma^2_{\epsilon}$, one data point at a time. The iterative filtering approach is an approximation of the full posterior computation but given enough data points it gets more accurate. The advantage of using this approach is that it's an online algorithm. Since the computations are done one data point at a time, it doesn't require the full timeseries and it also doesn't require any recomputation when new data is added. In the full posterior computation, each additional data point requires the whole computation to be repeated. \\
+
+\subsection{Statistical Model}
+We consider the stochastic differential equation model:
+\begin{align*}
+d X_t & = f(X_t; \theta) dt + g(X_t ; \theta) dW_t \\
+Y_t & = X_t + \epsilon_t
+\end{align*}
+
+The first equation is a stochastic differential equation with drift function $f(X_t; \theta)$, diffusion function $g(X_t; \theta)$ and Brownian motion $W_t$. We consider $X_t$ as the latent variable and $Y_t$ as the observed variable, where there's another observation noise $\epsilon_t$. The observation noise is assumed to be distributed normally with mean 0, variance $\sigma^2_{\epsilon}$. \\
+
+Considering the length of the timeseries as $L$, the data is given by $\{ y_0, y_1, \cdots, y_L\}$ where $y_j = Y_{t_j}$ is the observation on time $t_j$.
+
+%%%%%%%%%%%%%%% APPENDIX B %%%%%%%%%%%%%%
+\section{Gradient Calculation for the Filtering Model}
+% \label{Appendix:B}
+% Till now, the first term of the prior, $p ( \bx \, | \, \btheta) $ used to be the likelihood function we would calculate using the DTQ method, by applying quadrature. The final posterior can now be written as,
+
+% \begin{align*}
+% p(\bx, \btheta, \sigma^2_{\epsilon} \, | \, \by) \propto \bigg[\prod_{m=0}^{M} p \, (y_{t_{m}} \, | \, x_m, \sigma^2_{\epsilon}) \bigg] p(\bx \, | \, \btheta) \, p(\btheta) \, p(\sigma^2_{\epsilon})
+% \end{align*}
+
+Since we need the gradients of the posterior for optimization, it's easier to take the logarithm on both sides and take derivatives of the summation terms
+
+% \begin{equation}
+% \begin{split}
+% \log p(\bx, \btheta, \sigma^2_{\epsilon} \, | \, \by) & \propto \log \bigg[\prod_{m=0}^{M} p(y_{t_{m}} \, | \, x_m, \sigma^2_{\epsilon}) \bigg] + \log p(\bx \, | \, \btheta) + \log p(\btheta) + \log p(\sigma^2_{\epsilon}) \\
+% & \propto \underbrace{\bigg[\sum_{m=0}^{M} \log p(y_{t_{m}} | x_m, \sigma^2_{\epsilon}) \bigg]}_{\mathcal{A}} + \underbrace{\bigg[\sum_{m=0}^{M-1} \log p(x_{m+1} \, | \, x_m; \btheta) \bigg]}_{\mathcal{B}} + \\ 
+% & \qquad \qquad \qquad \underbrace{\log p(x_0 \, | \, \btheta)}_{\mathcal{C}} + \underbrace{\log p(\btheta)}_{\mathcal{D}} + \underbrace{\log p(\sigma^2_{\epsilon})}_{\mathcal{E}}
+% \end{split}
+% \end{equation}
+
+The time series is of length $M$, where an current data point is $m$. So while in the process of optimizing the objective function, we go one - by - one from $0 \leq m \leq M$. The current data point is $t_{m}$ with the observed data $y_{t_{m}}$, the estimated data $x_{m}$ and the estimation to be made as $x_{m+1}$. So we are in the interval $[t_{m}, t_{m+1}]$ where the parameters estimated at $t_{m}$ in the previous iterations are the initial conditions for this iteration. \\
+
+% The terms bracketed above are as follows:
+% \begin{enumerate}
+% \item The log likelihood function is a gaussian with mean $x_m$ and variance $\sigma^2_{\epsilon}$ because of the noise relation, $Y_t = X_t + {\epsilon}_t$. This term is independent of previous observations, previous estimated timeseries values and the parameters of the SDE. In this computation, $y_{t_{m}}$, $x_{m}$ are known and the previously estimated values of $\btheta, \sigma^2_{\epsilon}$ are considered the initial guesses for this iteration of the optimizer.
+% \begin{align*}
+% \mathcal{A} = & \sum_{m=0}^{M} \log p \, (y_{t_{m}} \, | \, x_m, \sigma^2_{\epsilon}) = \sum_{m=0}^{M} \log \frac{1}{\sqrt{2 \pi \sigma^2_{\epsilon}}} + \sum_{m=0}^{M} \bigg( -\frac{(y_{t_{m}} - x_m)^2}{2 \sigma^2_{\epsilon}}\bigg)\\
+% \frac{\partial \mathcal{A}}{\partial x_{i}} = & \frac{(y_{t_{i}} - x_{i})}{\sigma^2_{\epsilon}}, \qquad \qquad \frac{\partial \mathcal{A}}{\partial \sigma^2_{\epsilon}} = \sum_{m=0}^{m'} \bigg[ \frac{1}{\sigma^2_{\epsilon}} \log \frac{1}{\sqrt{2 \pi \sigma^2_{\epsilon}}} - \frac{(y_{t_m} - x_m)^2}{2\sigma^4_{\epsilon}} \bigg], \forall m' \mid 0 \leq m' \leq M
+% \end{align*}
+
+% \item The second term is the one computed by the DTQ method. This is the bottleneck computation because it can not be written down explicitly in the general case. In the DTQ method, we use the Euler - Maruyama approximation to the SDE and apply a quadrature over the interval so that it can do the computation more accurately even in the case of long non - equispaced intervals. In the DTQ method, if we have $n$ intermediate spatial grid points in the interval $[t_{m'}, t_{m'+1}]$, the following steps are involved
+
+% \begin{enumerate}
+% \item $1^{st}$ step is exact and involves going from the delta distribution at $x_{m'}$ to the normal distribution centered around $x_{m'}$. This is represented as the column vector $\bq(x_{m'})$.
+% \item Starting from the initial grid along $x_{m'}$ we need to propagate the computations along the spatial grids. There are $n - 2$ repeated matrix multiplications for forward progression in time represented as $\bA^{n - 2}$. The matrix $\bA$ remains the same irrespective of the interval.
+% \item To avoid interpolation on the grid that we created, the last step involves multiplication by the vector which represents the grid along the final spatial point, $\bgamma(x_{m'+1})$
+% \end{enumerate}
+
+% For computing the likelihood $p(\bx \mid \theta)$, we use the Markov property satisfied by the Euler-Maruyama approximation of the SDE
+
+% \begin{align*}
+% & \bgamma_{m+1} = (G^h_{\btheta}(x_{m+1}, -Lk), \, G^h_{\btheta}(x_{m+1}, (-L+1)k), \cdots, G^h_{\btheta}(x_{m+1}, Lk)) \\
+% & \frac{\partial \bgamma_{m+1}}{\partial x_{m+1}} = \bigg( \frac{\partial G^h_{\btheta}}{\partial x_{m+1}}(x_{m+1}, -Lk), \frac{\partial G^h_{\btheta}}{\partial x_{m+1}}(x_{m+1}, (-L+1)k), \cdots, \frac{\partial G^h_{\btheta}}{\partial x_{m+1}}(x_{m+1}, Lk) \bigg)
+% \end{align*}
+
+% The grid is $(-Lk, (-L+1)k, \cdots, (L-1)k, Lk)$. So considering one of the grid points, $jk, -L \leq i \leq L$, we get,
+
+% \begin{align*}
+% G^h_{\btheta}(x_{m+1}, jk) & = \frac{1}{\sqrt{2 \pi g^2(jk; \btheta) h}} \exp \bigg( - \frac{(x_{m+1} - b - f(jk; \btheta)h)^2}{2 g^2(jk; \btheta)h} \bigg) \\
+% \frac{\partial G^h_{\btheta}}{\partial x_{m+1}}(x_{m+1}, jk) & = -\frac{(x_{m+1} - jk - f(jk; \btheta)h)}{g^2(jk; \btheta)h} G^h_{\btheta}(x_{m+1}, jk) \\
+% \implies \frac{\partial \mathcal{B}}{\partial x_{m+1}} & = \sum_{m=0}^{M-1} \bigg( \cdots, -\frac{(x_{m+1} - jk - f(jk; \btheta)h)}{g^2(jk; \btheta)h}, \cdots \bigg) +
+% \end{align*}
+% \end{enumerate}
+
+% Let's simplify each of the terms before we take the derivatives
+
+% TODO: Correct the calculations
+
+\begin{align*}
+\mathbf{B1} = & p(x_{j+1} | x_j, \theta) = \vec{\Gamma}(x_{j+1}) . A^{n - 2}. \vec{g}(x_{j}) \\
+\frac{\partial \mathbf{B1}}{\partial x_i} = & \frac{\partial \vec{\Gamma}}{\partial x_i}(x_i) . A^{n- 2}. \vec{g}(x_{i-1})\\
+\frac{\partial \mathbf{B}}{\partial x_i} = & \sum_{j=1}^{L} \frac{\frac{\partial \vec{\Gamma}}{\partial x_i}(x_i) . A^{n-2}. \vec{g}(x_{i-1})}{\vec{\Gamma}(x_{i}) . A^{n-2}. \vec{g}(x_{i-1})}\\
+= & \sum_{j=1}^{L} \frac{1}{\vec{\Gamma}(x_i)} \frac{\partial \vec{\Gamma}}{\partial x_i}(x_i) \\
+\frac{\partial \mathbf{B}}{\partial \theta} = & \text{computed in DTQ code}
+\end{align*}
+
+We need to find the derivatives of the 4 circled terms above, with respect to 3 parameters, $\{ x_i, \{ \theta_1, \theta_2, \theta_3 \}, \sigma^2_{\epsilon} \}$
+
+\begin{table}[H]
+\centering
+\caption{Derivatives}
+\label{allderivs}
+\begin{tabular}{|l|l|l|l|l|l|}
+\hline
+$\frac{\partial}{\partial}$ & $\mathbf{A}$ & $\mathbf{B}$ & $\mathbf{C}$ & $\mathbf{D}$ & $\mathbf{E}$ \\ \hline
+$x_i$ & $\checkmark$ & $\checkmark$ & & 0 & 0 \\ \hline
+$\{ \theta_1, \theta_2, \theta_3 \}$ & 0 & $\checkmark$ & 0 & & 0 \\ \hline
+$\sigma^2_{\epsilon}$ & $\checkmark$ & 0 & 0 & 0 & \\ \hline
+\end{tabular}
+\end{table}
+
+The priors used for the parameters $\{ x, \{ \theta_1, \theta_2, \theta_3 \}, \sigma^2_{\epsilon} \}$ are as follows:
+\begin{align*}
+\log p(x_0) & = \log \mathcal{N}(x = x_0, \mu = y_0, \sigma^2 = \sigma^2_{\epsilon})\\
+\log p(\theta) & = \log \mathcal{N}(x = \theta_1, \mu = 0.5, \sigma^2 = 1) + \log \mathcal{N}(x = \theta_2, \mu = 2, \sigma^2 = 10)\\
+\log p(\sigma^2_{\epsilon}) & = \log (\text{Exp}(\lambda = 1)) = \log (\lambda) -\lambda \sigma^2_{\epsilon}
+\end{align*}
+
+For a general log Normal pdf,
+\begin{align*}
+f(x, \mu, \sigma^2) & = \log \bigg[ \frac{1}{\sqrt{2 \pi \sigma^2}} \exp \bigg( - \frac{(x - \mu)^2}{2 \sigma^2} \bigg) \bigg] = - \log(\sqrt{2 \pi \sigma^2}) - \frac{(x - \mu)^2}{2 \sigma^2} \\
+\frac{\partial f(x, \mu, \sigma^2)}{\partial x} & = - \frac{(x - \mu)}{\sigma^2}
+\end{align*}
+
+So the derivatives of the priors with respect to the parameters are,
+\begin{align*}
+\frac{\partial \log p(x_0)}{\partial x_0} = & - \frac{(x_0 - y_0)}{2 \sigma^2_{\epsilon}} \\
+\frac{\partial \log p(\theta)}{\partial \theta_1} = & -(\theta_1 - 0.5), \frac{\partial \log p(\theta)}{\partial \theta_2} = -\frac{(\theta_2 -2)}{100}, \frac{\partial \log p(\theta)}{\partial \theta_3} = 0\\
+\frac{\partial \log p(\sigma^2_{\epsilon})}{\partial \sigma_{\epsilon}^2} = & -\lambda &
+\end{align*}
+
+\end{document}
