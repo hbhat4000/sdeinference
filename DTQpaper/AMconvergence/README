@@ -1,0 +1,44 @@
+To reproduce the convergence figure (Figure 1) from the paper,
+follow these steps:
+
+1) From this directory, run the following command:
+
+Rscript runner.R > runner.out
+
+This should create allresults_j.RData for j=1,2,4,5,6.
+
+2) Enter the cpp directory and each of the ex# directories for #=1,2,4,5,6.
+
+Repeat the following steps for h=0.005,0.002,0.001:
+(1) Edit the iterate.cpp file to set the value of h appropriately
+(2) Build the executable:
+
+make
+
+(3) Run the C++ code and redirect output to a file:
+
+./iterate > solution_#_h
+
+for example, if #=5 and h=0.001, then the command would be:
+
+./iterate > solution_5_0.001
+
+There should be a total of 5*3 = 15 runs of this C++ code.
+
+3) Now get back to this directory and run
+
+Rscript newerrcomb.R
+
+Should create newallresults_j.RData for j=1,2,4,5,6.
+
+4) Create the convergence plots for j=1,2,4,5,6.
+
+Rscript plotter.R
+
+5) Take care of the j=3 special case.
+
+Rscript runner2.R > runner2.out
+Rscript plotter2.R
+
+You should now have convplot_j.eps and convplot_j.pdf for j=1,2,3,4,5,6.
+
