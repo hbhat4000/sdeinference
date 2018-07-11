@@ -14,10 +14,12 @@ kserrs = numeric(length=numh)
 yM = numeric(length=numh)
 npts = numeric(length=numh)
 
-for (j in c(1,2,4,5,6))
+#for (j in c(1,2,4,5,6))
+for (j in c(5,6))
 {
   for (ii in c(1:numh))
   {
+    print(paste0("j=",j,", h=",hseq[ii]))
     err = comperr(hseq[ii],T,s,init[j],drift=examples[[j]]$drift,diff=examples[[j]]$diff,exact=examples[[j]]$exact)
     inferrs[ii] = err$errinf
     l1errs[ii] = err$errl1

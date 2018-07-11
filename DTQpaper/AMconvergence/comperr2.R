@@ -7,10 +7,10 @@ source('integrandmat.R')
 comperr <- function(h,T,s,init,driftfun,difffun,exactfun)
 {
     numsteps = ceiling(T/h)
-    k = h^s
-    yM = pi/2 - 2*k
-    bigM = ceiling(yM/k)
-    xvec = seq(from=-bigM,to=bigM,by=1)*k
+    yM = pi/2 - (h^(2*s))
+    bigM = ceiling(yM/(h^s))
+    k = yM/bigM
+    xvec = c(-bigM:bigM)*k
     npts = length(xvec)
 
     # pdf after one timestep
@@ -18,7 +18,7 @@ comperr <- function(h,T,s,init,driftfun,difffun,exactfun)
     mysigma = abs(difffun(init))*sqrt(h)
     approxpdf = as.matrix(dnorm(x=xvec,mean=mymu,sd=mysigma))
 
-    A = integrandmat(xvec,xvec,h,driftfun,difffun)
+    A = integrandmat(xvec,k,h,driftfun,difffun)
     for (i in c(1:npts)) A[,i] = A[,i] / (sum(A[,i])*k)
 
     # pdf after two timesteps

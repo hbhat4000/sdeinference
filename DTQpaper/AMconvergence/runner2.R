@@ -3,7 +3,7 @@ rm(list=ls(all=TRUE))
 source('comperr2.R')
 source('allcoeffs.R')
 
-hseq = c(0.5,0.2,0.1,0.05,0.02,0.01,0.005,0.002,0.001)
+hseq = c(0.05,0.02,0.01,0.005,0.002,0.001) #,00005,0.00002,0.00001)
 init = c(0,0,0,0,0,0,0,0,0)
 numh = length(hseq)
 T = 1

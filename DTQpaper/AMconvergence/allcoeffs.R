@@ -52,13 +52,17 @@ examples[[3]]$sampler <- function(y)
 }
 examples[[3]]$exact <- function(yin,T)
 {
-  # note: T is assumed to be 1
-  load('./sw_x_3.RData')
-  load('./sw_bigden_3.RData')
-  z = approx(x=mydenx,y=bigden,xout=yin)$y
-  zsum = (yin[2]-yin[1])*sum(z)
-  z = z/zsum
+  z = exp(-tan(yin)^2/(2*T))
+  z = z/(cos(yin)^2)
+  z = z/sqrt(2*pi*T)
   return(z)
+  # note: T is assumed to be 1
+  # load('./sw_x_3.RData')
+  # load('./sw_bigden_3.RData')
+  # z = approx(x=mydenx,y=bigden,xout=yin)$y
+  # zsum = (yin[2]-yin[1])*sum(z)
+  # z = z/zsum
+  # return(z)
 }
 
 ### Example 4:
