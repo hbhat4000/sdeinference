@@ -1,0 +1,18 @@
+#! /bin/bash
+#$ -S /bin/bash
+#$ -q appliedmath.q
+#$ -cwd
+#$ -N AMrunner2
+#$ -j y
+#$ -o AMrunner2.qlog
+#$ -l mem_free=64G
+#
+# This submission file will run a simple set of commands. All stdout will
+# be captured in nonparametricEM.qlog (as specified in the SGE command -o above).
+# This job file uses a shared-memory parallel environment and requests 20
+# cores on a single node. This job will also run a global script called
+# merced_node_print that will let the user log the node where a job is
+# run. For more info on this script, cat /usr/local/bin/merced_node_print.
+#
+export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/home/hbhat/lib64:/home/hbhat/lib
+Rscript runner2.R > runner2.out
